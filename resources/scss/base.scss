@@ -1,0 +1,39 @@
+$cardWidth: 4.25em;
+$cardHeight: 6em;
+$cardCorner: .5em;
+
+@mixin cardShape {
+    height: $cardHeight;
+    width: $cardWidth;
+    border-radius: $cardCorner;
+}
+
+@mixin cardShadow($width, $height, $blur) {
+    @include cardShape;
+    content: '';
+    display: inline-block;
+    background: black;
+    position: absolute;
+    filter: drop-shadow($width $height $blur black);
+}
+
+@import "./card";
+@import "./pile";
+@import "./pile-control";
+@import "./table";
+
+body.flex-column {
+    height: 100vh;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+
+    .full-height {
+        flex: 1;
+    }
+}
+

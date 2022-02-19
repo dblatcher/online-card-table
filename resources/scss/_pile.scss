@@ -1,0 +1,81 @@
+.pile {
+  @include cardShape;
+  box-sizing: content-box;
+  margin: 0;
+  padding: .2em;
+  display: inline-block;
+  position: absolute;
+
+  &.no-cards {
+    filter: unset;
+
+    &:after {
+      @include cardShape;
+      content: '';
+      display: inline-block;
+      background: repeating-linear-gradient(45deg, transparent .4em, whitesmoke .5em, transparent .6em)
+    }
+  }
+
+  .card {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+
+
+  &.spread {
+    display: inline-flex;
+    filter: unset;
+    width: unset;
+
+    &.scrolling {
+      flex-basis: 16rem;
+      overflow-y: clip;
+      overflow-x: auto;
+    }
+
+    .card {
+      position: relative;
+      flex-basis: $cardWidth;
+      flex-shrink: 0;
+
+      &.flip {
+        left: .9em;
+      }
+    }
+
+    &[quantity="small"] .card {
+      flex-basis: 3em;
+    }
+    &[quantity="medium"] .card {
+      flex-basis: 2em;
+    }
+    &[quantity="big"] .card {
+      flex-basis: 1.5em;
+    }
+
+    &[quantity="huge"] .card {
+      flex-basis: .9em;
+    }
+  }
+
+  &:not(.spread) {
+    &[quantity="small"]::before {
+      @include cardShadow(2px,1px,2px);
+    }
+  
+    &[quantity="medium"]::before {
+      @include cardShadow(4px,2px,2px);
+    }
+  
+    &[quantity="big"]::before {
+      @include cardShadow(6px,3px,2px);
+    }
+  
+    &[quantity="huge"]::before {
+      @include cardShadow(8px,4px,2px);
+    }
+  }
+}

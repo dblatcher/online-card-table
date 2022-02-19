@@ -1,0 +1,33 @@
+.pile-control {
+    position: absolute;
+    display: inline-flex;
+    margin: 0;
+    left: -1em;
+    top:  -1em;
+    width: 2em;
+    height: 2em;
+    border-radius: 50%;
+    border:  1px dashed white;
+    color: white;
+    z-index: 10;
+    filter: none;
+
+    justify-content: center;
+    align-items: center;
+
+    &--right {
+        left: unset;
+        right: -1em;
+    }
+
+    &--bottom {
+        top: unset;
+        bottom: -1em;
+    }
+
+    cursor: pointer;
+
+    &[draggable] {
+        cursor: move;
+    }
+}

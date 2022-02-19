@@ -47,9 +47,8 @@ Encore.setPublicPath('/assets')
 | entrypoints.
 |
 */
-Encore.addEntry('app', './resources/js/app.ts')
-Encore.addEntry('new', './resources/js/new.ts')
-
+Encore.addEntry('app', './resources/js/app.ts');
+Encore.addEntry('card-table', './resources/js/card-table.ts');
 
 /*
 |--------------------------------------------------------------------------
@@ -160,7 +159,7 @@ Encore.configureDevServerOptions((options) => {
 | favorite CSS precompiler
 |
 */
-// Encore.enableSassLoader()
+Encore.enableSassLoader()
 // Encore.enableLessLoader()
 // Encore.enableStylusLoader()
 
@@ -173,7 +172,7 @@ Encore.configureDevServerOptions((options) => {
 | PostCSS or CSS.
 |
 */
-// Encore.enablePostCssLoader()
+Encore.enablePostCssLoader()
 // Encore.configureCssLoader(() => {})
 
 /*

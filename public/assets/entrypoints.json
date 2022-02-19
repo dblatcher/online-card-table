@@ -8,9 +8,12 @@
         "http://localhost:8080/assets/app.js"
       ]
     },
-    "new": {
+    "card-table": {
+      "css": [
+        "http://localhost:8080/assets/card-table.css"
+      ],
       "js": [
-        "http://localhost:8080/assets/new.js"
+        "http://localhost:8080/assets/card-table.js"
       ]
     }
   }

@@ -11,6 +11,8 @@
     "outDir": "build",
     "rootDir": "./",
     "sourceMap": true,
+    "lib": ["dom"],
+    "target": "ES5",
     "paths": {
       "App/*": [
         "./app/*"
@@ -31,7 +33,6 @@
       "@adonisjs/session",
       "@adonisjs/view",
       "@adonisjs/shield"
-    ],
-    "lib":["dom"],
+    ]
   }
 }

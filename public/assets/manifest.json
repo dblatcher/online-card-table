@@ -1,5 +1,6 @@
 {
   "assets/app.css": "http://localhost:8080/assets/app.css",
   "assets/app.js": "http://localhost:8080/assets/app.js",
-  "assets/new.js": "http://localhost:8080/assets/new.js"
+  "assets/card-table.css": "http://localhost:8080/assets/card-table.css",
+  "assets/card-table.js": "http://localhost:8080/assets/card-table.js"
 }

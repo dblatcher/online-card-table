@@ -1,0 +1,81 @@
+.card {
+    @include cardShape;
+    display: inline-block;
+    transform-origin: center;
+    transform: rotateY(0deg);
+    transform-style: preserve-3d;
+    margin: 0;
+    box-sizing: border-box;
+    transition: transform .2s;
+
+    &.flip {
+        transform: rotateY(180deg);
+    }
+
+    section {
+        display: inline-block;
+        position: absolute;
+        border-radius: $cardCorner;
+        backface-visibility: hidden;
+        width: inherit;
+        height: inherit;
+        margin: 0;
+        box-sizing: border-box;
+        border: 2px solid black;
+    }
+
+    .back {
+        transform: rotateY(180deg);
+        background: repeating-linear-gradient(45deg, antiquewhite .5rem, blue 1em);
+    }
+
+    .face {
+        background-color: antiquewhite;
+
+        &::after, .top-value, .bottom-value {
+            position: absolute;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 100%;
+            line-height: 1;
+        }
+
+        .top-value {
+            top: 0%;
+            left: 0%;
+            flex-direction: column;
+        }
+        
+        .bottom-value {
+            bottom: 0%;
+            right: 0%;
+            flex-direction: column-reverse;
+        }
+
+        .middle {
+            position: absolute;
+            font-size: 200%;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%);
+        }
+    }
+
+    &[suit="hearts"] .face {
+        color: red;
+    }
+
+    &[suit="diamonds"] .face {
+        color: red;
+
+    }
+
+    &[suit="spades"] .face {
+        color: black;
+    }
+
+    &[suit="clubs"] .face {
+        color: black;
+    }
+}
