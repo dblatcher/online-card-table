@@ -24,11 +24,18 @@ Route.get('/', async ({ view }) => {
   return view.render('welcome')
 })
 
+Route.get('/private-table', async ({ view }) => {
+  return view.render('privateTable')
+})
+
+Route.get('/shared-table', async ({ view }) => {
+  return view.render('sharedTable')
+})
+
 Route.get('/about', async ({ view }) => {
-  
   const greeting = Math.random() > .5 ? 'hello' : 'hi there'
 
   return view.render('about', {
-    greeting
+    greeting,
   })
 })

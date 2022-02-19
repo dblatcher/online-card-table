@@ -1,25 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AdonisJS - A fully featured web framework for Node.js</title>
-  @entryPointStyles('shared-card-table')
-  @entryPointScripts('shared-card-table')
+  @entryPointStyles('app')
+  @entryPointScripts('app')
 </head>
+
 <body>
 
   <main>
     <div>
       <h1 class="title"> Online card table </h1>
-
-      <main class="full-height flex-column">
-          <p>test page</p>
-          <article id="table" class="full-height table table--outlined"></article>
-      </main>
+      <ul>
+        <li>
+          <a href="/private-table">private table</a>
+        </li>
+        <li>
+          <a href="/shared-table">shared table</a>
+        </li>
+      </ul>
     </div>
 
   </main>
 
 </body>
+
 </html>
