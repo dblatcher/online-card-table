@@ -1,6 +1,10 @@
 import '../scss/base.scss'
 
-import {init} from './cards/index'
+import { init as initCardTable } from './cards/index'
+import { openClientSocket } from './socket/client-socket';
 
-window.onload = init
+window.onload = () => {
+  const socket = openClientSocket()
+  initCardTable(socket)
+}
 

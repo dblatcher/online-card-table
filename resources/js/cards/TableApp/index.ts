@@ -266,7 +266,7 @@ class TableApp extends TableModel {
     }
   }
 
-  protected respondToDropInteraction (sourcePile: Pile, targetPile: Pile, sourceCard?: Card, targetCard?: Card) {
+  public respondToDropInteraction (sourcePile: Pile, targetPile: Pile, sourceCard?: Card, targetCard?: Card) {
     if (targetPile === sourcePile) {
       console.log('dropped onto sourcePile')
     }
@@ -318,7 +318,8 @@ class TableApp extends TableModel {
     }
   }
 
-  protected dropOnTableHandler (event: DragEvent) {
+  // TO DO - use respondToDropEvent or a similar method here so this method can be protected again
+  public dropOnTableHandler (event: DragEvent) {
     const dragData = this.parseDragData(event)
     const { sourceCard, sourcePile } = dragData
     const { altKey, target, clientX, clientY } = event

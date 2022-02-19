@@ -21,13 +21,5 @@
 
   </main>
 
-  <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
-  <script>
-    const socket = io()
-    socket.on('news', (data) => {
-      console.log(data)
-      socket.emit('my other event', { my: 'data' })
-    })
-  </script>
 </body>
 </html>

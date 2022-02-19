@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 import { Card } from './card'
-import { Pile } from './pile'
+import { Pile, SerialisedPile } from './pile'
 
 class TableModel {
   piles:Pile[]
@@ -37,6 +37,10 @@ class TableModel {
       }
     })
     return sourcePileElement
+  }
+
+  serialise ():SerialisedPile[] {
+    return this.piles.map(pile => pile.serialise())
   }
 }
 
