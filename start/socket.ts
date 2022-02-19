@@ -3,16 +3,21 @@ Ws.boot()
 
 /**
  * Listen for incoming socket connections
+ * TO DO - validate incoming data from client
  */
 Ws.io.on('connection', (socket) => {
-  socket.emit('news', { hello: 'world' })
+  socket.emit('basicEmit', { message: 'Hello world' })
 
-  socket.on('my other event', (data) => {
-    console.log(data)
+  socket.on('basicEmit', (payload) => {
+    console.log(payload)
 
-    if (data.thisIs && data.thisIs === 'SocketedTableApp.constructor') {
-      socket.emit('news',{hello: 'You are a have a new SocketedTableApp'})
-      socket.broadcast.emit('news',{hello: 'Another SocketedTableApp has joined'})
+    if (payload.message === 'new SocketedTableApp constructed') {
+      socket.emit('basicEmit',{message: 'You are a new SocketedTableApp'})
+      socket.broadcast.emit('basicEmit',{message: 'Another SocketedTableApp has joined'})
     }
+  })
+
+  socket.on('tableStatus', (payload) => {
+    console.log(`tableStatus received at ${Date.now()} : ${payload.data.length} piles`)
   })
 })

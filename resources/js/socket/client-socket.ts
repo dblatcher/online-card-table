@@ -1,11 +1,12 @@
-import { io } from 'socket.io-client'
+import { ClientToServerEvents, ServerToClientEvents } from 'definitions/socket'
+import { io, Socket } from 'socket.io-client'
 
 export function openClientSocket () {
-  const socket = io()
+  const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io()
 
-  socket.on('news', (data) => {
-    console.log(data)
-    socket.emit('my other event', { my: 'data' })
+  socket.on('basicEmit', (payload) => {
+    console.log('received a basicEmit:', payload)
+    socket.emit('basicEmit', { message: `message acknowledged at ${Date.now()}` })
   })
 
   return socket

@@ -2,7 +2,7 @@ import { Socket } from 'socket.io-client'
 import { initialPiles } from './setUp'
 import { SocketedTableApp } from './SocketedTableApp'
 
-export function init(socket: Socket) {
+export function init (socket: Socket) {
   const tableElement = document.querySelector('.table')
   if (!tableElement) {
     console.warn('NO TABLE ELEMENT')
@@ -12,6 +12,4 @@ export function init(socket: Socket) {
 
   const myWindow = window as any
   myWindow.app = app
-
-  socket.emit('my other event', { thisIs: 'the init function' })
 }
