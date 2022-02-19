@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io-client'
-import { initialPiles } from './setUp'
+import { initialPiles } from '../card-game/setUp'
 import { SocketedTableApp } from './SocketedTableApp'
 
 export function init (socket: Socket) {

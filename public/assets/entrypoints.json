@@ -8,12 +8,20 @@
         "http://localhost:8080/assets/app.js"
       ]
     },
-    "card-table": {
+    "shared-card-table": {
       "css": [
-        "http://localhost:8080/assets/card-table.css"
+        "http://localhost:8080/assets/shared-card-table.css"
       ],
       "js": [
-        "http://localhost:8080/assets/card-table.js"
+        "http://localhost:8080/assets/shared-card-table.js"
+      ]
+    },
+    "private-card-table": {
+      "css": [
+        "http://localhost:8080/assets/private-card-table.css"
+      ],
+      "js": [
+        "http://localhost:8080/assets/private-card-table.js"
       ]
     }
   }

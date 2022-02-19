@@ -1,4 +1,4 @@
-import { SerialisedPile } from 'resources/js/cards/pile'
+import { SerialisedPile } from 'resources/js/card-game/pile'
 
 interface ServerToClientEvents {
   noArg: () => void;

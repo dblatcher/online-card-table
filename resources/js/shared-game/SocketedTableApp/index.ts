@@ -1,7 +1,7 @@
-import { TableApp } from '../TableApp'
+import { TableApp } from '../../card-game/TableApp'
 import { Socket } from 'socket.io-client'
-import { Pile } from '../pile'
-import { Card } from '../card'
+import { Pile } from '../../card-game/pile'
+import { Card } from '../../card-game/card'
 import { ServerToClientEvents, ClientToServerEvents } from 'definitions/socket'
 
 export class SocketedTableApp extends TableApp {
