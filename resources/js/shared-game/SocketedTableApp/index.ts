@@ -2,7 +2,7 @@ import { TableApp } from '../../card-game/TableApp'
 import { Socket } from 'socket.io-client'
 import { Pile } from '../../card-game/pile'
 import { Card } from '../../card-game/card'
-import { ServerToClientEvents, ClientToServerEvents } from 'definitions/socket'
+import { ServerToClientEvents, ClientToServerEvents, TableStatusPayload } from 'definitions/socket'
 
 export class SocketedTableApp extends TableApp {
   private socket: Socket<ServerToClientEvents, ClientToServerEvents>
@@ -13,12 +13,22 @@ export class SocketedTableApp extends TableApp {
     this.socket = socket
 
     this.socket.emit('basicEmit', { message: 'new SocketedTableApp constructed' })
+
+    this.socket.on('tableStatus', this.handleTableStatus.bind(this))
   }
 
   public reportState (triggeringMethodName?: string) {
     const data = this.serialise()
     console.log('emitting', triggeringMethodName, data)
-    this.socket.emit('tableStatus', { data })
+    this.socket.emit('tableStatus', { data, from:'client' })
+  }
+
+  public handleTableStatus (payload:TableStatusPayload):void {
+    console.log(payload)
+
+    const newPiles = payload.data.map(Pile.deserialise)
+
+    this.resetTo(newPiles)
   }
 
   public shufflePile (pile: Pile) {

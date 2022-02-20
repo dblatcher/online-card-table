@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io-client'
-import { initialPiles } from '../card-game/setUp'
+import { Pile } from '../card-game/pile'
 import { SocketedTableApp } from './SocketedTableApp'
 
 export function init (socket: Socket) {
@@ -8,7 +8,15 @@ export function init (socket: Socket) {
     console.warn('NO TABLE ELEMENT')
     return
   }
-  const app = new SocketedTableApp(initialPiles, tableElement,socket)
+  const app = new SocketedTableApp([], tableElement,socket)
+
+  const newDeckButton = document.querySelector('button#newDeck')
+  newDeckButton?.addEventListener('click', () => {
+    app.resetTo([
+      Pile.ofNewDeck(),
+    ])
+    app.reportState()
+  })
 
   const myWindow = window as any
   myWindow.app = app

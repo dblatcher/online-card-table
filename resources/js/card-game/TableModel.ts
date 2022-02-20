@@ -39,6 +39,23 @@ class TableModel {
     return sourcePileElement
   }
 
+  removePile (pile: Pile): Pile {
+    const index = this.piles.indexOf(pile)
+    const pileElement = this.findElementForPile(pile)
+    if (index === -1 || !pileElement) {
+      throw ('cannot find pile')
+    }
+    const [removedPile] = this.piles.splice(index, 1)
+
+    removedPile.cards.forEach(card => {
+      this.elementToCardMap.delete(this.findElementForCard(card))
+    })
+
+    this.elementToPileMap.delete(pileElement)
+    pileElement.parentElement?.removeChild(pileElement)
+    return pile
+  }
+
   serialise ():SerialisedPile[] {
     return this.piles.map(pile => pile.serialise())
   }

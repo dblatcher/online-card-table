@@ -12,12 +12,17 @@ Ws.io.on('connection', (socket) => {
     console.log(payload)
 
     if (payload.message === 'new SocketedTableApp constructed') {
-      socket.emit('basicEmit',{message: 'You are a new SocketedTableApp'})
-      socket.broadcast.emit('basicEmit',{message: 'Another SocketedTableApp has joined'})
+      socket.emit('basicEmit', { message: 'You are a new SocketedTableApp' })
+      socket.broadcast.emit('basicEmit', { message: 'Another SocketedTableApp has joined' })
     }
   })
 
   socket.on('tableStatus', (payload) => {
-    console.log(`tableStatus received at ${Date.now()} : ${payload.data.length} piles`)
+    console.log(`tableStatus received at ${Date.now()} from ${payload.from} : ${payload.data.length} piles`)
+
+    socket.broadcast.emit('tableStatus', {
+      ...payload,
+      from: 'client',
+    })
   })
 })
