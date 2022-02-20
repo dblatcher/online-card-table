@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 import { animatedElementMove } from '../animation'
-import { addCardElementToPileElement, makeCardElement, makePileElement,
-  removeCardElements, setPileElementAttributes, setPileElementPosition } from './elements'
+import {
+  addCardElementToPileElement, makeCardElement, makePileElement,
+  removeCardElements, setPileElementAttributes, setPileElementPosition,
+} from './elements'
 import { Pile } from '../pile'
 import { TableModel } from '../TableModel'
 import { Card } from '../card'
@@ -39,6 +41,16 @@ class TableApp extends TableModel {
       this.registerPile(pile)
     })
     this.setUpTable()
+  }
+
+  resetTo (piles: Pile[] = []) {
+    while (this.piles.length > 0) {
+      this.removePile(this.piles[0])
+    }
+
+    piles.forEach(pile => {
+      this.addPile(pile)
+    })
   }
 
   addPile (pile = new Pile()): Pile {
@@ -83,7 +95,12 @@ class TableApp extends TableModel {
     if (index === -1 || !pileElement) {
       throw ('cannot find pile')
     }
-    this.piles.splice(index, 1)
+    const [removedPile] = this.piles.splice(index, 1)
+
+    removedPile.cards.forEach(card => {
+      this.elementToCardMap.delete(this.findElementForCard(card))
+    })
+
     this.elementToPileMap.delete(pileElement)
     pileElement.parentElement?.removeChild(pileElement)
     return pile
@@ -216,7 +233,7 @@ class TableApp extends TableModel {
   protected parseDragData (event: DragEvent): CardOrPileDragData {
     let data: any = {}
     try {
-      const {dataTransfer} = event
+      const { dataTransfer } = event
       data = dataTransfer ? JSON.parse(dataTransfer.getData('text/plain')) : {}
     } catch (error) {
       console.warn(error)
@@ -283,7 +300,7 @@ class TableApp extends TableModel {
   }
 
   protected dropOnCardHandler (event: DragEvent) {
-    let targetCard: Card|undefined; let dropTarget: Element | undefined
+    let targetCard: Card | undefined; let dropTarget: Element | undefined
     const dragData = this.parseDragData(event)
     const { sourcePile, sourceCard } = dragData
 
@@ -296,13 +313,13 @@ class TableApp extends TableModel {
 
     const targetPile = targetCard ? this.findPileContainingCard(targetCard) : undefined
 
-    if (sourcePile && targetPile){
+    if (sourcePile && targetPile) {
       this.respondToDropInteraction(sourcePile, targetPile, sourceCard, targetPile.spread ? targetCard : undefined)
     }
   }
 
   protected dropOnPileHandler (event: DragEvent) {
-    let targetPile: Pile|undefined; let dropTarget: Element | undefined
+    let targetPile: Pile | undefined; let dropTarget: Element | undefined
     const dragData = this.parseDragData(event)
     const { sourcePile, sourceCard } = dragData
 
@@ -324,7 +341,7 @@ class TableApp extends TableModel {
     const { sourceCard, sourcePile } = dragData
     const { altKey, target, clientX, clientY } = event
 
-    let dropTarget: Element |undefined
+    let dropTarget: Element | undefined
     if (target instanceof HTMLElement) {
       dropTarget = target.closest('[droptarget]') || undefined
     }
