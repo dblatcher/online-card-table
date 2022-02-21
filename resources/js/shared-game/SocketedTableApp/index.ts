@@ -2,7 +2,7 @@ import { TableApp } from '../../card-game/TableApp'
 import { Socket } from 'socket.io-client'
 import { Pile } from '../../card-game/pile'
 import { Card } from '../../card-game/card'
-import { ServerToClientEvents, ClientToServerEvents, TableStatusPayload } from 'definitions/socket'
+import { ServerToClientEvents, ClientToServerEvents, TableStatusPayload } from 'definitions/socketEvents'
 
 export class SocketedTableApp extends TableApp {
   private socket: Socket<ServerToClientEvents, ClientToServerEvents>
@@ -12,15 +12,20 @@ export class SocketedTableApp extends TableApp {
     super(piles, tableElement)
     this.socket = socket
 
-    this.socket.emit('basicEmit', { message: 'new SocketedTableApp constructed' })
-
+    this.socket.emit('logIn',{})
     this.socket.on('tableStatus', this.handleTableStatus.bind(this))
+    this.socket.on('assignId', this.handleAssignId.bind(this))
   }
 
   public reportState (triggeringMethodName?: string) {
     const data = this.serialise()
     console.log('emitting', triggeringMethodName, data)
-    this.socket.emit('tableStatus', { data, from:'client' })
+    this.socket.emit('tableStatus', { data, from:this.id || 'CLIENT_WITH_NO_ID' })
+  }
+
+  public handleAssignId (payload:{id:string}):void {
+    console.log('handleAssignId', payload)
+    this.id = payload.id
   }
 
   public handleTableStatus (payload:TableStatusPayload):void {

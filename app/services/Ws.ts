@@ -1,7 +1,7 @@
 import { Server } from 'socket.io'
 import AdonisServer from '@ioc:Adonis/Core/Server'
 
-import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from '../../definitions/socket'
+import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from '../../definitions/socketEvents'
 
 class Ws {
   public io: Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>

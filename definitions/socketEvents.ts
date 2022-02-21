@@ -5,17 +5,29 @@ interface TableStatusPayload {
   from: string
 }
 
+interface BasicEmitPayload {
+  message: string
+  from?: string
+}
+
+interface LogInPayload {
+  name?: string
+  roomName?: string
+}
+
 interface ServerToClientEvents {
   noArg: () => void;
-  basicEmit: (payload: { message: string }) => void;
+  basicEmit: (payload: BasicEmitPayload) => void;
   withAck: (d: string, callback: (e: number) => void) => void;
-  tableStatus: (payload:TableStatusPayload) => void
+  tableStatus: (payload: TableStatusPayload) => void
+  assignId: (payload: { id: string }) => void
 }
 
 interface ClientToServerEvents {
   hello: () => void;
-  basicEmit: (payload: { message: string }) => void;
-  tableStatus: (payload:TableStatusPayload) => void
+  basicEmit: (payload: BasicEmitPayload) => void
+  tableStatus: (payload: TableStatusPayload) => void
+  logIn: (payload: LogInPayload) => void
 }
 
 interface InterServerEvents {
