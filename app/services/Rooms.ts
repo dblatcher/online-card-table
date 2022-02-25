@@ -46,6 +46,14 @@ class Rooms {
     return { newPlayer, room, roomName }
   }
 
+  public getRoomList (): { name: string, playerCount: number }[] {
+    return Object.keys(this.state).map(roomName => {
+      return {
+        name: roomName, playerCount: this.state[roomName].players.length,
+      }
+    })
+  }
+
   private addNewPlayer (roomName?: string): { newPlayer?: Player, room?: RoomState, errorString?: string } {
     const room = this.getRoomByName(roomName)
 

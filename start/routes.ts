@@ -20,17 +20,9 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
-Route.get('/', async ({ view }) => {
-  return view.render('welcome')
-})
-
-Route.get('/private-table', async ({ view }) => {
-  return view.render('privateTable')
-})
-
-Route.get('/shared-table', async ({ view }) => {
-  return view.render('sharedTable')
-})
+Route.get('/', 'IndexController.index')
+Route.get('/private-table', 'PrivateTablesController.index')
+Route.get('/shared-table', 'SharedTablesController.index')
 
 Route.get('/about', async ({ view }) => {
   const greeting = Math.random() > .5 ? 'hello' : 'hi there'
