@@ -17,8 +17,8 @@ interface LogInPayload {
 }
 
 interface AssignIdPayload {
-  id:string
-  roomName:string
+  id: string
+  roomName: string
 }
 
 interface ServerToClientEvents {
@@ -46,5 +46,6 @@ interface SocketData {
 }
 
 export type {
-  ServerToClientEvents, ClientToServerEvents, InterServerEvents, SocketData, TableStatusPayload,AssignIdPayload
+  ServerToClientEvents, ClientToServerEvents, InterServerEvents,
+  SocketData, TableStatusPayload, AssignIdPayload, LogInPayload,
 }

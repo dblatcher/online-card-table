@@ -1,6 +1,5 @@
 import SharedGames from 'App/services/SharedGames'
 import Ws from 'App/Services/Ws'
-import { SharedGameState } from 'definitions/SharedGameState'
 Ws.boot()
 
 /**
@@ -13,22 +12,20 @@ Ws.io.on('connection', (socket) => {
   })
 
   socket.on('logIn', (logInPayload) => {
-    const { roomName } = logInPayload
+    console.log(`logIn for "${logInPayload.roomName}" received at ${Date.now()} from "${logInPayload.name || 'UNNAMED'}"`)
+    const { newPlayer, room, roomName, errorString } = SharedGames.handleLogInEvent(logInPayload)
 
-    if (!roomName) {
-      socket.emit('basicEmit', { message: 'Failed to log in - no roomName provided', from: '_SERVER_' })
-      return
+    if (errorString) {
+      console.warn(errorString)
     }
 
-    const [newPlayer, room] = SharedGames.addNewPlayer(roomName)
-
-    if (!newPlayer || !room) {
-      socket.emit('basicEmit', { message: `Failed to log in to  ${roomName}`, from: '_SERVER_' })
+    if (!newPlayer || !room || !roomName) {
+      socket.emit('basicEmit', { message: errorString || 'unknown log in error' })
       return
     }
 
     socket.emit('basicEmit', { message: `You are logged in as new SocketedTableApp with id ${newPlayer.id}`, from: '_SERVER_' })
-    socket.emit('assignId', { id: newPlayer.id, roomName: roomName })
+    socket.emit('assignId', { id: newPlayer.id, roomName })
     socket.emit('tableStatus', {
       data: room.table,
       from: 'server',
@@ -38,26 +35,22 @@ Ws.io.on('connection', (socket) => {
   })
 
   socket.on('tableStatus', (tableStatusPayload) => {
-    const { roomName, from: playerName, data } = tableStatusPayload
+    console.log(`tableStatus for "${tableStatusPayload.roomName}" received at ${Date.now()} from "${tableStatusPayload.from}" : ${tableStatusPayload.data.length} piles`)
+    const {room, errorString} = SharedGames.handleTableStatusEvent(tableStatusPayload)
 
-    if (!roomName) {
-      console.warn(`No room name provided on tableStatus  by ${playerName}`)
-      return
+    if (errorString) {
+      console.warn(errorString)
     }
-
-    console.log(`tableStatus for "${roomName}" received at ${Date.now()} from "${playerName}" : ${data.length} piles`)
-    const room: SharedGameState | undefined = SharedGames.state[roomName]
 
     if (!room) {
-      console.warn(`No room called ${roomName}`)
+      socket.emit('basicEmit', { message: errorString || 'unknown table status update error' })
       return
     }
 
-    room.table = data
     socket.broadcast.emit('tableStatus', {
       data: room.table,
       from: 'server',
-      roomName,
+      roomName: tableStatusPayload.roomName,
     })
   })
 })

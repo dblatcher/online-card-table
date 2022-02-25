@@ -1,8 +1,9 @@
 import { Player, SharedGameState } from 'definitions/SharedGameState'
+import { TableStatusPayload, LogInPayload } from 'definitions/socketEvents'
 
 class TableStates {
   private booted = false
-  public state = TableStates.createInitialState()
+  private state = TableStates.createInitialState()
 
   public boot () {
     /**
@@ -15,22 +16,58 @@ class TableStates {
     this.booted = true
   }
 
-  public addNewPlayer (roomName:string): [Player?, SharedGameState?] {
-    const room = this.state[roomName]
+  public handleTableStatusEvent (tableStatusPayload: TableStatusPayload): {
+    room?: SharedGameState,
+    errorString?: string
+  } {
+    const { roomName, data } = tableStatusPayload
+    const room = this.getRoomByName(roomName)
 
     if (!room) {
-      console.warn(`There is no room called ${roomName} to addNewPlayer to.`)
-      return [undefined, undefined]
+      return { errorString: `No room called ${roomName}` }
+    }
+
+    room.table = data
+    return { room }
+  }
+
+  public handleLogInEvent (logInPayload: LogInPayload): {
+    newPlayer?: Player,
+    room?: SharedGameState,
+    roomName?: string,
+    errorString?: string
+  } {
+    const { roomName } = logInPayload
+    const { newPlayer, room, errorString } = this.addNewPlayer(roomName)
+
+    if (!newPlayer || !room) {
+      return { newPlayer, room, roomName, errorString }
+    }
+    return { newPlayer, room, roomName }
+  }
+
+  private addNewPlayer (roomName?: string): { newPlayer?: Player, room?: SharedGameState, errorString?: string } {
+    const room = this.getRoomByName(roomName)
+
+    if (!room) {
+      return { errorString: `There is no room called ${roomName} to addNewPlayer to.` }
     }
 
     const newPlayer = { id: this.getNextPlayerId() }
     room.players.push(newPlayer)
-    return [newPlayer, room]
+    return { newPlayer, room }
   }
 
-  public getNextPlayerId (): string {
+  private getNextPlayerId (): string {
     const count = this.getAllPlayers().length
     return 'ID-' + (count + 1).toString() + '-00'
+  }
+
+  private getRoomByName (roomName?: string): SharedGameState | undefined {
+    if (!roomName) {
+      return undefined
+    }
+    return this.state[roomName]
   }
 
   private getAllPlayers (): Player[] {
