@@ -1,4 +1,4 @@
-import { SerialisedPile } from "../../resources/js/card-game/pile"
+import { SerialisedPile } from './cardAndPile'
 
 interface Player {
   id: string

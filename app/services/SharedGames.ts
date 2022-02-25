@@ -15,17 +15,17 @@ class TableStates {
     this.booted = true
   }
 
-  public addNewPlayer (roomName = 'default'):Player | undefined {
+  public addNewPlayer (roomName:string): [Player?, SharedGameState?] {
     const room = this.state[roomName]
 
     if (!room) {
       console.warn(`There is no room called ${roomName} to addNewPlayer to.`)
-      return
+      return [undefined, undefined]
     }
 
     const newPlayer = { id: this.getNextPlayerId() }
     room.players.push(newPlayer)
-    return newPlayer
+    return [newPlayer, room]
   }
 
   public getNextPlayerId (): string {
@@ -43,7 +43,7 @@ class TableStates {
 
   private static createInitialState (): { [index: string]: SharedGameState } {
     return {
-      default: {
+      myFirstRoom: {
         table: [],
         players: [],
       },

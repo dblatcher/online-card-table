@@ -1,8 +1,9 @@
-import { SerialisedPile } from 'resources/js/card-game/pile'
+import { SerialisedPile } from './cardAndPile'
 
 interface TableStatusPayload {
   data: SerialisedPile[]
   from: string
+  roomName: string
 }
 
 interface BasicEmitPayload {
@@ -15,12 +16,17 @@ interface LogInPayload {
   roomName?: string
 }
 
+interface AssignIdPayload {
+  id:string
+  roomName:string
+}
+
 interface ServerToClientEvents {
   noArg: () => void;
   basicEmit: (payload: BasicEmitPayload) => void;
   withAck: (d: string, callback: (e: number) => void) => void;
   tableStatus: (payload: TableStatusPayload) => void
-  assignId: (payload: { id: string }) => void
+  assignId: (payload: AssignIdPayload) => void
 }
 
 interface ClientToServerEvents {
@@ -40,5 +46,5 @@ interface SocketData {
 }
 
 export type {
-  ServerToClientEvents, ClientToServerEvents, InterServerEvents, SocketData, TableStatusPayload,
+  ServerToClientEvents, ClientToServerEvents, InterServerEvents, SocketData, TableStatusPayload,AssignIdPayload
 }

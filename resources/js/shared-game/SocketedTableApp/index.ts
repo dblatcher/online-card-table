@@ -2,33 +2,48 @@ import { TableApp } from '../../card-game/TableApp'
 import { Socket } from 'socket.io-client'
 import { Pile } from '../../card-game/pile'
 import { Card } from '../../card-game/card'
-import { ServerToClientEvents, ClientToServerEvents, TableStatusPayload } from 'definitions/socketEvents'
+import {
+  ServerToClientEvents, ClientToServerEvents, TableStatusPayload, AssignIdPayload,
+} from 'definitions/socketEvents'
 
 export class SocketedTableApp extends TableApp {
   private socket: Socket<ServerToClientEvents, ClientToServerEvents>
   public id?: string
+  public roomName?: string
 
   constructor (piles: Pile[], tableElement: Element, socket: Socket<ServerToClientEvents, ClientToServerEvents>) {
     super(piles, tableElement)
     this.socket = socket
 
-    this.socket.emit('logIn',{})
+    this.socket.emit('logIn', {roomName:'myFirstRoom'})
     this.socket.on('tableStatus', this.handleTableStatus.bind(this))
     this.socket.on('assignId', this.handleAssignId.bind(this))
   }
 
   public reportState (triggeringMethodName?: string) {
+    const { id, roomName } = this
+
+    if (!id || !roomName) {
+      console.warn('Cannot report state', { id, roomName })
+      return
+    }
+
     const data = this.serialise()
     console.log('emitting', triggeringMethodName, data)
-    this.socket.emit('tableStatus', { data, from:this.id || 'CLIENT_WITH_NO_ID' })
+    this.socket.emit('tableStatus', {
+      data,
+      from: id,
+      roomName,
+    })
   }
 
-  public handleAssignId (payload:{id:string}):void {
+  public handleAssignId (payload: AssignIdPayload): void {
     console.log('handleAssignId', payload)
+    this.roomName = payload.roomName
     this.id = payload.id
   }
 
-  public handleTableStatus (payload:TableStatusPayload):void {
+  public handleTableStatus (payload: TableStatusPayload): void {
     console.log(payload)
 
     const newPiles = payload.data.map(Pile.deserialise)
