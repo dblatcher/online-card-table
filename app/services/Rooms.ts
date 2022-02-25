@@ -1,9 +1,9 @@
-import { Player, SharedGameState } from 'definitions/SharedGameState'
+import { Player, RoomState } from 'definitions/RoomState'
 import { TableStatusPayload, LogInPayload } from 'definitions/socketEvents'
 
-class TableStates {
+class Rooms {
   private booted = false
-  private state = TableStates.createInitialState()
+  private state = Rooms.createInitialState()
 
   public boot () {
     /**
@@ -17,7 +17,7 @@ class TableStates {
   }
 
   public handleTableStatusEvent (tableStatusPayload: TableStatusPayload): {
-    room?: SharedGameState,
+    room?: RoomState,
     errorString?: string
   } {
     const { roomName, data } = tableStatusPayload
@@ -33,7 +33,7 @@ class TableStates {
 
   public handleLogInEvent (logInPayload: LogInPayload): {
     newPlayer?: Player,
-    room?: SharedGameState,
+    room?: RoomState,
     roomName?: string,
     errorString?: string
   } {
@@ -46,7 +46,7 @@ class TableStates {
     return { newPlayer, room, roomName }
   }
 
-  private addNewPlayer (roomName?: string): { newPlayer?: Player, room?: SharedGameState, errorString?: string } {
+  private addNewPlayer (roomName?: string): { newPlayer?: Player, room?: RoomState, errorString?: string } {
     const room = this.getRoomByName(roomName)
 
     if (!room) {
@@ -63,7 +63,7 @@ class TableStates {
     return 'ID-' + (count + 1).toString() + '-00'
   }
 
-  private getRoomByName (roomName?: string): SharedGameState | undefined {
+  private getRoomByName (roomName?: string): RoomState | undefined {
     if (!roomName) {
       return undefined
     }
@@ -78,7 +78,7 @@ class TableStates {
     return players
   }
 
-  private static createInitialState (): { [index: string]: SharedGameState } {
+  private static createInitialState (): { [index: string]: RoomState } {
     return {
       myFirstRoom: {
         table: [],
@@ -88,4 +88,4 @@ class TableStates {
   }
 }
 
-export default new TableStates()
+export default new Rooms()

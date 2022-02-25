@@ -1,4 +1,4 @@
-import SharedGames from 'App/services/SharedGames'
+import Rooms from 'App/services/Rooms'
 import Ws from 'App/Services/Ws'
 Ws.boot()
 
@@ -13,7 +13,7 @@ Ws.io.on('connection', (socket) => {
 
   socket.on('logIn', (logInPayload) => {
     console.log(`logIn for "${logInPayload.roomName}" received at ${Date.now()} from "${logInPayload.name || 'UNNAMED'}"`)
-    const { newPlayer, room, roomName, errorString } = SharedGames.handleLogInEvent(logInPayload)
+    const { newPlayer, room, roomName, errorString } = Rooms.handleLogInEvent(logInPayload)
 
     if (errorString) {
       console.warn(errorString)
@@ -36,7 +36,7 @@ Ws.io.on('connection', (socket) => {
 
   socket.on('tableStatus', (tableStatusPayload) => {
     console.log(`tableStatus for "${tableStatusPayload.roomName}" received at ${Date.now()} from "${tableStatusPayload.from}" : ${tableStatusPayload.data.length} piles`)
-    const {room, errorString} = SharedGames.handleTableStatusEvent(tableStatusPayload)
+    const {room, errorString} = Rooms.handleTableStatusEvent(tableStatusPayload)
 
     if (errorString) {
       console.warn(errorString)

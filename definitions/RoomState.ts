@@ -5,11 +5,11 @@ interface Player {
   name?: string
 }
 
-interface SharedGameState {
+interface RoomState {
   table: SerialisedPile[]
   players: Player[]
 }
 
 export type {
-  Player, SharedGameState,
+  Player, RoomState,
 }
