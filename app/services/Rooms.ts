@@ -88,7 +88,7 @@ class Rooms {
 
   private static createInitialState (): { [index: string]: RoomState } {
     return {
-      myFirstRoom: {
+      'my-first-room': {
         table: [],
         players: [],
       },

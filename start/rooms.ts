@@ -1,3 +1,3 @@
-import Rooms from "App/services/Rooms";
+import Rooms from 'App/services/Rooms'
 
 Rooms.boot()

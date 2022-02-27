@@ -24,7 +24,7 @@ Ws.io.on('connection', (socket) => {
       return
     }
 
-    socket.emit('basicEmit', { message: `You are logged in as new SocketedTableApp with id ${newPlayer.id}`, from: '_SERVER_' })
+    socket.emit('basicEmit', { message: `You are logged in to ${roomName} as new SocketedTableApp with id ${newPlayer.id}`, from: '_SERVER_' })
     socket.emit('assignId', { id: newPlayer.id, roomName })
     socket.emit('tableStatus', {
       data: room.table,
