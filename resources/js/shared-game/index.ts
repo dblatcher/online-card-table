@@ -2,13 +2,17 @@ import { Socket } from 'socket.io-client'
 import { Pile } from '../card-game/pile'
 import { SocketedTableApp } from './SocketedTableApp'
 
-export function init (socket: Socket) {
+export function init(socket: Socket) {
   const tableElement = document.querySelector('.table')
   if (!tableElement) {
     console.warn('NO TABLE ELEMENT')
     return
   }
-  const app = new SocketedTableApp([], tableElement,socket)
+
+  const app = new SocketedTableApp([], tableElement, socket, {
+    messageBox: document.querySelector('div.messageBox') || undefined,
+    playerList: document.querySelector('div.playerList') || undefined,
+  })
 
   const newDeckButton = document.querySelector('button#newDeck')
   newDeckButton?.addEventListener('click', () => {

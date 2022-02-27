@@ -48,4 +48,5 @@ interface SocketData {
 export type {
   ServerToClientEvents, ClientToServerEvents, InterServerEvents,
   SocketData, TableStatusPayload, AssignIdPayload, LogInPayload,
+  BasicEmitPayload,
 }
