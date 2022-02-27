@@ -13,25 +13,27 @@ Ws.io.on('connection', (socket) => {
 
   socket.on('logIn', (logInPayload) => {
     console.log(`logIn for "${logInPayload.roomName}" received at ${Date.now()} from "${logInPayload.name || 'UNNAMED'}"`)
-    const { newPlayer, room, roomName, errorString } = Rooms.handleLogInEvent(logInPayload)
+    const { newPlayer, room, errorString } = Rooms.handleLogInEvent(logInPayload)
 
     if (errorString) {
       console.warn(errorString)
     }
 
-    if (!newPlayer || !room || !roomName) {
+    if (!newPlayer || !room || !room.name) {
       socket.emit('basicEmit', { message: errorString || 'unknown log in error' })
       return
     }
 
-    socket.emit('basicEmit', { message: `You are logged in to ${roomName} as new SocketedTableApp with id ${newPlayer.id}`, from: '_SERVER_' })
-    socket.emit('assignId', { id: newPlayer.id, roomName })
+    socket.join(room.name)
+
+    socket.emit('assignId', { id: newPlayer.id, roomName: room.name })
     socket.emit('tableStatus', {
       data: room.table,
       from: 'server',
-      roomName,
+      roomName: room.name,
     })
-    socket.broadcast.emit('basicEmit', { message: `Another SocketedTableApp has joined ${roomName} with id ${newPlayer.id}`, from: '_SERVER_' })
+    socket.emit('basicEmit', { message: `You are logged in to ${room.name} as new SocketedTableApp with id ${newPlayer.id}`, from: '_SERVER_' })
+    socket.to(room.name).emit('basicEmit', { message: `Another SocketedTableApp has joined ${room.name} with id ${newPlayer.id}`, from: '_SERVER_' })
   })
 
   socket.on('tableStatus', (tableStatusPayload) => {
@@ -43,13 +45,13 @@ Ws.io.on('connection', (socket) => {
     }
 
     if (!room) {
-      socket.emit('basicEmit', { message: errorString || 'unknown table status update error' })
+      socket.emit('basicEmit', { message: errorString || 'unknown table status update error', from:'_SERVER_' })
       return
     }
 
-    socket.broadcast.emit('tableStatus', {
+    socket.to(tableStatusPayload.roomName).emit('tableStatus', {
       data: room.table,
-      from: 'server',
+      from: '_SERVER_',
       roomName: tableStatusPayload.roomName,
     })
   })

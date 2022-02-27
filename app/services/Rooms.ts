@@ -17,39 +17,45 @@ class Rooms {
   }
 
   public handleTableStatusEvent (tableStatusPayload: TableStatusPayload): {
-    room?: RoomState,
+    room?: RoomState
+    player?: Player
     errorString?: string
   } {
-    const { roomName, data } = tableStatusPayload
+    const { roomName, data, from: playerId } = tableStatusPayload
     const room = this.getRoomByName(roomName)
 
     if (!room) {
       return { errorString: `No room called ${roomName}` }
     }
 
+    const player = room.players.find(player => player.id === playerId)
+
+    if (!player) {
+      return { errorString: `room "${roomName}" does not have player with id "${playerId}"` }
+    }
+
     room.table = data
-    return { room }
+    return { room, player }
   }
 
   public handleLogInEvent (logInPayload: LogInPayload): {
     newPlayer?: Player,
     room?: RoomState,
-    roomName?: string,
     errorString?: string
   } {
     const { roomName } = logInPayload
     const { newPlayer, room, errorString } = this.addNewPlayer(roomName)
 
     if (!newPlayer || !room) {
-      return { newPlayer, room, roomName, errorString }
+      return { newPlayer, room, errorString }
     }
-    return { newPlayer, room, roomName }
+    return { newPlayer, room }
   }
 
   public getRoomList (): { name: string, playerCount: number }[] {
-    return Object.keys(this.state).map(roomName => {
+    return this.state.map(room => {
       return {
-        name: roomName, playerCount: this.state[roomName].players.length,
+        name: room.name, playerCount: room.players.length,
       }
     })
   }
@@ -75,24 +81,30 @@ class Rooms {
     if (!roomName) {
       return undefined
     }
-    return this.state[roomName]
+    return this.state.find(room => room.name === roomName)
   }
 
   private getAllPlayers (): Player[] {
     const players: Player[] = []
-    Object.values(this.state).forEach(tableState => {
-      players.push(...tableState.players)
+    this.state.forEach(room => {
+      players.push(...room.players)
     })
     return players
   }
 
-  private static createInitialState (): { [index: string]: RoomState } {
-    return {
-      'my-first-room': {
-        table: [],
-        players: [],
-      },
+  private static createInitialState (): RoomState[] {
+    const room1: RoomState = {
+      name: 'my-first-room',
+      table: [],
+      players: [],
     }
+    const room2: RoomState = {
+      name: 'my-second-room',
+      table: [],
+      players: [],
+    }
+
+    return [room1, room2]
   }
 }
 

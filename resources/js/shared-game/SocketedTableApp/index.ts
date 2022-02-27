@@ -3,7 +3,7 @@ import { Socket } from 'socket.io-client'
 import { Pile } from '../../card-game/pile'
 import { Card } from '../../card-game/card'
 import {
-  ServerToClientEvents, ClientToServerEvents, TableStatusPayload, AssignIdPayload, BasicEmitPayload
+  ServerToClientEvents, ClientToServerEvents, TableStatusPayload, AssignIdPayload, BasicEmitPayload,
 } from 'definitions/socketEvents'
 import { createMessagePost } from './elements'
 

@@ -6,6 +6,7 @@ interface Player {
 }
 
 interface RoomState {
+  name: string
   table: SerialisedPile[]
   players: Player[]
 }
