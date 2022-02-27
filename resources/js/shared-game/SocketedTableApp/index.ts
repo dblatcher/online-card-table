@@ -3,9 +3,8 @@ import { Socket } from 'socket.io-client'
 import { Pile } from '../../card-game/pile'
 import { Card } from '../../card-game/card'
 import {
-  ServerToClientEvents, ClientToServerEvents, TableStatusPayload, AssignIdPayload, BasicEmitPayload,
+  ServerToClientEvents, ClientToServerEvents, TableStatusPayload, AssignIdPayload,
 } from 'definitions/socketEvents'
-import { createMessagePost } from './elements'
 
 interface SocketedTableAppElements {
   messageBox?: Element
@@ -29,7 +28,6 @@ export class SocketedTableApp extends TableApp {
     this.elements = elements
     this.socket.on('tableStatus', this.handleTableStatus.bind(this))
     this.socket.on('assignId', this.handleAssignId.bind(this))
-    this.socket.on('basicEmit', this.handleBasicEmit.bind(this))
     this.sendLoginRequest()
   }
 
@@ -54,13 +52,6 @@ export class SocketedTableApp extends TableApp {
     console.log('handleAssignId', payload)
     this.roomName = payload.roomName
     this.id = payload.id
-  }
-
-  public handleBasicEmit (payload: BasicEmitPayload) {
-    if (!this.elements.messageBox) {
-      return
-    }
-    this.elements.messageBox.appendChild(createMessagePost(payload))
   }
 
   public handleTableStatus (payload: TableStatusPayload): void {

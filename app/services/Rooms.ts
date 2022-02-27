@@ -77,7 +77,7 @@ class Rooms {
     return 'ID-' + (count + 1).toString() + '-00'
   }
 
-  private getRoomByName (roomName?: string): RoomState | undefined {
+  public getRoomByName (roomName?: string): RoomState | undefined {
     if (!roomName) {
       return undefined
     }

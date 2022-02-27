@@ -9,6 +9,7 @@ interface TableStatusPayload {
 interface BasicEmitPayload {
   message: string
   from?: string
+  roomName?: string
 }
 
 interface LogInPayload {

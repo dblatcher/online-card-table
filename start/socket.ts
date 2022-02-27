@@ -9,6 +9,10 @@ Ws.boot()
 Ws.io.on('connection', (socket) => {
   socket.on('basicEmit', (payload) => {
     console.log(payload)
+    const room = Rooms.getRoomByName(payload.roomName)
+    if (room) {
+      socket.to(room.name).emit('basicEmit', payload)
+    }
   })
 
   socket.on('logIn', (logInPayload) => {
@@ -38,14 +42,14 @@ Ws.io.on('connection', (socket) => {
 
   socket.on('tableStatus', (tableStatusPayload) => {
     console.log(`tableStatus for "${tableStatusPayload.roomName}" received at ${Date.now()} from "${tableStatusPayload.from}" : ${tableStatusPayload.data.length} piles`)
-    const {room, errorString} = Rooms.handleTableStatusEvent(tableStatusPayload)
+    const { room, errorString } = Rooms.handleTableStatusEvent(tableStatusPayload)
 
     if (errorString) {
       console.warn(errorString)
     }
 
     if (!room) {
-      socket.emit('basicEmit', { message: errorString || 'unknown table status update error', from:'_SERVER_' })
+      socket.emit('basicEmit', { message: errorString || 'unknown table status update error', from: '_SERVER_' })
       return
     }
 

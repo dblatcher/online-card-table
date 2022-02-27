@@ -1,16 +1,38 @@
-.messageBox {
+.message-box {
 
-  height: 10rem;
-  overflow-y: scroll;
-  background-color: beige;
+  padding: .25rem;
+  background-color: khaki;
 
-  p {
-    margin: 0 0 .5em;
+  h2 {
+    margin: 0;
   }
 
-  b {
-    background-color: black;
-    color: whitesmoke;
-    min-width: 6rem;
+  &__inner {
+    height: 10rem;
+    padding: .25em;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    background-color: beige;
+
+    p {
+      margin: 0 0 .5em;
+
+      b {
+        background-color: black;
+        color: whitesmoke;
+        min-width: 6rem;
+        display: inline-block;
+      }
+
+      span {
+        padding-left: .5em;
+      }
+    }
+
   }
+
+  &__input {
+    border-top: 1px solid;
+  }
+
 }
