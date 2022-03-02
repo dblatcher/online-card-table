@@ -1,7 +1,9 @@
 import { Socket } from 'socket.io-client'
 import { Pile } from '../card-game/pile'
-import { MessageBox } from './MessageBox'
 import { SocketedTableApp } from './SocketedTableApp'
+
+import { MessageBox } from './MessageBox'
+import { h, render } from 'preact'
 
 export function init (socket: Socket) {
   const tableElement = document.querySelector('.table')
@@ -14,11 +16,12 @@ export function init (socket: Socket) {
     playerList: document.querySelector('div.playerList') || undefined,
   })
 
-  let messageBox
   const messageBoxContainer = document.querySelector('.message-box')
-  console.log({messageBoxContainer})
   if (messageBoxContainer) {
-    messageBox = new MessageBox(messageBoxContainer, socket)
+    render(
+      h(MessageBox, { socket: socket }),
+      messageBoxContainer
+    )
   }
 
   const newDeckButton = document.querySelector('button#newDeck')
@@ -31,5 +34,4 @@ export function init (socket: Socket) {
 
   const myWindow = window as any
   myWindow.app = app
-  myWindow.messageBox = messageBox
 }
