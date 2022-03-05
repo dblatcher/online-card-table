@@ -66,4 +66,24 @@ Ws.io.on('connection', (socket) => {
       roomName: tableStatusPayload.roomName,
     })
   })
+
+  socket.on('disconnect', (reason:string):void => {
+    console.log('disconnected', reason, socket.id)
+
+    const {leavingPlayer,room,errorString} = Rooms.handleDisconnect(socket.id)
+
+    if (errorString) {
+      console.warn(errorString)
+    }
+
+    if (!leavingPlayer || !room) {
+      return
+    }
+
+    Ws.io.to(room.name).emit('basicEmit', {
+      from:'_SERVER_',
+      message: `${leavingPlayer.name || leavingPlayer.id} has disconnected`,
+    })
+    Ws.io.to(room.name).emit('playerList',{roomName:room.name, players: room.players.map(removeSocketIdFromPlayer)})
+  })
 })

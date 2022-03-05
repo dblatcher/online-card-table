@@ -5,7 +5,7 @@ class Rooms {
   private booted = false
   private state = Rooms.createInitialState()
 
-  public boot () {
+  public boot() {
     /**
      * Ignore multiple calls to the boot method
      */
@@ -16,7 +16,7 @@ class Rooms {
     this.booted = true
   }
 
-  public handleTableStatusEvent (tableStatusPayload: TableStatusPayload): {
+  public handleTableStatusEvent(tableStatusPayload: TableStatusPayload): {
     room?: RoomState
     player?: Player
     errorString?: string
@@ -38,7 +38,7 @@ class Rooms {
     return { room, player }
   }
 
-  public handleLogInEvent (logInPayload: LogInPayload, socketId:string): {
+  public handleLogInEvent(logInPayload: LogInPayload, socketId: string): {
     newPlayer?: Player,
     room?: RoomState,
     errorString?: string
@@ -51,12 +51,30 @@ class Rooms {
     }
 
     const id = this.getNextPlayerId()
-    const newPlayer:Player = { id, socketId }
+    const newPlayer: Player = { id, socketId }
     room.players.push(newPlayer)
     return { newPlayer, room }
   }
 
-  public getRoomList (): { name: string, playerCount: number }[] {
+  public handleDisconnect(socketId: string): {
+    leavingPlayer?: Player,
+    room?: RoomState,
+    errorString?: string
+  } {
+    const room = this.state.find(room => room.players.some(player => player.socketId === socketId))
+    if (!room) {
+      return { errorString: `Cannot find a room with a player with socketId "${socketId}"` }
+    }
+    const leavingPlayer = room.players.find(player => player.socketId === socketId)
+    if (!leavingPlayer) {
+      return { errorString: `Cannot find a player with socketId "${socketId}"` }
+    }
+
+    room.players.splice(room.players.indexOf(leavingPlayer),1)
+    return { leavingPlayer, room }
+  }
+
+  public getRoomList(): { name: string, playerCount: number }[] {
     return this.state.map(room => {
       return {
         name: room.name, playerCount: room.players.length,
@@ -64,19 +82,26 @@ class Rooms {
     })
   }
 
-  private getNextPlayerId (): string {
-    const count = this.getAllPlayers().length
-    return 'ID-' + (count + 1).toString() + '-00'
+  private getNextPlayerId(): string {
+    const players = this.getAllPlayers()
+    const generate = () =>'ID-p' + Math.random().toString()
+    let possibleId = generate()
+
+    while (players.find(player => player.id === possibleId)) {
+      possibleId = generate()
+    }
+
+    return possibleId
   }
 
-  public getRoomByName (roomName?: string): RoomState | undefined {
+  public getRoomByName(roomName?: string): RoomState | undefined {
     if (!roomName) {
       return undefined
     }
     return this.state.find(room => room.name === roomName)
   }
 
-  private getAllPlayers (): Player[] {
+  private getAllPlayers(): Player[] {
     const players: Player[] = []
     this.state.forEach(room => {
       players.push(...room.players)
@@ -84,7 +109,7 @@ class Rooms {
     return players
   }
 
-  private static createInitialState (): RoomState[] {
+  private static createInitialState(): RoomState[] {
     const room1: RoomState = {
       name: 'my-first-room',
       table: [],
