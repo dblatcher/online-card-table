@@ -17,7 +17,7 @@ Ws.io.on('connection', (socket) => {
 
   socket.on('logIn', (logInPayload) => {
     console.log(`logIn for "${logInPayload.roomName}" received at ${Date.now()} from "${logInPayload.name || 'UNNAMED'}"`)
-    const { newPlayer, room, errorString } = Rooms.handleLogInEvent(logInPayload)
+    const { newPlayer, room, errorString } = Rooms.handleLogInEvent(logInPayload, socket.id)
 
     if (errorString) {
       console.warn(errorString)

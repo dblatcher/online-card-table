@@ -38,17 +38,21 @@ class Rooms {
     return { room, player }
   }
 
-  public handleLogInEvent (logInPayload: LogInPayload): {
+  public handleLogInEvent (logInPayload: LogInPayload, socketId:string): {
     newPlayer?: Player,
     room?: RoomState,
     errorString?: string
   } {
     const { roomName } = logInPayload
-    const { newPlayer, room, errorString } = this.addNewPlayer(roomName)
+    const room = this.getRoomByName(roomName)
 
-    if (!newPlayer || !room) {
-      return { newPlayer, room, errorString }
+    if (!room) {
+      return { errorString: `There is no room called ${roomName} to addNewPlayer to.` }
     }
+
+    const id = this.getNextPlayerId()
+    const newPlayer:Player = { id, socketId }
+    room.players.push(newPlayer)
     return { newPlayer, room }
   }
 
@@ -58,18 +62,6 @@ class Rooms {
         name: room.name, playerCount: room.players.length,
       }
     })
-  }
-
-  private addNewPlayer (roomName?: string): { newPlayer?: Player, room?: RoomState, errorString?: string } {
-    const room = this.getRoomByName(roomName)
-
-    if (!room) {
-      return { errorString: `There is no room called ${roomName} to addNewPlayer to.` }
-    }
-
-    const newPlayer = { id: this.getNextPlayerId() }
-    room.players.push(newPlayer)
-    return { newPlayer, room }
   }
 
   private getNextPlayerId (): string {

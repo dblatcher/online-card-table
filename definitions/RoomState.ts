@@ -2,6 +2,7 @@ import { SerialisedPile } from './cardAndPile'
 
 interface Player {
   id: string
+  socketId: string
   name?: string
 }
 
