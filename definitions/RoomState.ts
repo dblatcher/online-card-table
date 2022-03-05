@@ -6,6 +6,8 @@ interface Player {
   name?: string
 }
 
+type ClientSafePlayer =(Partial<Player> & {id:string, socketId:undefined})
+
 interface RoomState {
   name: string
   table: SerialisedPile[]
@@ -13,5 +15,5 @@ interface RoomState {
 }
 
 export type {
-  Player, RoomState,
+  Player, RoomState, ClientSafePlayer,
 }

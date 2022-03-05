@@ -1,6 +1,11 @@
 import Rooms from 'App/services/Rooms'
 import Ws from 'App/Services/Ws'
+import { ClientSafePlayer, Player } from 'definitions/RoomState'
 Ws.boot()
+
+const removeSocketIdFromPlayer = (player:Player): ClientSafePlayer => {
+  return { ...player, socketId:undefined}
+}
 
 /**
  * Listen for incoming socket connections
@@ -38,6 +43,8 @@ Ws.io.on('connection', (socket) => {
     })
     socket.emit('basicEmit', { message: `You are logged in to ${room.name} as new SocketedTableApp with id ${newPlayer.id}`, from: '_SERVER_' })
     socket.to(room.name).emit('basicEmit', { message: `Another SocketedTableApp has joined ${room.name} with id ${newPlayer.id}`, from: '_SERVER_' })
+
+    Ws.io.to(room.name).emit('playerList',{roomName:room.name, players: room.players.map(removeSocketIdFromPlayer)})
   })
 
   socket.on('tableStatus', (tableStatusPayload) => {

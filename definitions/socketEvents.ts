@@ -1,4 +1,5 @@
 import { SerialisedPile } from './cardAndPile'
+import { ClientSafePlayer } from './RoomState'
 
 interface TableStatusPayload {
   data: SerialisedPile[]
@@ -22,12 +23,18 @@ interface AssignIdPayload {
   roomName: string
 }
 
+interface PlayerListPayload {
+  roomName: string
+  players: ClientSafePlayer[]
+}
+
 interface ServerToClientEvents {
   noArg: () => void;
   basicEmit: (payload: BasicEmitPayload) => void;
   withAck: (d: string, callback: (e: number) => void) => void;
   tableStatus: (payload: TableStatusPayload) => void
   assignId: (payload: AssignIdPayload) => void
+  playerList: (payload:PlayerListPayload) => void
 }
 
 interface ClientToServerEvents {
@@ -48,6 +55,6 @@ interface SocketData {
 
 export type {
   ServerToClientEvents, ClientToServerEvents, InterServerEvents,
-  SocketData, TableStatusPayload, AssignIdPayload, LogInPayload,
+  SocketData, TableStatusPayload, AssignIdPayload, LogInPayload, PlayerListPayload,
   BasicEmitPayload,
 }

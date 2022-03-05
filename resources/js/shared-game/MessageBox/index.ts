@@ -3,11 +3,13 @@
 import { Component, Attributes, ComponentChild, ComponentChildren, createRef, RefObject } from 'preact'
 import { html } from 'htm/preact'
 import {
-  ServerToClientEvents, ClientToServerEvents, BasicEmitPayload, AssignIdPayload,
+  ServerToClientEvents, ClientToServerEvents, BasicEmitPayload, AssignIdPayload, PlayerListPayload,
 } from 'definitions/socketEvents'
 import { Socket } from 'socket.io-client'
 import MessagePost from './MessagePost'
 import InputControl from './InputControl'
+import { ClientSafePlayer } from 'definitions/RoomState'
+import PlayerListBox from './PlayerListBox'
 
 export class MessageBox extends Component {
   props: Readonly<Attributes & {
@@ -19,6 +21,7 @@ export class MessageBox extends Component {
     roomName?: string
     id?: string
     messages: BasicEmitPayload[]
+    players: ClientSafePlayer[]
     inputValue: string
   }
   messageBoxRef: RefObject<HTMLElement>
@@ -29,18 +32,21 @@ export class MessageBox extends Component {
       roomName: undefined,
       id: undefined,
       messages: [],
+      players:[],
       inputValue: 'initial',
     }
     this.messageBoxRef = createRef()
     this.handleBasicEmit = this.handleBasicEmit.bind(this)
     this.handleAssignId = this.handleAssignId.bind(this)
     this.sendMessage = this.sendMessage.bind(this)
+    this.handlePlayerList = this.handlePlayerList.bind(this)
   }
 
   componentDidMount() {
     const { socket } = this.props
     socket.on('basicEmit', this.handleBasicEmit)
     socket.on('assignId', this.handleAssignId)
+    socket.on('playerList', this.handlePlayerList)
   }
 
   sendMessage() {
@@ -84,13 +90,22 @@ export class MessageBox extends Component {
     this.addMessage(payload)
   }
 
+  handlePlayerList(payload: PlayerListPayload) {
+    const {players,roomName} = payload
+
+    if (!this.state.roomName || roomName === this.state.roomName) {
+      this.setState({players})
+    }
+  }
+
   render(): ComponentChild {
-    const { roomName, id, messages, inputValue } = this.state
+    const { roomName, id, messages, inputValue, players } = this.state
 
     return html`
     <div>
       <h2>Messages</h2>
       <p>id= ${id}, roomname: ${roomName}</p>
+      <${PlayerListBox} players=${players} />
       <div class="message-box__inner" ref=${this.messageBoxRef}>
         ${messages.map(message => html`<${MessagePost} message=${message}/>`)}
       </div>
