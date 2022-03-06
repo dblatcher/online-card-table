@@ -8,7 +8,6 @@ export default function PlayerListBox (props:{
   const {players} = props
   console.log({players})
 
-
   return html`<div>
       <p>There are ${players.length} players</p>
       <ul>

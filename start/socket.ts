@@ -3,7 +3,7 @@ import Ws from 'App/Services/Ws'
 import { ClientSafePlayer, Player } from 'definitions/RoomState'
 Ws.boot()
 
-const removeSocketIdFromPlayer = (player:Player): ClientSafePlayer => {
+const makeSafe = (player:Player): ClientSafePlayer => {
   return { ...player, socketId:undefined}
 }
 
@@ -35,7 +35,7 @@ Ws.io.on('connection', (socket) => {
 
     socket.join(room.name)
 
-    socket.emit('assignId', { id: newPlayer.id, roomName: room.name })
+    socket.emit('assignId', { player:makeSafe(newPlayer), roomName: room.name })
     socket.emit('tableStatus', {
       data: room.table,
       from: 'server',
@@ -44,7 +44,7 @@ Ws.io.on('connection', (socket) => {
     socket.emit('basicEmit', { message: `You are logged in to ${room.name} as new SocketedTableApp with id ${newPlayer.id}`, from: '_SERVER_' })
     socket.to(room.name).emit('basicEmit', { message: `Another SocketedTableApp has joined ${room.name} with id ${newPlayer.id}`, from: '_SERVER_' })
 
-    Ws.io.to(room.name).emit('playerList',{roomName:room.name, players: room.players.map(removeSocketIdFromPlayer)})
+    Ws.io.to(room.name).emit('playerList',{roomName:room.name, players: room.players.map(makeSafe)})
   })
 
   socket.on('tableStatus', (tableStatusPayload) => {
@@ -84,6 +84,6 @@ Ws.io.on('connection', (socket) => {
       from:'_SERVER_',
       message: `${leavingPlayer.name || leavingPlayer.id} has disconnected`,
     })
-    Ws.io.to(room.name).emit('playerList',{roomName:room.name, players: room.players.map(removeSocketIdFromPlayer)})
+    Ws.io.to(room.name).emit('playerList',{roomName:room.name, players: room.players.map(makeSafe)})
   })
 })

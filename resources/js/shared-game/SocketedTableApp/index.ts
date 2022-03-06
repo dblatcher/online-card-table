@@ -28,7 +28,6 @@ export class SocketedTableApp extends TableApp {
     this.elements = elements
     this.socket.on('tableStatus', this.handleTableStatus.bind(this))
     this.socket.on('assignId', this.handleAssignId.bind(this))
-    this.sendLoginRequest()
   }
 
   public reportState (triggeringMethodName?: string) {
@@ -51,7 +50,7 @@ export class SocketedTableApp extends TableApp {
   public handleAssignId (payload: AssignIdPayload): void {
     console.log('handleAssignId', payload)
     this.roomName = payload.roomName
-    this.id = payload.id
+    this.id = payload.player.id
   }
 
   public handleTableStatus (payload: TableStatusPayload): void {
@@ -90,11 +89,5 @@ export class SocketedTableApp extends TableApp {
   public respondToDropInteraction (sourcePile: Pile, targetPile: Pile, sourceCard?: Card, targetCard?: Card) {
     TableApp.prototype.respondToDropInteraction.apply(this, [sourcePile, targetPile, sourceCard, targetCard])
     this.reportState('respondToDropInteraction')
-  }
-
-  private sendLoginRequest ():void {
-    const url = new URL(window.location.href)
-    const roomName = url.pathname.split('/')[2]
-    this.socket.emit('logIn', {roomName})
   }
 }

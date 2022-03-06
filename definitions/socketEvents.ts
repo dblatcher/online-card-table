@@ -19,7 +19,7 @@ interface LogInPayload {
 }
 
 interface AssignIdPayload {
-  id: string
+  player: ClientSafePlayer
   roomName: string
 }
 

@@ -19,7 +19,7 @@ export class MessageBox extends Component {
 
   state: {
     roomName?: string
-    id?: string
+    you?: ClientSafePlayer
     messages: BasicEmitPayload[]
     players: ClientSafePlayer[]
     inputValue: string
@@ -30,7 +30,7 @@ export class MessageBox extends Component {
     super(props)
     this.state = {
       roomName: undefined,
-      id: undefined,
+      you: undefined,
       messages: [],
       players:[],
       inputValue: 'initial',
@@ -51,14 +51,14 @@ export class MessageBox extends Component {
 
   sendMessage() {
     const { socket } = this.props
-    const { id, roomName, inputValue } = this.state
-    if (!id || !roomName) {
+    const { you, roomName, inputValue } = this.state
+    if (!you || !roomName) {
       return
     }
 
     const payload = {
       message: inputValue,
-      from: id,
+      from: you.id,
       roomName: roomName,
     }
 
@@ -71,7 +71,7 @@ export class MessageBox extends Component {
     console.log('handleAssignId', payload)
     this.setState({
       roomName: payload.roomName,
-      id: payload.id,
+      you: {...payload.player},
     })
   }
 
@@ -99,15 +99,17 @@ export class MessageBox extends Component {
   }
 
   render(): ComponentChild {
-    const { roomName, id, messages, inputValue, players } = this.state
+    const { roomName, you, messages, inputValue, players } = this.state
+
+    const signInText = you ? you.name || you.id : 'NOT SIGNED IN'
 
     return html`
     <div>
       <h2>Messages</h2>
-      <p>id= ${id}, roomname: ${roomName}</p>
+      <p>You are ${signInText}, roomname: ${roomName}</p>
       <${PlayerListBox} players=${players} />
       <div class="message-box__inner" ref=${this.messageBoxRef}>
-        ${messages.map(message => html`<${MessagePost} message=${message}/>`)}
+        ${messages.map(message => html`<${MessagePost} message=${message} players=${players}/>`)}
       </div>
       <${InputControl}
         send=${this.sendMessage}
