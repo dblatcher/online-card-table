@@ -11,6 +11,17 @@ import InputControl from './InputControl'
 import { ClientSafePlayer } from 'definitions/RoomState'
 import PlayerListBox from './PlayerListBox'
 
+export function sendLoginRequest (socket:Socket, name?:string):void {
+  const url = new URL(window.location.href)
+  const roomName = url.pathname.split('/')[2]
+  socket.emit('logIn', {roomName, name})
+}
+
+const names = ['Bob','John','Mary','Cline','Kwame','Mehmet','Bill','Zara','Haoching']
+function pickRandomName ():string {
+  return names[Math.floor(Math.random()*names.length)]
+}
+
 export class MessageBox extends Component {
   props: Readonly<Attributes & {
     children?: ComponentChildren;
@@ -23,6 +34,7 @@ export class MessageBox extends Component {
     messages: BasicEmitPayload[]
     players: ClientSafePlayer[]
     inputValue: string
+    nameInputValue: string
   }
   messageBoxRef: RefObject<HTMLElement>
 
@@ -34,11 +46,13 @@ export class MessageBox extends Component {
       messages: [],
       players:[],
       inputValue: 'initial',
+      nameInputValue: pickRandomName(),
     }
     this.messageBoxRef = createRef()
     this.handleBasicEmit = this.handleBasicEmit.bind(this)
     this.handleAssignId = this.handleAssignId.bind(this)
     this.sendMessage = this.sendMessage.bind(this)
+    this.signIn = this.signIn.bind(this)
     this.handlePlayerList = this.handlePlayerList.bind(this)
   }
 
@@ -65,6 +79,12 @@ export class MessageBox extends Component {
     socket.emit('basicEmit', payload)
     this.addMessage(payload)
     this.setState({ inputValue: '' })
+  }
+
+  signIn() {
+    const { socket } = this.props
+    const { nameInputValue } = this.state
+    sendLoginRequest(socket, nameInputValue)
   }
 
   handleAssignId(payload: AssignIdPayload): void {
@@ -99,22 +119,30 @@ export class MessageBox extends Component {
   }
 
   render(): ComponentChild {
-    const { roomName, you, messages, inputValue, players } = this.state
+    const { you, messages, inputValue, players, nameInputValue } = this.state
 
     const signInText = you ? you.name || you.id : 'NOT SIGNED IN'
 
     return html`
     <div>
       <h2>Messages</h2>
-      <p>You are ${signInText}, roomname: ${roomName}</p>
-      <${PlayerListBox} players=${players} />
-      <div class="message-box__inner" ref=${this.messageBoxRef}>
-        ${messages.map(message => html`<${MessagePost} message=${message} players=${players}/>`)}
-      </div>
-      <${InputControl}
-        send=${this.sendMessage}
-        value=${inputValue}
-        update=${(inputValue: string) => this.setState({ inputValue })}/>
+      <p>You are ${signInText}</p>
+      ${you ? html`
+        <${PlayerListBox} players=${players} />
+        <div class="message-box__inner" ref=${this.messageBoxRef}>
+          ${messages.map(message => html`<${MessagePost} message=${message} players=${players}/>`)}
+        </div>
+        <${InputControl}
+          send=${this.sendMessage}
+          value=${inputValue}
+          update=${(inputValue: string) => this.setState({ inputValue })}/>
+      ` : html`
+        <b>enter a name and sign in:</b>
+        <${InputControl}
+          send=${this.signIn}
+          value=${nameInputValue}
+          update=${(nameInputValue: string) => this.setState({ nameInputValue })}/>
+      `}
     </div>`
   }
 }

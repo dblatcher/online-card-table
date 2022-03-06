@@ -5,8 +5,9 @@ export default function InputControl (props: {
   send: Function
   update: Function
   value: string
+  buttonText?: string
 }) {
-  const { send, value,update } = props
+  const { send, value,update, buttonText='send' } = props
 
   const handleInput = (event) => {
     update(event.target.value)
@@ -21,7 +22,7 @@ export default function InputControl (props: {
   return html`
   <div class="message-box__input">
     <input type="text" value=${value} oninput=${handleInput} onkeypress=${handleKeyPress} />
-    <button onclick=${send}>send</button>
+    <button onclick=${send}>${buttonText}</button>
   </div>
 `
 }
