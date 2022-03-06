@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 /* eslint-disable @typescript-eslint/space-before-function-paren */
 import { Component, Attributes, ComponentChild, ComponentChildren, createRef, RefObject } from 'preact'
+import { css } from '@emotion/css'
 import { html } from 'htm/preact'
 import {
   ServerToClientEvents, ClientToServerEvents, BasicEmitPayload, AssignIdPayload, PlayerListPayload,
@@ -21,6 +22,36 @@ const names = ['Bob','John','Mary','Cline','Kwame','Mehmet','Bill','Zara','Haoch
 function pickRandomName ():string {
   return names[Math.floor(Math.random()*names.length)]
 }
+
+const containerStyle = css`
+  padding: .25rem;
+  background-color: khaki;
+  max-width: 40rem;
+
+  .posts {
+    height: 10rem;
+    padding: .25em;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    background-color: beige;
+  }
+`
+
+const headingStyle = css`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  h2 {
+    color:blue;
+    font-size: 20px;
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+`
+
 
 export class MessageBox extends Component {
   props: Readonly<Attributes & {
@@ -88,7 +119,6 @@ export class MessageBox extends Component {
   }
 
   handleAssignId(payload: AssignIdPayload): void {
-    console.log('handleAssignId', payload)
     this.setState({
       roomName: payload.roomName,
       you: {...payload.player},
@@ -124,12 +154,14 @@ export class MessageBox extends Component {
     const signInText = you ? you.name || you.id : 'NOT SIGNED IN'
 
     return html`
-    <div>
-      <h2>Messages</h2>
-      <p>You are ${signInText}</p>
+    <div class=${containerStyle}>
+      <div class=${headingStyle}>
+        <h2>Messages</h2>
+        <b>You are ${signInText}</b>
+      </div>
       ${you ? html`
         <${PlayerListBox} players=${players} />
-        <div class="message-box__inner" ref=${this.messageBoxRef}>
+        <div class="posts" ref=${this.messageBoxRef}>
           ${messages.map(message => html`<${MessagePost} message=${message} players=${players}/>`)}
         </div>
         <${InputControl}
