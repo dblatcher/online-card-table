@@ -29,7 +29,7 @@ export function init (socket: Socket) {
     app.resetTo([
       Pile.ofNewDeck(),
     ])
-    app.reportState()
+    app.reportState('reset')
   })
 
   const myWindow = window as any

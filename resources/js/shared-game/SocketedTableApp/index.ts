@@ -2,9 +2,11 @@ import { TableApp } from '../../card-game/TableApp'
 import { Socket } from 'socket.io-client'
 import { Pile } from '../../card-game/pile'
 import { Card } from '../../card-game/card'
+import { setPileElementAttributes } from '../../card-game/TableApp/elements'
 import {
   ServerToClientEvents, ClientToServerEvents, TableStatusPayload, AssignIdPayload,
 } from 'definitions/socketEvents'
+import { TableAction, TableActionName } from 'definitions/cardAndPile'
 
 interface SocketedTableAppElements {
   messageBox?: Element
@@ -30,7 +32,7 @@ export class SocketedTableApp extends TableApp {
     this.socket.on('assignId', this.handleAssignId.bind(this))
   }
 
-  public reportState (triggeringMethodName?: string) {
+  public reportState (triggeringMethodName: TableActionName, action: TableAction = { type: 'reset' }) {
     const { id, roomName } = this
 
     if (!id || !roomName) {
@@ -44,6 +46,8 @@ export class SocketedTableApp extends TableApp {
       data,
       from: id,
       roomName,
+      actionName: triggeringMethodName,
+      action: action,
     })
   }
 
@@ -54,21 +58,57 @@ export class SocketedTableApp extends TableApp {
   }
 
   public handleTableStatus (payload: TableStatusPayload): void {
-    console.log(payload)
-
     const newPiles = payload.data.map(Pile.deserialise)
+    const action = payload.action || { type: 'reset' }
 
-    this.resetTo(newPiles)
+    switch (action.type) {
+      case 'shufflePile':
+        return this.beShuffled(newPiles, action.pileIndex)
+      case 'turnOverPile':
+        return this.beTurnedOver(newPiles, action.pileIndex)
+      case 'reset':
+      default:
+        return this.resetTo(newPiles)
+    }
+  }
+
+  public beShuffled (newPiles: Pile[], index: number) {
+    console.log(`pile [${index}] should shuffle`)
+    const pile = this.piles[index]
+    const pileElement = this.findElementForPile(pile) as HTMLElement
+
+    pile.cards = newPiles[index].cards
+    this.removeAndRenderCards(pile, pileElement)
+    this.runShuffleAnimation(pile)
   }
 
   public shufflePile (pile: Pile) {
     TableApp.prototype.shufflePile.apply(this, [pile])
-    this.reportState('shufflePile')
+    this.reportState('shufflePile', { type: 'shufflePile', pileIndex: this.piles.indexOf(pile) })
+  }
+
+  public beTurnedOver (newPiles: Pile[], index: number) {
+    console.log(`pile [${index}] should turn over`)
+    const pile = this.piles[index]
+    const pileElement = this.findElementForPile(pile) as HTMLElement
+
+    const stateChange = async () => {
+      await new Promise<void>(resolve => {
+        requestAnimationFrame(() => {
+          pile.cards = newPiles[index].cards
+          pile.faceDown = newPiles[index].faceDown
+          setPileElementAttributes(pile, pileElement)
+          this.removeAndRenderCards(pile, pileElement)
+          resolve()
+        })
+      })
+    }
+    this.runTurnOverAnimation(pile, stateChange)
   }
 
   public turnOverPile (pile: Pile): void {
     TableApp.prototype.turnOverPile.apply(this, [pile])
-    this.reportState('turnOverPile')
+    this.reportState('turnOverPile', { type: 'turnOverPile', pileIndex: this.piles.indexOf(pile) })
   }
 
   public spreadOrCollectPile (pile: Pile): void {

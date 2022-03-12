@@ -69,26 +69,34 @@ class TableApp extends TableModel {
 
   turnOverPile (pile: Pile): void {
     const pileElement = this.findElementForPile(pile)
-    animatedElementMove(
+
+    const stateChange = () => {
+      if (pile.spread) {
+        pile.flipCards()
+      } else {
+        pile.turnOver()
+      }
+      setPileElementAttributes(pile, pileElement)
+      this.removeAndRenderCards(pile, pileElement)
+    }
+
+    this.runTurnOverAnimation(pile, stateChange)
+  }
+
+  runTurnOverAnimation(pile:Pile, stateChange:{():void}) {
+    const pileElement = this.findElementForPile(pile)
+    return animatedElementMove(
       pileElement as HTMLElement,
-      () => {
-        if (pile.spread) {
-          pile.flipCards()
-        } else {
-          pile.turnOver()
-        }
-        setPileElementAttributes(pile, pileElement)
-        this.removeAndRenderCards(pile, pileElement)
-      },
+      stateChange,
       {
         time: .5,
         startingTransforms: {
           'rotateY': '-180deg',
+          'rotatez': pile.spread ? '0deg':'-15deg',
         },
       }
     )
   }
-
 
   movePile (pile: Pile, tableX: number, tableY: number) {
     const pileElement = this.findElementForPile(pile) as HTMLElement
@@ -110,7 +118,10 @@ class TableApp extends TableModel {
     const pileElement = this.findElementForPile(pile) as HTMLElement
     pile.shuffle()
     this.removeAndRenderCards(pile, pileElement)
+    this.runShuffleAnimation(pile)
+  }
 
+  runShuffleAnimation (pile:Pile) {
     pile.cards.forEach(card => {
       const cardElement = this.findElementForCard(card) as HTMLElement
       const endsOnTop = pile.cards.indexOf(card) === 0

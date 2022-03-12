@@ -40,6 +40,7 @@ Ws.io.on('connection', (socket) => {
       data: room.table,
       from: 'server',
       roomName: room.name,
+      actionName: 'reset',
     })
     socket.emit('basicEmit', { message: `You are logged in to ${room.name} as new SocketedTableApp with id ${newPlayer.id}`, from: '_SERVER_' })
     socket.to(room.name).emit('basicEmit', { message: `Another SocketedTableApp has joined ${room.name} with id ${newPlayer.id}`, from: '_SERVER_' })
@@ -49,21 +50,21 @@ Ws.io.on('connection', (socket) => {
 
   socket.on('tableStatus', (tableStatusPayload) => {
     console.log(`tableStatus for "${tableStatusPayload.roomName}" received at ${Date.now()} from "${tableStatusPayload.from}" : ${tableStatusPayload.data.length} piles`)
-    const { room, errorString } = Rooms.handleTableStatusEvent(tableStatusPayload)
+    const { room, errorString, player } = Rooms.handleTableStatusEvent(tableStatusPayload)
 
     if (errorString) {
       console.warn(errorString)
     }
 
-    if (!room) {
+    if (!room || !player) {
       socket.emit('basicEmit', { message: errorString || 'unknown table status update error', from: '_SERVER_' })
       return
     }
 
     socket.to(tableStatusPayload.roomName).emit('tableStatus', {
+      ...tableStatusPayload,
       data: room.table,
-      from: '_SERVER_',
-      roomName: tableStatusPayload.roomName,
+      from: player.id,
     })
   })
 
