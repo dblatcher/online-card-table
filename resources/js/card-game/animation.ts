@@ -1,5 +1,12 @@
 const defaultTransitionTime = 1
 
+interface AnimatedMoveConfig {
+  time?: number, speed?: number,
+  startingTransforms?: { [index: string]: string },
+  endingClasses?: { [index: string]: boolean },
+  zIndexDuringMove?: number
+}
+
 function buildInlineTransformString (
   first: DOMRect,
   last: DOMRect,
@@ -41,27 +48,16 @@ function calculateTransitionTime (
   return defaultTransitionTime
 }
 
-async function animatedElementMove (
-  element: HTMLElement,
-  moveFunction: Function,
-  config: {
-    time?: number, speed?: number,
-    startingTransforms?: { [index: string]: string },
-    endingClasses?: { [index: string]: boolean },
-    zIndexDuringMove?: number
-  } = {}
+function makeTransition (
+  element: HTMLElement, first: DOMRect, last: DOMRect, config:AnimatedMoveConfig,
 ): Promise<HTMLElement> {
-  const { startingTransforms = {}, endingClasses = {}, time, speed, zIndexDuringMove = 10 } = config
-
-  const first = element.getBoundingClientRect()
-  await moveFunction()
-  const last = element.getBoundingClientRect()
-
-  element.style.transition = 'none'
-  element.style.zIndex = zIndexDuringMove.toString()
-  element.style.transform = buildInlineTransformString(first, last, startingTransforms)
-
   return new Promise(resolve => {
+    const { startingTransforms = {}, endingClasses = {}, time, speed, zIndexDuringMove = 10 } = config
+
+    element.style.transition = 'none'
+    element.style.zIndex = zIndexDuringMove.toString()
+    element.style.transform = buildInlineTransformString(first, last, startingTransforms)
+
     element.addEventListener('transitionend',
       () => {
         element.style.transform = ''
@@ -85,4 +81,18 @@ async function animatedElementMove (
   })
 }
 
-export { animatedElementMove }
+export async function animatedElementMove (
+  elements: HTMLElement[] | HTMLElement,
+  moveFunction: Function,
+  config: AnimatedMoveConfig = {}
+): Promise<HTMLElement[]> {
+  if (!Array.isArray(elements)) {
+    elements = [elements]
+  }
+
+  const firsts = elements.map(element => element.getBoundingClientRect())
+  await moveFunction()
+  const lasts = elements.map(element => element.getBoundingClientRect())
+
+  return Promise.all(elements.map((element,index) => makeTransition(element, firsts[index], lasts[index], config)))
+}
