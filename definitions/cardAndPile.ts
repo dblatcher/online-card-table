@@ -9,6 +9,11 @@ interface ShuffleAction {
   pileIndex: number
 }
 
+interface SpreadOrCollectPileAction {
+  type: 'spreadOrCollectPile',
+  pileIndex: number
+}
+
 interface TurnOverPileAction {
   type: 'turnOverPile',
   pileIndex: number
@@ -18,7 +23,7 @@ interface ResetAction {
   type: 'reset'
 }
 
-type TableAction = ShuffleAction | TurnOverPileAction | ResetAction
+type TableAction = ShuffleAction | TurnOverPileAction | ResetAction | SpreadOrCollectPileAction
 
 export {
   Card, SerialisedCard, Pile, SerialisedPile,

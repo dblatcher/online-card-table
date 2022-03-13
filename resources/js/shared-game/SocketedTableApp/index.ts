@@ -66,6 +66,8 @@ export class SocketedTableApp extends TableApp {
         return this.beShuffled(newPiles, action.pileIndex)
       case 'turnOverPile':
         return this.beTurnedOver(newPiles, action.pileIndex)
+      case 'spreadOrCollectPile':
+        return this.beSpreadOrCollected(newPiles, action.pileIndex)
       case 'reset':
       default:
         return this.resetTo(newPiles)
@@ -111,11 +113,31 @@ export class SocketedTableApp extends TableApp {
     this.reportState('turnOverPile', { type: 'turnOverPile', pileIndex: this.piles.indexOf(pile) })
   }
 
+  public beSpreadOrCollected (newPiles: Pile[], index: number) {
+    console.log(`pile [${index}] should spread or collect over`)
+    const pile = this.piles[index]
+
+    const stateChange = async () => {
+      await new Promise<void>(resolve => {
+        requestAnimationFrame(() => {
+          pile.spread = newPiles[index].spread
+          if (pile.cards.length === 0) {
+            pile.spread = false
+          }
+          setPileElementAttributes(pile, this.findElementForPile(pile))
+          resolve()
+        })
+      })
+    }
+
+    this.runSpreadOrCollectAnimation(pile, stateChange)
+  }
+
   public spreadOrCollectPile (pile: Pile): void {
     const pileWasSpreadBefore = pile.spread
     TableApp.prototype.spreadOrCollectPile.apply(this, [pile])
     if (pileWasSpreadBefore !== pile.spread) {
-      this.reportState('spreadOrCollectPile')
+      this.reportState('spreadOrCollectPile', {type:'spreadOrCollectPile', pileIndex:this.piles.indexOf(pile)})
     }
   }
 

@@ -59,12 +59,24 @@ class TableApp extends TableModel {
     return pile
   }
 
+  runSpreadOrCollectAnimation (pile:Pile, stateChange:{():void}) {
+    animatedElementMove(
+      pile.cards.map(card => this.findElementForCard(card)) as HTMLElement[],
+      stateChange,
+      {}
+    )
+  }
+
   spreadOrCollectPile (pile: Pile): void {
-    pile.spread = !pile.spread
-    if (pile.cards.length === 0) {
-      pile.spread = false
+    const stateChange = () => {
+      pile.spread = !pile.spread
+      if (pile.cards.length === 0) {
+        pile.spread = false
+      }
+      setPileElementAttributes(pile, this.findElementForPile(pile))
     }
-    setPileElementAttributes(pile, this.findElementForPile(pile))
+
+    this.runSpreadOrCollectAnimation(pile, stateChange)
   }
 
   turnOverPile (pile: Pile): void {
@@ -83,7 +95,7 @@ class TableApp extends TableModel {
     this.runTurnOverAnimation(pile, stateChange)
   }
 
-  runTurnOverAnimation(pile:Pile, stateChange:{():void}) {
+  runTurnOverAnimation (pile:Pile, stateChange:{():void}) {
     const pileElement = this.findElementForPile(pile)
     return animatedElementMove(
       pileElement as HTMLElement,
