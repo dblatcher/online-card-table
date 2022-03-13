@@ -2,7 +2,6 @@
   @include cardShape;
   box-sizing: content-box;
   margin: 0;
-  padding: .2em;
   display: inline-block;
   position: absolute;
 
@@ -29,6 +28,7 @@
     display: inline-flex;
     filter: unset;
     width: unset;
+    padding-right: 15px;
 
     &.scrolling {
       flex-basis: 16rem;
@@ -47,33 +47,43 @@
     }
 
     &[quantity="small"] .card {
-      flex-basis: 3em;
+      margin-left: -10px;
     }
     &[quantity="medium"] .card {
-      flex-basis: 2em;
+      margin-left: -30px;
     }
     &[quantity="big"] .card {
-      flex-basis: 1.5em;
+      margin-left: -40px;
     }
 
     &[quantity="huge"] .card {
-      flex-basis: .9em;
+      margin-left: -50px;
+    }
+
+    .card:first-of-type{
+      margin-left: 0;
+    }
+
+    .card.flip:first-of-type{
+      margin-left: -15px;
     }
   }
+
+
 
   &:not(.spread) {
     &[quantity="small"]::before {
       @include cardShadow(2px,1px,2px);
     }
-  
+
     &[quantity="medium"]::before {
       @include cardShadow(4px,2px,2px);
     }
-  
+
     &[quantity="big"]::before {
       @include cardShadow(6px,3px,2px);
     }
-  
+
     &[quantity="huge"]::before {
       @include cardShadow(8px,4px,2px);
     }

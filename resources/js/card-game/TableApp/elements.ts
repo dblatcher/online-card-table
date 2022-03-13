@@ -62,7 +62,7 @@ function makeControlElement (
   right = false,
   bottom = false,
 ): HTMLElement {
-  const controlElement = document.createElement('figure')
+  const controlElement = document.createElement('div')
   controlElement.classList.add('pile-control')
   if (bottom) {
     controlElement.classList.add('pile-control--bottom')
