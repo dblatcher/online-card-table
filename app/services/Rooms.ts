@@ -1,4 +1,4 @@
-import { Player, RoomState } from 'definitions/RoomState'
+import { ClientSafePlayer, Player, RoomState } from 'definitions/RoomState'
 import { TableStatusPayload, LogInPayload } from 'definitions/socketEvents'
 
 class Rooms {
@@ -122,6 +122,10 @@ class Rooms {
     }
 
     return [room1, room2]
+  }
+
+  public makeSafe (player:Player): ClientSafePlayer {
+    return { ...player, socketId:undefined}
   }
 }
 

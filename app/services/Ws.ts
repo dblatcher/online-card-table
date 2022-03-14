@@ -1,10 +1,9 @@
 import { Server } from 'socket.io'
 import AdonisServer from '@ioc:Adonis/Core/Server'
-
-import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from '../../definitions/socketEvents'
+import { TypedServer } from 'definitions/socketTypes'
 
 class Ws {
-  public io: Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
+  public io: TypedServer
   private booted = false
 
   public boot () {
@@ -16,7 +15,7 @@ class Ws {
     }
 
     this.booted = true
-    this.io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(
+    this.io = new Server(
       AdonisServer.instance!,
       {
         cors: {
