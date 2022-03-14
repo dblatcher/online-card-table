@@ -23,7 +23,6 @@ export function makeLoginHandler (socket: AppSocket, io: TypedServer) {
       data: room.table,
       from: 'server',
       roomName: room.name,
-      actionName: 'reset',
     })
     socket.emit('basicEmit', { message: `You are logged in to ${room.name} as new SocketedTableApp with id ${newPlayer.id}`, from: '_SERVER_' })
     socket.to(room.name).emit('basicEmit', { message: `Another SocketedTableApp has joined ${room.name} with id ${newPlayer.id}`, from: '_SERVER_' })
