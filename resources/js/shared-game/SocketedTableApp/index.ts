@@ -6,7 +6,7 @@ import { setPileElementAttributes } from '../../card-game/TableApp/elements'
 import {
   ServerToClientEvents, ClientToServerEvents, TableStatusPayload, AssignIdPayload,
 } from 'definitions/socketEvents'
-import { TableAction, TableActionName } from 'definitions/cardAndPile'
+import { TableAction } from 'definitions/cardAndPile'
 
 interface SocketedTableAppElements {
   messageBox?: Element
@@ -32,7 +32,7 @@ export class SocketedTableApp extends TableApp {
     this.socket.on('assignId', this.handleAssignId.bind(this))
   }
 
-  public reportState (triggeringMethodName: TableActionName, action: TableAction = { type: 'reset' }) {
+  public reportState (triggeringMethodName: string, action: TableAction = { type: 'reset' }) {
     const { id, roomName } = this
 
     if (!id || !roomName) {
@@ -46,7 +46,6 @@ export class SocketedTableApp extends TableApp {
       data,
       from: id,
       roomName,
-      actionName: triggeringMethodName,
       action: action,
     })
   }

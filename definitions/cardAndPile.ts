@@ -1,9 +1,6 @@
 import { Card, SerialisedCard } from 'resources/js/card-game/card'
 import { Pile, SerialisedPile } from 'resources/js/card-game/pile'
 
-type TableActionName = 'shufflePile' | 'reset' | 'spreadOrCollectPile' |
-'dropOnTableHandler' | 'respondToDropInteraction' | 'turnOverPile'
-
 interface ShuffleAction {
   type: 'shufflePile',
   pileIndex: number
@@ -27,6 +24,6 @@ type TableAction = ShuffleAction | TurnOverPileAction | ResetAction | SpreadOrCo
 
 export {
   Card, SerialisedCard, Pile, SerialisedPile,
-  TableActionName, TableAction,
+  TableAction,
   ShuffleAction, ResetAction,
 }

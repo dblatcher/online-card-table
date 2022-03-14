@@ -1,11 +1,10 @@
-import { SerialisedPile, TableAction, TableActionName } from './cardAndPile'
+import { SerialisedPile, TableAction } from './cardAndPile'
 import { ClientSafePlayer } from './RoomState'
 
 interface TableStatusPayload {
   data: SerialisedPile[]
   from: string
   roomName: string
-  actionName: TableActionName
   action?: TableAction
 }
 
