@@ -59,7 +59,7 @@ class TableApp extends TableModel {
     return pile
   }
 
-  runSpreadOrCollectAnimation (pile:Pile, stateChange:{():void}) {
+  runSpreadOrCollectAnimation (pile: Pile, stateChange: { (): void }) {
     animatedElementMove(
       pile.cards.map(card => this.findElementForCard(card)) as HTMLElement[],
       stateChange,
@@ -95,7 +95,7 @@ class TableApp extends TableModel {
     this.runTurnOverAnimation(pile, stateChange)
   }
 
-  runTurnOverAnimation (pile:Pile, stateChange:{():void}) {
+  runTurnOverAnimation (pile: Pile, stateChange: { (): void }) {
     const pileElement = this.findElementForPile(pile)
     return animatedElementMove(
       pileElement as HTMLElement,
@@ -104,7 +104,7 @@ class TableApp extends TableModel {
         time: .5,
         startingTransforms: {
           'rotateY': '-180deg',
-          'rotatez': pile.spread ? '0deg':'-15deg',
+          'rotatez': pile.spread ? '0deg' : '-15deg',
         },
       }
     )
@@ -133,7 +133,7 @@ class TableApp extends TableModel {
     this.runShuffleAnimation(pile)
   }
 
-  runShuffleAnimation (pile:Pile) {
+  runShuffleAnimation (pile: Pile) {
     pile.cards.forEach(card => {
       const cardElement = this.findElementForCard(card) as HTMLElement
       const endsOnTop = pile.cards.indexOf(card) === 0
@@ -290,17 +290,11 @@ class TableApp extends TableModel {
     }
   }
 
-  public respondToDropInteraction (sourcePile: Pile, targetPile: Pile, sourceCard?: Card, targetCard?: Card) {
-    if (targetPile === sourcePile) {
-      console.log('dropped onto sourcePile')
-    }
-
+  public respondToDropOnPileInteraction (sourcePile: Pile, targetPile: Pile, sourceCard?: Card, targetCard?: Card) {
     if (!targetPile || !sourceCard) {
       return
     }
-
     this.moveCard(sourceCard, sourcePile, targetPile, targetCard)
-
     if (sourcePile.cards.length === 0) {
       this.removePile(sourcePile)
     }
@@ -321,7 +315,9 @@ class TableApp extends TableModel {
     const targetPile = targetCard ? this.findPileContainingCard(targetCard) : undefined
 
     if (sourcePile && targetPile) {
-      this.respondToDropInteraction(sourcePile, targetPile, sourceCard, targetPile.spread ? targetCard : undefined)
+      this.respondToDropOnPileInteraction(
+        sourcePile, targetPile, sourceCard, targetPile.spread ? targetCard : undefined
+      )
     }
   }
 
@@ -338,12 +334,33 @@ class TableApp extends TableModel {
     }
 
     if (sourcePile && targetPile) {
-      this.respondToDropInteraction(sourcePile, targetPile, sourceCard)
+      this.respondToDropOnPileInteraction(sourcePile, targetPile, sourceCard)
     }
   }
 
-  // TO DO - use respondToDropEvent or a similar method here so this method can be protected again
-  public dropOnTableHandler (event: DragEvent) {
+  public respondToDropOnTableInteraction (
+    sourceCard: Card | undefined,
+    sourcePile: Pile | undefined,
+    tableX: number, tableY: number,
+    altKey: boolean
+  ) {
+    if (sourceCard && sourcePile) {
+      const newPile = this.addPile(
+        new Pile([], {
+          x: tableX, y: tableY,
+          faceDown: altKey ? !sourcePile.faceDown : sourcePile.faceDown,
+        })
+      )
+      this.moveCard(sourceCard, sourcePile, newPile)
+      if (sourcePile.cards.length === 0) {
+        this.removePile(sourcePile)
+      }
+    } else if (sourcePile) {
+      this.movePile(sourcePile, tableX, tableY)
+    }
+  }
+
+  protected dropOnTableHandler (event: DragEvent) {
     const dragData = this.parseDragData(event)
     const { sourceCard, sourcePile } = dragData
     const { altKey, target, clientX, clientY } = event
@@ -361,20 +378,7 @@ class TableApp extends TableModel {
     const tableX = clientX - tableRect.left
     const tableY = clientY - tableRect.top
 
-    if (sourceCard && sourcePile) {
-      const newPile = this.addPile(
-        new Pile([], {
-          x: tableX, y: tableY,
-          faceDown: altKey ? !sourcePile.faceDown : sourcePile.faceDown,
-        })
-      )
-      this.moveCard(sourceCard, sourcePile, newPile)
-      if (sourcePile.cards.length === 0) {
-        this.removePile(sourcePile)
-      }
-    } else if (sourcePile) {
-      this.movePile(sourcePile, tableX, tableY)
-    }
+    this.respondToDropOnTableInteraction(sourceCard, sourcePile, tableX, tableY, altKey)
   }
 }
 

@@ -140,15 +140,16 @@ export class SocketedTableApp extends TableApp {
     }
   }
 
-  // TO DO - the TableApp's method needs to return boolean(?) to say if the event resulted in a change
-  // ie will be false if the methof was triggered but dropTarget !== this.tableElement
-  public dropOnTableHandler (event: DragEvent) {
-    TableApp.prototype.dropOnTableHandler.apply(this, [event])
-    this.reportState('dropOnTableHandler')
+
+  public respondToDropOnTableInteraction (
+    sourceCard: Card | undefined, sourcePile: Pile | undefined, tableX: number, tableY: number, altKey: boolean
+  ): void {
+    TableApp.prototype.respondToDropOnTableInteraction.apply(this,[sourceCard,sourcePile,tableX,tableY,altKey])
+    this.reportState('respondToDropOnTableInteraction')
   }
 
-  public respondToDropInteraction (sourcePile: Pile, targetPile: Pile, sourceCard?: Card, targetCard?: Card) {
-    TableApp.prototype.respondToDropInteraction.apply(this, [sourcePile, targetPile, sourceCard, targetCard])
-    this.reportState('respondToDropInteraction')
+  public respondToDropOnPileInteraction (sourcePile: Pile, targetPile: Pile, sourceCard?: Card, targetCard?: Card) {
+    TableApp.prototype.respondToDropOnPileInteraction.apply(this, [sourcePile, targetPile, sourceCard, targetCard])
+    this.reportState('respondToDropOnPileInteraction')
   }
 }
