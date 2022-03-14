@@ -63,7 +63,9 @@ class TableApp extends TableModel {
     animatedElementMove(
       pile.cards.map(card => this.findElementForCard(card)) as HTMLElement[],
       stateChange,
-      {}
+      {startingTransforms:{
+        'rotateY': pile.faceDown ? '180deg' : '0deg',
+      }}
     )
   }
 
