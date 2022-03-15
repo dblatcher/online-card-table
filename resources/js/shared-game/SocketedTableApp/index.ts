@@ -59,6 +59,8 @@ export class SocketedTableApp extends TableApp {
         return this.beTurnedOver(newPiles, action.pileIndex)
       case 'spreadOrCollectPile':
         return this.beSpreadOrCollected(newPiles, action.pileIndex)
+      case 'dropOnPile':
+      case 'dropOnTable':
       case 'reset':
       default:
         return this.resetTo(newPiles)
