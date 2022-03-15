@@ -185,10 +185,11 @@ class TableApp extends TableModel {
     )
 
     if (sourcePile.cards.length === 0) {
-      sourcePile.spread = false
+      this.removePile(sourcePile)
+    } else {
+      setPileElementAttributes(sourcePile, sourcePileElement)
     }
     setPileElementAttributes(targetPile, targetPileElement)
-    setPileElementAttributes(sourcePile, sourcePileElement)
   }
 
   protected setUpTable () {
@@ -297,9 +298,6 @@ class TableApp extends TableModel {
       return
     }
     this.moveCard(sourceCard, sourcePile, targetPile, targetCard)
-    if (sourcePile.cards.length === 0) {
-      this.removePile(sourcePile)
-    }
   }
 
   protected dropOnCardHandler (event: DragEvent) {
@@ -354,9 +352,6 @@ class TableApp extends TableModel {
         })
       )
       this.moveCard(sourceCard, sourcePile, newPile)
-      if (sourcePile.cards.length === 0) {
-        this.removePile(sourcePile)
-      }
     } else if (sourcePile) {
       this.movePile(sourcePile, tableX, tableY)
     }
