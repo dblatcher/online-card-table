@@ -8,26 +8,18 @@ import {
 } from 'definitions/socketEvents'
 import { TableAction } from 'definitions/cardAndPile'
 
-interface SocketedTableAppElements {
-  messageBox?: Element
-  playerList?: Element
-}
-
 export class SocketedTableApp extends TableApp {
   private socket: Socket<ServerToClientEvents, ClientToServerEvents>
   public id?: string
   public roomName?: string
-  public elements: SocketedTableAppElements
 
   constructor (
     piles: Pile[],
     tableElement: Element,
     socket: Socket<ServerToClientEvents, ClientToServerEvents>,
-    elements: SocketedTableAppElements = {}
   ) {
     super(piles, tableElement)
     this.socket = socket
-    this.elements = elements
     this.socket.on('tableStatus', this.handleTableStatus.bind(this))
     this.socket.on('assignId', this.handleAssignId.bind(this))
   }
@@ -139,7 +131,6 @@ export class SocketedTableApp extends TableApp {
       this.reportState('spreadOrCollectPile', {type:'spreadOrCollectPile', pileIndex:this.piles.indexOf(pile)})
     }
   }
-
 
   public respondToDropOnTableInteraction (
     sourceCard: Card | undefined, sourcePile: Pile | undefined, tableX: number, tableY: number, altKey: boolean
