@@ -24,7 +24,7 @@ export class SocketedTableApp extends TableApp {
     this.socket.on('assignId', this.handleAssignId.bind(this))
   }
 
-  public reportState (triggeringMethodName: string, action: TableAction = { type: 'reset' }) {
+  public reportState (action: TableAction = { type: 'reset' }) {
     const { id, roomName } = this
 
     if (!id || !roomName) {
@@ -33,13 +33,22 @@ export class SocketedTableApp extends TableApp {
     }
 
     const data = this.serialise()
-    console.log('emitting', triggeringMethodName, data)
+    console.log('emitting', data, action)
     this.socket.emit('tableStatus', {
       data,
       from: id,
       roomName,
       action: action,
     })
+  }
+
+  public resetTo (piles?: Pile[]): void {
+    TableApp.prototype.resetTo.apply(this,[piles])
+    this.reportState()
+  }
+
+  public beResetTo (piles?: Pile[]): void {
+    TableApp.prototype.resetTo.apply(this,[piles])
   }
 
   public handleAssignId (payload: AssignIdPayload): void {
@@ -60,12 +69,12 @@ export class SocketedTableApp extends TableApp {
       case 'spreadOrCollectPile':
         return this.beSpreadOrCollected(newPiles, action.pileIndex)
       case 'dropOnPile':
-        return this.haveCardMovedToPile(newPiles, action)
+        return this.haveCardMovedToPile(action)
       case 'dropOnTable':
-        return this.haveCardMovedToTable(newPiles, action)
+        return this.haveCardMovedToTable(action)
       case 'reset':
       default:
-        return this.resetTo(newPiles)
+        return this.beResetTo(newPiles)
     }
   }
 
@@ -81,7 +90,7 @@ export class SocketedTableApp extends TableApp {
 
   public shufflePile (pile: Pile) {
     TableApp.prototype.shufflePile.apply(this, [pile])
-    this.reportState('shufflePile', { type: 'shufflePile', pileIndex: this.piles.indexOf(pile) })
+    this.reportState({ type: 'shufflePile', pileIndex: this.piles.indexOf(pile) })
   }
 
   public beTurnedOver (newPiles: Pile[], index: number) {
@@ -105,7 +114,7 @@ export class SocketedTableApp extends TableApp {
 
   public turnOverPile (pile: Pile): void {
     TableApp.prototype.turnOverPile.apply(this, [pile])
-    this.reportState('turnOverPile', { type: 'turnOverPile', pileIndex: this.piles.indexOf(pile) })
+    this.reportState({ type: 'turnOverPile', pileIndex: this.piles.indexOf(pile) })
   }
 
   public beSpreadOrCollected (newPiles: Pile[], index: number) {
@@ -132,27 +141,25 @@ export class SocketedTableApp extends TableApp {
     const pileWasSpreadBefore = pile.spread
     TableApp.prototype.spreadOrCollectPile.apply(this, [pile])
     if (pileWasSpreadBefore !== pile.spread) {
-      this.reportState('spreadOrCollectPile', { type: 'spreadOrCollectPile', pileIndex: this.piles.indexOf(pile) })
+      this.reportState({ type: 'spreadOrCollectPile', pileIndex: this.piles.indexOf(pile) })
     }
   }
 
-  protected haveCardMovedToPile (newPiles: Pile[], action: DropOnPileAction) {
-    console.log(newPiles, action)
+  protected haveCardMovedToPile (action: DropOnPileAction) {
     const { targetPileIndex, targetCardIndex, sourcePileIndex, sourceCardIndex } = action
     const targetPile = this.piles[targetPileIndex]
     const targetCard = typeof targetCardIndex === 'number' ? targetPile.cards[targetCardIndex] : undefined
     const sourcePile = this.piles[sourcePileIndex]
     const sourceCard = typeof sourceCardIndex === 'number' ? sourcePile.cards[sourceCardIndex] : undefined
 
-    console.log({sourceCard, sourcePile, targetPile, targetCard})
     if (!targetPile || !sourceCard) {
       return
     }
 
     this.moveCard(sourceCard, sourcePile, targetPile, targetCard)
   }
-  protected haveCardMovedToTable (newPiles: Pile[], action: DropOnTableAction) {
-    console.log(newPiles, action)
+
+  protected haveCardMovedToTable (action: DropOnTableAction) {
     const { sourcePileIndex, sourceCardIndex, altKey, tableX, tableY } = action
     const sourcePile = typeof sourcePileIndex === 'number' ?this.piles[sourcePileIndex] : undefined
     const sourceCard = sourcePile && typeof sourceCardIndex === 'number' ? sourcePile.cards[sourceCardIndex] : undefined
@@ -175,10 +182,12 @@ export class SocketedTableApp extends TableApp {
       tableX, tableY, altKey,
     }
     TableApp.prototype.respondToDropOnTableInteraction.apply(this, [sourceCard, sourcePile, tableX, tableY, altKey])
-    this.reportState('respondToDropOnTableInteraction', action)
+    this.reportState(action)
   }
 
-  public respondToDropOnPileInteraction (sourcePile: Pile, targetPile: Pile, sourceCard?: Card, targetCard?: Card) {
+  public respondToDropOnPileInteraction (
+    sourcePile: Pile, targetPile: Pile, sourceCard?: Card, targetCard?: Card
+  ): void {
     const action:DropOnPileAction = {
       type: 'dropOnPile',
       sourceCardIndex: sourceCard ? sourcePile.cards.indexOf(sourceCard) : undefined,
@@ -188,6 +197,6 @@ export class SocketedTableApp extends TableApp {
     }
 
     TableApp.prototype.respondToDropOnPileInteraction.apply(this, [sourcePile, targetPile, sourceCard, targetCard])
-    this.reportState('respondToDropOnPileInteraction', action)
+    this.reportState(action)
   }
 }
