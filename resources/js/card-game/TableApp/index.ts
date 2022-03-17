@@ -166,14 +166,21 @@ class TableApp extends TableModel {
     const targetPileElement = this.findElementForPile(targetPile) as HTMLElement
 
     const positionToPlaceAt = targetCard ? targetPile.cards.indexOf(targetCard) : 0
-
     sourcePile.dealTo(targetPile, sourceCard, positionToPlaceAt)
+
+    const stateChange = async () => {
+      await new Promise<void>(resolve => {
+        requestAnimationFrame(() => {
+          addCardElementToPileElement(targetPileElement, sourceCardElement, positionToPlaceAt)
+          resolve()
+        })
+      })
+    }
+
 
     animatedElementMove(
       sourceCardElement as HTMLElement,
-      () => {
-        addCardElementToPileElement(targetPileElement, sourceCardElement, positionToPlaceAt)
-      },
+      stateChange,
       {
         time: 1,
         startingTransforms: {

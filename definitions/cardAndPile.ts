@@ -42,5 +42,5 @@ ResetAction | SpreadOrCollectPileAction | DropOnTableAction | DropOnPileAction
 export {
   Card, SerialisedCard, Pile, SerialisedPile,
   TableAction,
-  ShuffleAction, ResetAction,
+  ShuffleAction, ResetAction, DropOnTableAction, DropOnPileAction,
 }

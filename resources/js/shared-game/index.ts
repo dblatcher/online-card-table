@@ -12,9 +12,7 @@ export function init (socket: Socket) {
     return
   }
 
-  const app = new SocketedTableApp([], tableElement, socket, {
-    playerList: document.querySelector('div.playerList') || undefined,
-  })
+  const app = new SocketedTableApp([], tableElement, socket)
 
   const messageBoxContainer = document.querySelector('.message-box')
   if (messageBoxContainer) {
