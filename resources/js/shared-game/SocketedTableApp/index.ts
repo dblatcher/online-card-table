@@ -6,7 +6,7 @@ import { setPileElementAttributes } from '../../card-game/TableApp/elements'
 import {
   ServerToClientEvents, ClientToServerEvents, TableStatusPayload, AssignIdPayload,
 } from 'definitions/socketEvents'
-import { DropOnPileAction, TableAction } from 'definitions/cardAndPile'
+import { DropOnPileAction, DropOnTableAction, TableAction } from 'definitions/cardAndPile'
 
 export class SocketedTableApp extends TableApp {
   private socket: Socket<ServerToClientEvents, ClientToServerEvents>
@@ -62,6 +62,7 @@ export class SocketedTableApp extends TableApp {
       case 'dropOnPile':
         return this.haveCardMovedToPile(newPiles, action)
       case 'dropOnTable':
+        return this.haveCardMovedToTable(newPiles, action)
       case 'reset':
       default:
         return this.resetTo(newPiles)
@@ -150,17 +151,31 @@ export class SocketedTableApp extends TableApp {
 
     this.moveCard(sourceCard, sourcePile, targetPile, targetCard)
   }
+  protected haveCardMovedToTable (newPiles: Pile[], action: DropOnTableAction) {
+    console.log(newPiles, action)
+    const { sourcePileIndex, sourceCardIndex, altKey, tableX, tableY } = action
+    const sourcePile = typeof sourcePileIndex === 'number' ?this.piles[sourcePileIndex] : undefined
+    const sourceCard = sourcePile && typeof sourceCardIndex === 'number' ? sourcePile.cards[sourceCardIndex] : undefined
+
+    if (sourceCard && sourcePile) {
+      const newPile = this.makeNewPileFrom(sourcePile, tableX, tableY, altKey)
+      this.moveCard(sourceCard, sourcePile, newPile)
+    } else if (sourcePile) {
+      this.movePile(sourcePile, tableX, tableY)
+    }
+  }
 
   public respondToDropOnTableInteraction (
     sourceCard: Card | undefined, sourcePile: Pile | undefined, tableX: number, tableY: number, altKey: boolean
   ): void {
-    TableApp.prototype.respondToDropOnTableInteraction.apply(this, [sourceCard, sourcePile, tableX, tableY, altKey])
-    this.reportState('respondToDropOnTableInteraction', {
+    const action:DropOnTableAction = {
       type: 'dropOnTable',
       sourceCardIndex: sourceCard ? sourcePile?.cards.indexOf(sourceCard) : undefined,
       sourcePileIndex: sourcePile ? this.piles.indexOf(sourcePile) : undefined,
       tableX, tableY, altKey,
-    })
+    }
+    TableApp.prototype.respondToDropOnTableInteraction.apply(this, [sourceCard, sourcePile, tableX, tableY, altKey])
+    this.reportState('respondToDropOnTableInteraction', action)
   }
 
   public respondToDropOnPileInteraction (sourcePile: Pile, targetPile: Pile, sourceCard?: Card, targetCard?: Card) {
@@ -170,7 +185,6 @@ export class SocketedTableApp extends TableApp {
       sourcePileIndex: this.piles.indexOf(sourcePile),
       targetPileIndex: this.piles.indexOf(targetPile),
       targetCardIndex: targetCard ? targetPile.cards.indexOf(targetCard) : undefined,
-
     }
 
     TableApp.prototype.respondToDropOnPileInteraction.apply(this, [sourcePile, targetPile, sourceCard, targetCard])

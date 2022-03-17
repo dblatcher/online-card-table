@@ -117,11 +117,18 @@ class TableApp extends TableModel {
     pile.x = tableX
     pile.y = tableY
 
+    const stateChange = async () => {
+      await new Promise<void>(resolve => {
+        requestAnimationFrame(() => {
+          setPileElementPosition(pile, pileElement)
+          resolve()
+        })
+      })
+    }
+
     animatedElementMove(
       pileElement as HTMLElement,
-      () => {
-        setPileElementPosition(pile, pileElement)
-      },
+      stateChange,
       {
         time: 1,
       }
@@ -176,7 +183,6 @@ class TableApp extends TableModel {
         })
       })
     }
-
 
     animatedElementMove(
       sourceCardElement as HTMLElement,
@@ -345,6 +351,15 @@ class TableApp extends TableModel {
     }
   }
 
+  public makeNewPileFrom (sourcePile:Pile, tableX:number, tableY:number, turnOver:boolean):Pile {
+    return this.addPile(
+      new Pile([], {
+        x: tableX, y: tableY,
+        faceDown: turnOver ? !sourcePile.faceDown : sourcePile.faceDown,
+      })
+    )
+  }
+
   public respondToDropOnTableInteraction (
     sourceCard: Card | undefined,
     sourcePile: Pile | undefined,
@@ -352,12 +367,7 @@ class TableApp extends TableModel {
     altKey: boolean
   ) {
     if (sourceCard && sourcePile) {
-      const newPile = this.addPile(
-        new Pile([], {
-          x: tableX, y: tableY,
-          faceDown: altKey ? !sourcePile.faceDown : sourcePile.faceDown,
-        })
-      )
+      const newPile = this.makeNewPileFrom(sourcePile, tableX, tableY, altKey)
       this.moveCard(sourceCard, sourcePile, newPile)
     } else if (sourcePile) {
       this.movePile(sourcePile, tableX, tableY)
