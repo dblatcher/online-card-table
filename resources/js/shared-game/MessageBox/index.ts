@@ -12,15 +12,15 @@ import InputControl from './InputControl'
 import { ClientSafePlayer } from 'definitions/RoomState'
 import PlayerListBox from './PlayerListBox'
 
-export function sendLoginRequest (socket:Socket, name?:string):void {
+export function sendLoginRequest(socket: Socket, name?: string): void {
   const url = new URL(window.location.href)
   const roomName = url.pathname.split('/')[2]
-  socket.emit('logIn', {roomName, name})
+  socket.emit('logIn', { roomName, name })
 }
 
-const names = ['Bob','John','Mary','Cline','Kwame','Mehmet','Bill','Zara','Haoching']
-function pickRandomName ():string {
-  return names[Math.floor(Math.random()*names.length)]
+const names = ['Bob', 'John', 'Mary', 'Cline', 'Kwame', 'Mehmet', 'Bill', 'Zara', 'Haoching']
+function pickRandomName(): string {
+  return names[Math.floor(Math.random() * names.length)]
 }
 
 const containerStyle = css`
@@ -52,6 +52,12 @@ const headingStyle = css`
   }
 `
 
+export type Message = {
+  content: string
+  sender?: ClientSafePlayer
+  isFromServer: boolean
+  isFromYou: boolean
+}
 
 export class MessageBox extends Component {
   props: Readonly<Attributes & {
@@ -62,7 +68,7 @@ export class MessageBox extends Component {
   state: {
     roomName?: string
     you?: ClientSafePlayer
-    messages: BasicEmitPayload[]
+    messages: Message[]
     players: ClientSafePlayer[]
     inputValue: string
     nameInputValue: string
@@ -75,7 +81,7 @@ export class MessageBox extends Component {
       roomName: undefined,
       you: undefined,
       messages: [],
-      players:[],
+      players: [],
       inputValue: 'initial',
       nameInputValue: pickRandomName(),
     }
@@ -108,7 +114,7 @@ export class MessageBox extends Component {
     }
 
     socket.emit('basicEmit', payload)
-    this.addMessage(payload)
+    this.addMessage(this.makeMessageFromBasicEmitPayload(payload))
     this.setState({ inputValue: '' })
   }
 
@@ -121,14 +127,26 @@ export class MessageBox extends Component {
   handleAssignId(payload: AssignIdPayload): void {
     this.setState({
       roomName: payload.roomName,
-      you: {...payload.player},
+      you: { ...payload.player },
     })
   }
 
-  addMessage(payload: BasicEmitPayload) {
+  makeMessageFromBasicEmitPayload(payload: BasicEmitPayload): Message {
+    const { players, you } = this.state
+    const sender = players.find(player => player.id === payload.from)
+
+    return {
+      sender,
+      content: payload.message,
+      isFromServer: !sender,
+      isFromYou: (sender && you) ? sender.id === you.id : false,
+    }
+  }
+
+  addMessage(newMessage: Message) {
     this.setState((state: MessageBox['state']) => {
       return {
-        messages: [...state.messages, payload],
+        messages: [...state.messages, newMessage],
       }
     }, () => {
       const { current: messageBoxElement } = this.messageBoxRef
@@ -137,14 +155,14 @@ export class MessageBox extends Component {
   }
 
   handleBasicEmit(payload: BasicEmitPayload) {
-    this.addMessage(payload)
+    this.addMessage(this.makeMessageFromBasicEmitPayload(payload))
   }
 
   handlePlayerList(payload: PlayerListPayload) {
-    const {players,roomName} = payload
+    const { players, roomName } = payload
 
     if (!this.state.roomName || roomName === this.state.roomName) {
-      this.setState({players})
+      this.setState({ players })
     }
   }
 
@@ -162,7 +180,7 @@ export class MessageBox extends Component {
       ${you ? html`
         <${PlayerListBox} players=${players} />
         <div class="posts" ref=${this.messageBoxRef}>
-          ${messages.map(message => html`<${MessagePost} message=${message} players=${players}/>`)}
+          ${messages.map(message => html`<${MessagePost} message=${message}/>`)}
         </div>
         <${InputControl}
           send=${this.sendMessage}

@@ -1,16 +1,15 @@
 import { css } from '@emotion/css'
-import { ClientSafePlayer } from 'definitions/RoomState'
-import { BasicEmitPayload } from 'definitions/socketEvents'
 import { html } from 'htm/preact'
+import { Message } from '.'
 
-const postStyle = (isFromServer:boolean) => css`
+const postStyle = (message: Message) => css`
   margin: 0 0 .5em;
-  background-color: ${isFromServer ? 'yellow': 'unset'};
+  background-color: ${message.isFromServer ? 'yellow' : 'unset'};
 
   b {
     background-color: black;
-    color: ${ isFromServer ? 'yellow':'whitesmoke'};
-    min-width: 6rem;
+    color: ${message.isFromServer ? 'yellow' : 'whitesmoke'};
+    padding: 0 .25rem;
     display: inline-block;
   }
 
@@ -19,18 +18,16 @@ const postStyle = (isFromServer:boolean) => css`
   }
 `
 
-export default function MessagePost (props: {
-  message: BasicEmitPayload,
-  players: ClientSafePlayer[],
+export default function MessagePost(props: {
+  message: Message,
 }) {
-  const { message, players } = props
+  const { message } = props
+  const { isFromServer, isFromYou, content, sender } = message
 
-  const sender = players.find(player=>player.id === message.from)
-  const isFromServer = !sender
-  const senderName = sender ? sender.name || sender.id : '[SERVER]'
+  const displayName = isFromYou ? 'YOU' : isFromServer ? 'SERVER' : sender ? sender.name || sender.id : '[unknown]'
 
-  return html`<p class=${postStyle(isFromServer)}>
-  <b>${senderName}</b>
-  <span>${message.message}</span>
+  return html`<p class=${postStyle(message)}>
+  <b>${displayName}:</b>
+  <span>${content}</span>
 </p>`
 }
