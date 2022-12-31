@@ -23,6 +23,14 @@
       "js": [
         "http://localhost:8080/assets/private-card-table.js"
       ]
+    },
+    "board-game": {
+      "css": [
+        "http://localhost:8080/assets/board-game.css"
+      ],
+      "js": [
+        "http://localhost:8080/assets/board-game.js"
+      ]
     }
   }
 }

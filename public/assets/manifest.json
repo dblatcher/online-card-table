@@ -4,5 +4,7 @@
   "assets/shared-card-table.css": "http://localhost:8080/assets/shared-card-table.css",
   "assets/shared-card-table.js": "http://localhost:8080/assets/shared-card-table.js",
   "assets/private-card-table.css": "http://localhost:8080/assets/private-card-table.css",
-  "assets/private-card-table.js": "http://localhost:8080/assets/private-card-table.js"
+  "assets/private-card-table.js": "http://localhost:8080/assets/private-card-table.js",
+  "assets/board-game.js": "http://localhost:8080/assets/board-game.js",
+  "assets/board-game.css": "http://localhost:8080/assets/board-game.css"
 }
