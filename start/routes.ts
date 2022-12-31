@@ -24,6 +24,7 @@ Route.get('/', 'IndexController.index')
 Route.get('/private-table', 'PrivateTablesController.index')
 Route.get('/shared-table', 'SharedTablesController.index')
 Route.get('/shared-table/:roomName', 'SharedTablesController.room')
+Route.get('/board-game', 'BoardGameController.index')
 
 Route.get('/about', async ({ view }) => {
   const greeting = Math.random() > .5 ? 'hello' : 'hi there'
