@@ -5,7 +5,10 @@ export type Cell = {
   color?: PlayerColor
 }
 
+export type DieRoll = 1 | 2 | 3 | 4 | 5 | 6
+
 export type TabulaCondition = {
   cells: Cell[],
   turnOf: PlayerColor,
+  dice: DieRoll[],
 }

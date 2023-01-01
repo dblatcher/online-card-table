@@ -13,7 +13,7 @@ function initBoardGame () {
   container.innerHTML = ''
 
   render(
-    h(BoardGameApp, { text: 'WORLD', socket }),
+    h(BoardGameApp, { socket }),
     container
   )
 }
