@@ -9,7 +9,7 @@ export type DieRoll = 1 | 2 | 3 | 4 | 5 | 6
 
 export type TabulaCondition = {
   cells: Cell[],
-  turnOf: PlayerColor,
+  currentPlayer: PlayerColor,
   dice: DieRoll[],
   start: Record<PlayerColor, number>,
   jail: Record<PlayerColor, number>,

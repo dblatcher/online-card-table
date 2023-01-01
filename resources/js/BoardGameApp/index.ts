@@ -44,7 +44,7 @@ export class BoardGameApp extends Component<Props, State> {
 
   handleSpecialClick(player: PlayerColor, zone: 'jail' | 'start') {
     const { selectedDieIndex } = this.state
-    if (player !== this.state.game.condition.turnOf || typeof selectedDieIndex === 'undefined') {
+    if (player !== this.state.game.condition.currentPlayer || typeof selectedDieIndex === 'undefined') {
       return
     }
 
@@ -67,7 +67,7 @@ export class BoardGameApp extends Component<Props, State> {
     const { condition } = this.state.game
     return html`
       <div>
-        <p>${condition.turnOf}'s turn</p>
+        <p>${condition.currentPlayer}'s turn</p>
 
         <section>
           ${condition.dice.map((die, index) => html`
