@@ -3,13 +3,14 @@
 import { css } from '@emotion/css'
 import { Component, ComponentChild } from 'preact'
 import { html } from 'htm/preact'
-import { Cell, TabulaCondition } from './types'
+import type { Cell, PlayerColor, TabulaCondition } from './types'
 import { Square } from './Square'
 import { Stones } from './Stones'
 
 interface Props {
   game: TabulaCondition
   squareClickHandler: { (cellIndex: number): void }
+  specialClickHandler: { (player: PlayerColor, zone: 'jail' | 'start'): void }
 }
 
 interface State { }
@@ -89,7 +90,7 @@ export class Board extends Component<Props, State> {
 
   public render(): ComponentChild {
     const { rows } = this
-    const { squareClickHandler, game } = this.props
+    const { squareClickHandler, game, specialClickHandler } = this.props
     return html`
       <div class=${boardStyle}>
       ${rows.map((row, rowIndex) => html`
@@ -108,13 +109,21 @@ export class Board extends Component<Props, State> {
 
         <div>
           <span>start</start>
-          <button><${Stones} color="BLUE" stones=${game.start.BLUE} renderZero /></button>
-          <button><${Stones} color="GREEN" stones=${game.start.GREEN} renderZero /></button>
+          <button onclick=${() => { specialClickHandler('BLUE', 'start') }}>
+            <${Stones} color="BLUE" stones=${game.start.BLUE} renderZero />
+          </button>
+          <button onclick=${() => { specialClickHandler('GREEN', 'start') }}>
+            <${Stones} color="GREEN" stones=${game.start.GREEN} renderZero />
+          </button>
         </div>
         <div>
           <span>jail</start>
-          <button><${Stones} color="BLUE" stones=${game.jail.BLUE} renderZero /></button>
-          <button><${Stones} color="GREEN" stones=${game.jail.GREEN} renderZero/></button>
+          <button onclick=${() => { specialClickHandler('BLUE', 'jail') }}>
+            <${Stones} color="BLUE" stones=${game.jail.BLUE} renderZero />
+          </button>
+          <button onclick=${() => { specialClickHandler('GREEN', 'jail') }}>
+            <${Stones} color="GREEN" stones=${game.jail.GREEN} renderZero/>
+          </button>
         </div>
         <div>
           <span>home</start>

@@ -10,7 +10,6 @@ const makeEmptyCellRange = (count: number) => {
   return range
 }
 
-
 export class TabulaGame {
   private _condition: TabulaCondition
 
@@ -28,8 +27,31 @@ export class TabulaGame {
       : [rolls[0], rolls[1]]
   }
 
+  public attemptMoveFromStart(dieIndex: number) {
+    const { dice, cells, turnOf, start, jail } = this._condition
+    const dieValue = dice[dieIndex]
+    const targetCell = cells[dieValue - 1]
+    const validTargetSqaure = targetCell && !this.isHeldByOtherPlayer(targetCell)
+    console.log({ dieValue, turnOf, targetCell, validTargetSqaure })
+
+    if (jail[turnOf] > 0) {
+      console.log(`${turnOf} must get thier pieces from jail first`)
+      return
+    } else if (start[turnOf] === 0) {
+      console.log(`${turnOf} has no pieces to bring on`)
+      return
+    } else if (!validTargetSqaure) {
+      console.log(`target is held by ${this.otherPlayer}`)
+      return
+    } else {
+      console.log(`${turnOf} is moving a stone from start to ${dieValue}`)
+      dice.splice(dieIndex, 1)
+      this.moveFromStartToSquare(targetCell)
+    }
+  }
+
   public attemptMoveFromSquare(dieIndex: number, cellIndex: number) {
-    const { dice, cells, turnOf } = this._condition
+    const { dice, cells, turnOf, jail } = this._condition
     const dieValue = dice[dieIndex]
     const startCell = cells[cellIndex]
 
@@ -40,9 +62,14 @@ export class TabulaGame {
     const wouldCastOff = dieValue + cellIndex >= cells.length
     const targetCell = cells[dieValue + cellIndex]
     const validStartSquare = startCell.color === turnOf && startCell.stones > 0
-    const validTargetSqaure = !wouldCastOff && targetCell && !this.isHeldByOtherPlayer(targetCell)
+    const validTargetSqaure = targetCell && !this.isHeldByOtherPlayer(targetCell)
 
     console.log({ wouldCastOff, targetCell, validStartSquare, validTargetSqaure })
+
+    if (jail[turnOf] > 0) {
+      console.log(`${turnOf} must get thier pieces from jail first`)
+      return
+    }
 
     if (validStartSquare && validTargetSqaure) {
       dice.splice(dieIndex, 1)
@@ -55,15 +82,25 @@ export class TabulaGame {
     }
   }
 
+  private moveFromStartToSquare(targetCell: Cell) {
+    this._condition.start[this._condition.turnOf]--
+    this.captureSingle(targetCell)
+    targetCell.stones++
+    targetCell.color = this._condition.turnOf
+  }
   private moveFromSquareToSquare(startCell: Cell, targetCell: Cell) {
     startCell.stones--
+    this.captureSingle(targetCell)
+    targetCell.stones++
+    targetCell.color = this._condition.turnOf
+  }
+
+  private captureSingle(targetCell: Cell) {
     if (targetCell.color === this.otherPlayer) {
       this._condition.jail[this.otherPlayer] += targetCell.stones
       targetCell.stones = 0
       console.log(`${this._condition.turnOf} captured a ${this.otherPlayer} stone.`)
     }
-    targetCell.stones++
-    targetCell.color = this._condition.turnOf
   }
 
   private isHeldByOtherPlayer(cell?: Cell): boolean {
@@ -102,11 +139,16 @@ export class TabulaGame {
       { stones: 2, 'color': 'BLUE' },
       { stones: 3, 'color': 'BLUE' },
       { stones: 1, 'color': 'GREEN' },
-      { stones: 0 },
+      { stones: 1, 'color': 'GREEN' },
       { stones: 3, 'color': 'GREEN' },
       { stones: 0 },
       ...makeEmptyCellRange(18),
     ]
-    return new TabulaGame({ ...TabulaGame.initial()._condition, cells })
+    return new TabulaGame({
+      ...TabulaGame.initial()._condition,
+      cells,
+      dice: [5, 4, 3, 2, 1],
+      jail: { BLUE: 0, GREEN: 0 },
+    })
   }
 }

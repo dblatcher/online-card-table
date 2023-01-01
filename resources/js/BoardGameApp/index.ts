@@ -8,6 +8,7 @@ import { Socket } from 'socket.io-client'
 import { Board } from './Board'
 import { TabulaGame } from './TabulaGame'
 import { DieButton } from './DieButton'
+import { PlayerColor } from './types'
 
 interface Props {
   socket?: Socket<ServerToClientEvents, ClientToServerEvents>
@@ -23,7 +24,6 @@ export class BoardGameApp extends Component<Props, State> {
     super((props))
 
     const game = TabulaGame.testState()
-    game.setDice([4, 2])
 
     this.state = {
       game,
@@ -31,6 +31,7 @@ export class BoardGameApp extends Component<Props, State> {
     }
     this.handleSquareClick = this.handleSquareClick.bind(this)
     this.handleDieClick = this.handleDieClick.bind(this)
+    this.handleSpecialClick = this.handleSpecialClick.bind(this)
   }
 
   handleSquareClick(cellIndex: number) {
@@ -40,6 +41,23 @@ export class BoardGameApp extends Component<Props, State> {
       this.forceUpdate()
     }
   }
+
+  handleSpecialClick(player: PlayerColor, zone: 'jail' | 'start') {
+    const { selectedDieIndex } = this.state
+    if (player !== this.state.game.condition.turnOf || typeof selectedDieIndex === 'undefined') {
+      return
+    }
+
+    switch (zone) {
+      case 'jail':
+        break
+      case 'start':
+        this.state.game.attemptMoveFromStart(selectedDieIndex)
+        break
+    }
+    this.forceUpdate()
+  }
+
   handleDieClick(dieIndex: number) {
     this.setState({ selectedDieIndex: dieIndex })
   }
@@ -63,6 +81,7 @@ export class BoardGameApp extends Component<Props, State> {
         <${Board}
           game=${condition}
           squareClickHandler=${this.handleSquareClick}
+          specialClickHandler=${this.handleSpecialClick}
         />
       </div>
     `
