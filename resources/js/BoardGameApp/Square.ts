@@ -4,6 +4,7 @@ import { css } from '@emotion/css'
 import { FunctionalComponent } from 'preact'
 import { html } from 'htm/preact'
 import { Cell } from './types'
+import { Stones } from './Stones'
 
 interface Props {
   cell: Cell
@@ -32,11 +33,7 @@ export const Square: FunctionalComponent<Props> = ({ cell, cellIndex, cellSize =
     class=${SquareStyle(cellSize)}
     onClick=${() => { clickHandler(cellIndex) }}>
     <b>${cellIndex + 1}</b>
-    ${cell.stones > 0 ? html`
-      <span>
-        ${cell.stones}, ${cell.color}
-      </span>
-    `: null}
+    <${Stones} color=${cell.color} stones=${cell.stones} />
   </button>
   `
 }

@@ -5,6 +5,7 @@ import { Component, ComponentChild } from 'preact'
 import { html } from 'htm/preact'
 import { Cell, TabulaCondition } from './types'
 import { Square } from './Square'
+import { Stones } from './Stones'
 
 interface Props {
   game: TabulaCondition
@@ -60,6 +61,10 @@ const middleStyle = css`
     display: flex;
     justify-content: space-between;
   }
+
+  button {
+    min-width: 4em;
+  }
 `
 
 export class Board extends Component<Props, State> {
@@ -103,18 +108,18 @@ export class Board extends Component<Props, State> {
 
         <div>
           <span>start</start>
-          <button>${game.start.BLUE} blue</button>
-          <button>${game.start.GREEN} green</button>
+          <button><${Stones} color="BLUE" stones=${game.start.BLUE} renderZero /></button>
+          <button><${Stones} color="GREEN" stones=${game.start.GREEN} renderZero /></button>
         </div>
         <div>
           <span>jail</start>
-          <button>${game.jail.BLUE} blue</button>
-          <button>${game.jail.GREEN} green</button>
+          <button><${Stones} color="BLUE" stones=${game.jail.BLUE} renderZero /></button>
+          <button><${Stones} color="GREEN" stones=${game.jail.GREEN} renderZero/></button>
         </div>
         <div>
           <span>home</start>
-          <b>${game.home.BLUE} blue</b>
-          <b>${game.home.GREEN} green</b>
+          <span><${Stones} color="BLUE" stones=${game.home.BLUE} renderZero /></span>
+          <span><${Stones} color="GREEN" stones=${game.home.GREEN} renderZero /></span>
         </div>
 
       </section>
