@@ -8,7 +8,8 @@ import { Socket } from 'socket.io-client'
 import { Board } from './Board'
 import { TabulaGame } from './TabulaGame'
 import { DieButton } from './DieButton'
-import { PlayerColor } from './types'
+import { DieRoll, PlayerColor } from './types'
+import { d6 } from './diceService'
 
 interface Props {
   socket?: Socket<ServerToClientEvents, ClientToServerEvents>
@@ -32,6 +33,7 @@ export class BoardGameApp extends Component<Props, State> {
     this.handleSquareClick = this.handleSquareClick.bind(this)
     this.handleDieClick = this.handleDieClick.bind(this)
     this.handleSpecialClick = this.handleSpecialClick.bind(this)
+    this.rollDice = this.rollDice.bind(this)
   }
 
   handleSquareClick(cellIndex: number) {
@@ -47,7 +49,6 @@ export class BoardGameApp extends Component<Props, State> {
     if (player !== this.state.game.condition.currentPlayer || typeof selectedDieIndex === 'undefined') {
       return
     }
-
     switch (zone) {
       case 'jail':
         this.state.game.attemptMoveFromJail(selectedDieIndex)
@@ -59,17 +60,37 @@ export class BoardGameApp extends Component<Props, State> {
     this.forceUpdate()
   }
 
+  rollDice() {
+    const roll: [DieRoll, DieRoll] = [d6(), d6()]
+    this.state.game.newTurn(roll)
+    this.forceUpdate()
+  }
+
   handleDieClick(dieIndex: number) {
     this.setState({ selectedDieIndex: dieIndex })
+  }
+
+  get message():string {
+    const { currentPlayer,dice } = this.state.game.condition
+    const { otherPlayer } = this.state.game
+
+    if (dice.length === 0) {
+      return `${otherPlayer} to roll dice`
+    }
+
+    return `${currentPlayer} to move`
   }
 
   public render(): ComponentChild {
     const { condition } = this.state.game
     return html`
       <div>
-        <p>${condition.currentPlayer}'s turn</p>
+        <p>${this.message}</p>
 
         <section>
+          ${condition.dice.length === 0 && html`
+          <button onClick=${this.rollDice}>roll</buttonl>
+          `}
           ${condition.dice.map((die, index) => html`
             <${DieButton}
               value=${die}

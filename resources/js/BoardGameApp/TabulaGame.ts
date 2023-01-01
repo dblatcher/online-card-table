@@ -21,10 +21,12 @@ export class TabulaGame {
     return this._condition
   }
 
-  public setDice(rolls: [DieRoll, DieRoll]) {
+  public newTurn(rolls: [DieRoll, DieRoll]) {
     this._condition.dice = rolls[0] === rolls[1]
       ? [rolls[0], rolls[0], rolls[0], rolls[0]]
       : [rolls[0], rolls[1]]
+
+    this._condition.currentPlayer = this.otherPlayer
   }
 
   public attemptMoveFromStart(dieIndex: number) {
@@ -151,7 +153,7 @@ export class TabulaGame {
     return cell.color === this.otherPlayer && cell.stones >= 2
   }
 
-  private get otherPlayer(): PlayerColor {
+  public get otherPlayer(): PlayerColor {
     return this._condition.currentPlayer === 'BLUE' ? 'GREEN' : 'BLUE'
   }
 
@@ -191,7 +193,7 @@ export class TabulaGame {
     return new TabulaGame({
       ...TabulaGame.initial()._condition,
       cells,
-      dice: [5, 4, 3, 2, 1],
+      dice: [1],
       start: { BLUE: 0, GREEN: 15 },
       jail: { BLUE: 1, GREEN: 0 },
     })
