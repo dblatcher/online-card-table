@@ -32,7 +32,6 @@ export class TabulaGame {
     const dieValue = dice[dieIndex]
     const targetCell = cells[dieValue - 1]
     const validTargetSqaure = targetCell && !this.isHeldByOtherPlayer(targetCell)
-    console.log({ dieValue, turnOf, targetCell, validTargetSqaure })
 
     if (jail[turnOf] > 0) {
       console.log(`${turnOf} must get thier pieces from jail first`)
@@ -47,6 +46,25 @@ export class TabulaGame {
       console.log(`${turnOf} is moving a stone from start to ${dieValue}`)
       dice.splice(dieIndex, 1)
       this.moveFromStartToSquare(targetCell)
+    }
+  }
+
+  public attemptMoveFromJail(dieIndex: number) {
+    const { dice, cells, turnOf, jail } = this._condition
+    const dieValue = dice[dieIndex]
+    const targetCell = cells[dieValue - 1]
+    const validTargetSqaure = targetCell && !this.isHeldByOtherPlayer(targetCell)
+
+    if (jail[turnOf] === 0) {
+      console.log(`${turnOf} has no pieces in jail`)
+      return
+    } else if (!validTargetSqaure) {
+      console.log(`target is held by ${this.otherPlayer}`)
+      return
+    } else {
+      console.log(`${turnOf} is moving a stone from start to ${dieValue}`)
+      dice.splice(dieIndex, 1)
+      this.moveFromJailToSquare(targetCell)
     }
   }
 
@@ -84,6 +102,12 @@ export class TabulaGame {
 
   private moveFromStartToSquare(targetCell: Cell) {
     this._condition.start[this._condition.turnOf]--
+    this.captureSingle(targetCell)
+    targetCell.stones++
+    targetCell.color = this._condition.turnOf
+  }
+  private moveFromJailToSquare(targetCell: Cell) {
+    this._condition.jail[this._condition.turnOf]--
     this.captureSingle(targetCell)
     targetCell.stones++
     targetCell.color = this._condition.turnOf
@@ -148,7 +172,7 @@ export class TabulaGame {
       ...TabulaGame.initial()._condition,
       cells,
       dice: [5, 4, 3, 2, 1],
-      jail: { BLUE: 0, GREEN: 0 },
+      jail: { BLUE: 2, GREEN: 0 },
     })
   }
 }

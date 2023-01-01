@@ -50,6 +50,7 @@ export class BoardGameApp extends Component<Props, State> {
 
     switch (zone) {
       case 'jail':
+        this.state.game.attemptMoveFromJail(selectedDieIndex)
         break
       case 'start':
         this.state.game.attemptMoveFromStart(selectedDieIndex)
