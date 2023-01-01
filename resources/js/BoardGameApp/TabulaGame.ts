@@ -69,7 +69,7 @@ export class TabulaGame {
   }
 
   public attemptMoveFromSquare(dieIndex: number, cellIndex: number) {
-    const { dice, cells, turnOf, jail } = this._condition
+    const { dice, cells, turnOf, jail, start } = this._condition
     const dieValue = dice[dieIndex]
     const startCell = cells[cellIndex]
 
@@ -78,6 +78,7 @@ export class TabulaGame {
     }
 
     const wouldCastOff = dieValue + cellIndex >= cells.length
+    const canCastOff = start[turnOf] === 0 && jail[turnOf] === 0
     const targetCell = cells[dieValue + cellIndex]
     const validStartSquare = startCell.color === turnOf && startCell.stones > 0
     const validTargetSqaure = targetCell && !this.isHeldByOtherPlayer(targetCell)
@@ -87,6 +88,18 @@ export class TabulaGame {
     if (jail[turnOf] > 0) {
       console.log(`${turnOf} must get thier pieces from jail first`)
       return
+    }
+
+    if (wouldCastOff) {
+      if (canCastOff) {
+        dice.splice(dieIndex, 1)
+        this.castOffFromSquare(startCell)
+        console.log(`${turnOf} casting off from square ${cellIndex + 1}!`)
+        return
+      } else {
+        console.log(`${turnOf} cannot cast off!`)
+        return
+      }
     }
 
     if (validStartSquare && validTargetSqaure) {
@@ -117,6 +130,10 @@ export class TabulaGame {
     this.captureSingle(targetCell)
     targetCell.stones++
     targetCell.color = this._condition.turnOf
+  }
+  private castOffFromSquare(startCell: Cell) {
+    startCell.stones--
+    this._condition.home[this._condition.turnOf]++
   }
 
   private captureSingle(targetCell: Cell) {
@@ -166,13 +183,17 @@ export class TabulaGame {
       { stones: 1, 'color': 'GREEN' },
       { stones: 3, 'color': 'GREEN' },
       { stones: 0 },
-      ...makeEmptyCellRange(18),
+      ...makeEmptyCellRange(15),
+      { stones: 0 },
+      { stones: 3, color: 'BLUE' },
+      { stones: 0 },
     ]
     return new TabulaGame({
       ...TabulaGame.initial()._condition,
       cells,
       dice: [5, 4, 3, 2, 1],
-      jail: { BLUE: 2, GREEN: 0 },
+      start: { BLUE: 0, GREEN: 15 },
+      jail: { BLUE: 1, GREEN: 0 },
     })
   }
 }
