@@ -11,4 +11,7 @@ export type TabulaCondition = {
   cells: Cell[],
   turnOf: PlayerColor,
   dice: DieRoll[],
+  start: Record<PlayerColor, number>,
+  jail: Record<PlayerColor, number>,
+  home: Record<PlayerColor, number>,
 }

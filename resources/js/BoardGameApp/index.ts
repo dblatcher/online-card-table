@@ -22,8 +22,8 @@ export class BoardGameApp extends Component<Props, State> {
   constructor(props: Props) {
     super((props))
 
-    const game = TabulaGame.initial()
-    game.setDice([4, 4])
+    const game = TabulaGame.testState()
+    game.setDice([4, 2])
 
     this.state = {
       game,
@@ -34,10 +34,13 @@ export class BoardGameApp extends Component<Props, State> {
   }
 
   handleSquareClick(cellIndex: number) {
-    console.log(`square ${cellIndex} clicked`, this.state.game.condition.cells[cellIndex])
+    const { selectedDieIndex } = this.state
+    if (typeof selectedDieIndex === 'number') {
+      this.state.game.attemptMoveFromSquare(selectedDieIndex, cellIndex)
+      this.forceUpdate()
+    }
   }
   handleDieClick(dieIndex: number) {
-    console.log(`die ${dieIndex} clicked`, this.state.game.condition.dice[dieIndex])
     this.setState({ selectedDieIndex: dieIndex })
   }
 

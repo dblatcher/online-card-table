@@ -33,8 +33,8 @@ export const DieButton: FunctionalComponent<Props> = ({ dieIndex, value, clickHa
   <button
     class=${dieStyle(isSelected)}
     onClick=${() => {
-      clickHandler(dieIndex)
-    }}>
+    clickHandler(dieIndex)
+  }}>
     <b>${value}</b>
 
   </button>
