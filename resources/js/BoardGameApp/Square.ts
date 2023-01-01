@@ -15,6 +15,7 @@ interface Props {
 const SquareStyle = (size: number) => css`
   display: inline-flex;
   flex-direction: column;
+  box-sizing: border-box;
   width: ${size}em;
   height: ${size}em;
   padding:0;

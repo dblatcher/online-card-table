@@ -21,6 +21,8 @@ const boardStyle = css`
   position:relative;
   height: ${8 * cellSize}em;
   width: ${8 * cellSize}em;
+  padding: ${cellSize * 1.25}em;
+  box-sizing: border-box;
 `
 
 const rowStyle = css`
@@ -50,6 +52,16 @@ const rowStyleFor = [
   `,
 ]
 
+const middleStyle = css`
+  background-color: orange;
+  padding: .5em;
+
+  div {
+    display: flex;
+    justify-content: space-between;
+  }
+`
+
 export class Board extends Component<Props, State> {
   constructor(props: Props) {
     super((props))
@@ -72,7 +84,7 @@ export class Board extends Component<Props, State> {
 
   public render(): ComponentChild {
     const { rows } = this
-    const { squareClickHandler } = this.props
+    const { squareClickHandler, game } = this.props
     return html`
       <div class=${boardStyle}>
       ${rows.map((row, rowIndex) => html`
@@ -87,6 +99,25 @@ export class Board extends Component<Props, State> {
         </section>
       `)}
 
+      <section class=${middleStyle}>
+
+        <div>
+          <span>start</start>
+          <button>${game.start.BLUE} blue</button>
+          <button>${game.start.GREEN} green</button>
+        </div>
+        <div>
+          <span>jail</start>
+          <button>${game.jail.BLUE} blue</button>
+          <button>${game.jail.GREEN} green</button>
+        </div>
+        <div>
+          <span>home</start>
+          <b>${game.home.BLUE} blue</b>
+          <b>${game.home.GREEN} green</b>
+        </div>
+
+      </section>
       </div>
     `
   }
