@@ -5,8 +5,8 @@ import { Component, ComponentChild } from 'preact'
 import { html } from 'htm/preact'
 import { ServerToClientEvents, ClientToServerEvents } from 'definitions/socketEvents'
 import { Socket } from 'socket.io-client'
-import { TabulaGame } from './types'
 import { Board } from './Board'
+import { TabulaGame } from './TabulaGame'
 
 interface Props {
   text: string
@@ -21,35 +21,13 @@ export class BoardGameApp extends Component<Props, State> {
   constructor(props: Props) {
     super((props))
     this.state = {
-      game: {
-        cells: [
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 2, color: 'BLUE' },
-          { stones: 0 },
-          { stones: 4, color: 'GREEN' },
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 0 },
-          { stones: 0 },
-        ],
-      },
+      game: TabulaGame.initial(),
     }
+    this.handleSquareClick = this.handleSquareClick.bind(this)
+  }
+
+  handleSquareClick(cellIndex: number) {
+    console.log(`square ${cellIndex} clicked`, this.state.game.condition.cells[cellIndex])
   }
 
   public render(): ComponentChild {
@@ -57,7 +35,10 @@ export class BoardGameApp extends Component<Props, State> {
     return html`
       <div>
         <p>hello ${this.props.text}</p>
-        <${Board} game=${game}/>
+        <${Board}
+          game=${game.condition}
+          squareClickHandler=${this.handleSquareClick}
+        />
       </div>
     `
   }

@@ -5,6 +5,7 @@ export type Cell = {
   color?: PlayerColor
 }
 
-export type TabulaGame = {
-  cells: Cell[]
+export type TabulaCondition = {
+  cells: Cell[],
+  turnOf: PlayerColor,
 }

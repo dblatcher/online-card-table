@@ -3,10 +3,12 @@
 import { css } from '@emotion/css'
 import { Component, ComponentChild } from 'preact'
 import { html } from 'htm/preact'
-import { Cell, TabulaGame } from './types'
+import { Cell, TabulaCondition } from './types'
+import { Square } from './Square'
 
 interface Props {
-  game: TabulaGame
+  game: TabulaCondition
+  squareClickHandler: { (cellIndex: number): void }
 }
 
 interface State { }
@@ -48,19 +50,6 @@ const rowStyleFor = [
   `,
 ]
 
-const cellStyle = css`
-  display: inline-flex;
-  flex-direction: column;
-  width: ${cellSize}em;
-  height: ${cellSize}em;
-  padding:0;
-  b {
-    display: block;
-    font-size: 1.25em;
-  }
-  font-size: 1em;
-`
-
 export class Board extends Component<Props, State> {
   constructor(props: Props) {
     super((props))
@@ -78,25 +67,22 @@ export class Board extends Component<Props, State> {
       const newRow = copy.splice(0, 6)
       rows.push(newRow)
     }
-    return rows;
+    return rows
   }
 
   public render(): ComponentChild {
     const { rows } = this
+    const { squareClickHandler } = this.props
     return html`
       <div class=${boardStyle}>
       ${rows.map((row, rowIndex) => html`
-
         <section class=${[rowStyle, rowStyleFor[rowIndex]].join(' ')}>
           ${row.map((cell, index) => html`
-            <button class=${cellStyle}>
-            <b>${(rowIndex * 6) + index + 1}</b>
-            ${cell.stones > 0 ? html`
-            <span>
-              ${cell.stones}, ${cell.color}
-            </span>
-            `: null}
-            </button>
+            <${Square}
+              cell=${cell}
+              cellIndex=${(rowIndex * 6) + index}
+              clickHandler=${squareClickHandler}
+            />
           `)}
         </section>
       `)}
