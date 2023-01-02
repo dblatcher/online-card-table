@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/space-before-function-paren */
-import { Cell, DieRoll, PlayerColor, TabulaCondition } from './types'
+import { Cell, DieRoll, GameEvent, PlayerColor, TabulaCondition, EventCategory } from './types'
 
 const makeEmptyCell = (): Cell => ({ stones: 0 })
 const makeEmptyCellRange = (count: number) => {
@@ -12,13 +12,21 @@ const makeEmptyCellRange = (count: number) => {
 
 export class TabulaGame {
   private _condition: TabulaCondition
+  private _log: GameEvent[]
 
   constructor(condition: TabulaCondition) {
     this._condition = condition
+    this._log = []
   }
 
   public get condition() {
     return this._condition
+  }
+  public get log() {
+    return this._log
+  }
+  public get otherPlayer(): PlayerColor {
+    return this._condition.currentPlayer === 'BLUE' ? 'GREEN' : 'BLUE'
   }
 
   public newTurn(rolls: [DieRoll, DieRoll]) {
@@ -36,16 +44,16 @@ export class TabulaGame {
     const validTargetSqaure = targetCell && !this.isHeldByOtherPlayer(targetCell)
 
     if (jail[currentPlayer] > 0) {
-      console.log(`${currentPlayer} must get thier pieces from jail first`)
+      this.record(`${currentPlayer} must get thier pieces from jail first`, EventCategory.illegalMove)
       return
     } else if (start[currentPlayer] === 0) {
-      console.log(`${currentPlayer} has no pieces to bring on`)
+      this.record(`${currentPlayer} has no pieces to bring on`, EventCategory.illegalMove)
       return
     } else if (!validTargetSqaure) {
-      console.log(`target is held by ${this.otherPlayer}`)
+      this.record(`target is held by ${this.otherPlayer}`, EventCategory.illegalMove)
       return
     } else {
-      console.log(`${currentPlayer} is moving a stone from start to ${dieValue}`)
+      this.record(`${currentPlayer} is moving a stone from start to ${dieValue}`, EventCategory.moveMade)
       dice.splice(dieIndex, 1)
       this.moveFromStartToSquare(targetCell)
     }
@@ -58,13 +66,13 @@ export class TabulaGame {
     const validTargetSqaure = targetCell && !this.isHeldByOtherPlayer(targetCell)
 
     if (jail[currentPlayer] === 0) {
-      console.log(`${currentPlayer} has no pieces in jail`)
+      this.record(`${currentPlayer} has no pieces in jail`)
       return
     } else if (!validTargetSqaure) {
-      console.log(`target is held by ${this.otherPlayer}`)
+      this.record(`target is held by ${this.otherPlayer}`)
       return
     } else {
-      console.log(`${currentPlayer} is moving a stone from start to ${dieValue}`)
+      this.record(`${currentPlayer} is moving a stone from start to ${dieValue}`)
       dice.splice(dieIndex, 1)
       this.moveFromJailToSquare(targetCell)
     }
@@ -85,10 +93,8 @@ export class TabulaGame {
     const validStartSquare = startCell.color === currentPlayer && startCell.stones > 0
     const validTargetSqaure = targetCell && !this.isHeldByOtherPlayer(targetCell)
 
-    console.log({ wouldCastOff, targetCell, validStartSquare, validTargetSqaure })
-
     if (jail[currentPlayer] > 0) {
-      console.log(`${currentPlayer} must get thier pieces from jail first`)
+      this.record(`${currentPlayer} must get thier pieces from jail first`, EventCategory.illegalMove)
       return
     }
 
@@ -96,22 +102,22 @@ export class TabulaGame {
       if (canCastOff) {
         dice.splice(dieIndex, 1)
         this.castOffFromSquare(startCell)
-        console.log(`${currentPlayer} casting off from square ${cellIndex + 1}!`)
+        this.record(`${currentPlayer} casting off from square ${cellIndex + 1}!`, EventCategory.moveMade)
         return
       } else {
-        console.log(`${currentPlayer} cannot cast off!`)
+        this.record(`${currentPlayer} cannot cast off!`, EventCategory.illegalMove)
         return
       }
     }
 
     if (validStartSquare && validTargetSqaure) {
       dice.splice(dieIndex, 1)
-      console.log(`${currentPlayer} moving ${dieValue} placed from square ${cellIndex + 1}`)
+      this.record(`${currentPlayer} moving ${dieValue} placed from square ${cellIndex + 1}`, EventCategory.moveMade)
       this.moveFromSquareToSquare(startCell, targetCell)
     } else if (!validStartSquare) {
-      console.log(`${currentPlayer} has no stones on ${cellIndex + 1}`)
+      this.record(`${currentPlayer} has no stones on ${cellIndex + 1}`, EventCategory.illegalMove)
     } else if (this.isHeldByOtherPlayer(targetCell)) {
-      console.log(`${currentPlayer} can't move from ${cellIndex + 1} to ${cellIndex + dieValue + 1} because is it held by ${this.otherPlayer}`)
+      this.record(`${currentPlayer} can't move from ${cellIndex + 1} to ${cellIndex + dieValue + 1} because is it held by ${this.otherPlayer}`, EventCategory.illegalMove)
     }
   }
 
@@ -142,7 +148,7 @@ export class TabulaGame {
     if (targetCell.color === this.otherPlayer) {
       this._condition.jail[this.otherPlayer] += targetCell.stones
       targetCell.stones = 0
-      console.log(`${this._condition.currentPlayer} captured a ${this.otherPlayer} stone.`)
+      this.record(`${this._condition.currentPlayer} captured a ${this.otherPlayer} stone.`, EventCategory.capture)
     }
   }
 
@@ -153,8 +159,8 @@ export class TabulaGame {
     return cell.color === this.otherPlayer && cell.stones >= 2
   }
 
-  public get otherPlayer(): PlayerColor {
-    return this._condition.currentPlayer === 'BLUE' ? 'GREEN' : 'BLUE'
+  private record(message: string, category?: EventCategory): void {
+    this._log.push({ message, category })
   }
 
   public static initial() {

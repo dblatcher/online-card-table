@@ -8,8 +8,9 @@ import { Socket } from 'socket.io-client'
 import { Board } from './Board'
 import { TabulaGame } from './TabulaGame'
 import { DieButton } from './DieButton'
-import { DieRoll, PlayerColor, TabulaCondition } from './types'
+import { DieRoll, PlayerColor, TabulaCondition, GameEvent } from './types'
 import { d6 } from './diceService'
+import { EventList } from './EventList'
 
 interface Props {
   socket?: Socket<ServerToClientEvents, ClientToServerEvents>
@@ -17,6 +18,7 @@ interface Props {
 
 interface State {
   condition: TabulaCondition
+  events: GameEvent[]
   selectedDieIndex?: number
 }
 
@@ -25,10 +27,11 @@ export class BoardGameApp extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
 
-    const game = TabulaGame.testState()
-    this.tabula = game
+    const tabula = TabulaGame.testState()
+    this.tabula = tabula
     this.state = {
-      condition: game.condition,
+      condition: tabula.condition,
+      events: tabula.log,
       selectedDieIndex: 0,
     }
     this.handleSquareClick = this.handleSquareClick.bind(this)
@@ -40,6 +43,7 @@ export class BoardGameApp extends Component<Props, State> {
   updateConditionState() {
     this.setState({
       condition: this.tabula.condition,
+      events: this.tabula.log,
       selectedDieIndex: this.tabula.condition.dice.length > 0 ? 0 : undefined,
     })
   }
@@ -90,7 +94,7 @@ export class BoardGameApp extends Component<Props, State> {
   }
 
   public render(): ComponentChild {
-    const { condition } = this.state
+    const { condition, events } = this.state
     return html`
       <div>
         <p>${this.message}</p>
@@ -108,11 +112,17 @@ export class BoardGameApp extends Component<Props, State> {
           `)}
         </section>
 
-        <${Board}
-          game=${condition}
-          squareClickHandler=${this.handleSquareClick}
-          specialClickHandler=${this.handleSpecialClick}
-        />
+        <div style=${{display:'flex'}}>
+
+          <${Board}
+            game=${condition}
+            squareClickHandler=${this.handleSquareClick}
+            specialClickHandler=${this.handleSpecialClick}
+          />
+
+          <${EventList} events=${events} />
+
+        </div>
       </div>
     `
   }

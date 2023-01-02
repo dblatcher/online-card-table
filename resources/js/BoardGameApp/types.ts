@@ -15,3 +15,14 @@ export type TabulaCondition = {
   jail: Record<PlayerColor, number>,
   home: Record<PlayerColor, number>,
 }
+
+export enum EventCategory {
+  illegalMove,
+  moveMade,
+  capture,
+}
+
+export type GameEvent = {
+  message: string
+  category?: EventCategory
+}
