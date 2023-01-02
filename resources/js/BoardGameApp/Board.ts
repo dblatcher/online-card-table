@@ -13,13 +13,15 @@ interface Props {
   specialClickHandler: { (player: PlayerColor, zone: 'jail' | 'start'): void }
 }
 
-interface State { }
-
 const cellSize = 4
+const frameStyle = css`
+  display: inline-flex;
+  border: 5px outset pink;
+  margin-bottom: 2em;
+  background-color:pink;
+`
 
 const boardStyle = css`
-  background-color: pink;
-  border: 3px inset pink;
   position:relative;
   height: ${8 * cellSize}em;
   width: ${8 * cellSize}em;
@@ -68,13 +70,7 @@ const middleStyle = css`
   }
 `
 
-export class Board extends Component<Props, State> {
-  constructor(props: Props) {
-    super((props))
-    this.state = {
-    }
-  }
-
+export class Board extends Component<Props> {
   get rows() {
     const { cells } = this.props.game
 
@@ -92,12 +88,14 @@ export class Board extends Component<Props, State> {
     const { rows } = this
     const { squareClickHandler, game, specialClickHandler } = this.props
     return html`
-      <div class=${boardStyle}>
+    <article class=${frameStyle}>
+      <main class=${boardStyle}>
       ${rows.map((row, rowIndex) => html`
         <section class=${[rowStyle, rowStyleFor[rowIndex]].join(' ')}>
           ${row.map((cell, index) => html`
             <${Square}
               cell=${cell}
+              cellSize=${cellSize}
               cellIndex=${(rowIndex * 6) + index}
               clickHandler=${squareClickHandler}
             />
@@ -132,7 +130,7 @@ export class Board extends Component<Props, State> {
         </div>
 
       </section>
-      </div>
+      </main></article>
     `
   }
 }
