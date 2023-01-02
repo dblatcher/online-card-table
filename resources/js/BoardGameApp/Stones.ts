@@ -3,7 +3,7 @@
 import { css } from '@emotion/css'
 import { FunctionalComponent } from 'preact'
 import { html } from 'htm/preact'
-import { PlayerColor } from './types'
+import { PlayerColor } from '../../../definitions/tabula/types'
 
 interface Props {
   color?: PlayerColor

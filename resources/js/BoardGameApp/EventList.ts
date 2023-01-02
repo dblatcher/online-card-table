@@ -3,7 +3,7 @@
 import { css } from '@emotion/css'
 import { Component, ComponentChild, createRef, RefObject } from 'preact'
 import { html } from 'htm/preact'
-import { GameEvent, EventCategory } from './types'
+import { GameEvent, EventCategory } from '../../../definitions/tabula/types'
 
 interface Props {
   events: GameEvent[]

@@ -3,7 +3,7 @@
 import { css } from '@emotion/css'
 import { Component, ComponentChild } from 'preact'
 import { html } from 'htm/preact'
-import type { Cell, PlayerColor, TabulaCondition } from './types'
+import type { Cell, PlayerColor, TabulaCondition } from '../../../definitions/tabula/types'
 import { Square } from './Square'
 import { Stones } from './Stones'
 

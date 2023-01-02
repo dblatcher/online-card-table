@@ -3,7 +3,7 @@
 import { css } from '@emotion/css'
 import { FunctionalComponent } from 'preact'
 import { html } from 'htm/preact'
-import { DieRoll } from './types'
+import { DieRoll } from '../../../definitions/tabula/types'
 
 interface Props {
   value: DieRoll

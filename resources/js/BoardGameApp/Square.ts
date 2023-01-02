@@ -3,7 +3,7 @@
 import { css } from '@emotion/css'
 import { FunctionalComponent } from 'preact'
 import { html } from 'htm/preact'
-import { Cell } from './types'
+import { Cell } from '../../../definitions/tabula/types'
 import { Stones } from './Stones'
 
 interface Props {
