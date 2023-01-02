@@ -8,7 +8,7 @@ import { Socket } from 'socket.io-client'
 import { Board } from './Board'
 import { TabulaGame } from './TabulaGame'
 import { DieButton } from './DieButton'
-import { DieRoll, PlayerColor } from './types'
+import { DieRoll, PlayerColor, TabulaCondition } from './types'
 import { d6 } from './diceService'
 
 interface Props {
@@ -16,18 +16,19 @@ interface Props {
 }
 
 interface State {
-  game: TabulaGame
+  condition: TabulaCondition
   selectedDieIndex?: number
 }
 
 export class BoardGameApp extends Component<Props, State> {
+  tabula: TabulaGame
   constructor(props: Props) {
-    super((props))
+    super(props)
 
     const game = TabulaGame.testState()
-
+    this.tabula = game
     this.state = {
-      game,
+      condition: game.condition,
       selectedDieIndex: 0,
     }
     this.handleSquareClick = this.handleSquareClick.bind(this)
@@ -36,43 +37,50 @@ export class BoardGameApp extends Component<Props, State> {
     this.rollDice = this.rollDice.bind(this)
   }
 
+  updateConditionState() {
+    this.setState({
+      condition: this.tabula.condition,
+      selectedDieIndex: this.tabula.condition.dice.length > 0 ? 0 : undefined,
+    })
+  }
+
   handleSquareClick(cellIndex: number) {
     const { selectedDieIndex } = this.state
     if (typeof selectedDieIndex === 'number') {
-      this.state.game.attemptMoveFromSquare(selectedDieIndex, cellIndex)
-      this.forceUpdate()
+      this.tabula.attemptMoveFromSquare(selectedDieIndex, cellIndex)
+      this.updateConditionState()
     }
   }
 
   handleSpecialClick(player: PlayerColor, zone: 'jail' | 'start') {
     const { selectedDieIndex } = this.state
-    if (player !== this.state.game.condition.currentPlayer || typeof selectedDieIndex === 'undefined') {
+    if (player !== this.tabula.condition.currentPlayer || typeof selectedDieIndex === 'undefined') {
       return
     }
     switch (zone) {
       case 'jail':
-        this.state.game.attemptMoveFromJail(selectedDieIndex)
+        this.tabula.attemptMoveFromJail(selectedDieIndex)
         break
       case 'start':
-        this.state.game.attemptMoveFromStart(selectedDieIndex)
+        this.tabula.attemptMoveFromStart(selectedDieIndex)
         break
     }
-    this.forceUpdate()
+    this.updateConditionState()
   }
 
   rollDice() {
     const roll: [DieRoll, DieRoll] = [d6(), d6()]
-    this.state.game.newTurn(roll)
-    this.forceUpdate()
+    this.tabula.newTurn(roll)
+    this.updateConditionState()
   }
 
   handleDieClick(dieIndex: number) {
     this.setState({ selectedDieIndex: dieIndex })
   }
 
-  get message():string {
-    const { currentPlayer,dice } = this.state.game.condition
-    const { otherPlayer } = this.state.game
+  get message(): string {
+    const { currentPlayer, dice } = this.state.condition
+    const { otherPlayer } = this.tabula
 
     if (dice.length === 0) {
       return `${otherPlayer} to roll dice`
@@ -82,7 +90,7 @@ export class BoardGameApp extends Component<Props, State> {
   }
 
   public render(): ComponentChild {
-    const { condition } = this.state.game
+    const { condition } = this.state
     return html`
       <div>
         <p>${this.message}</p>
