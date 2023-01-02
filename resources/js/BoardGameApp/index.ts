@@ -6,76 +6,80 @@ import { html } from 'htm/preact'
 import { ServerToClientEvents, ClientToServerEvents } from 'definitions/socketEvents'
 import { Socket } from 'socket.io-client'
 import { Board } from './Board'
-import { TabulaGame } from '../../../definitions/tabula/TabulaGame'
 import { DieButton } from './DieButton'
 import { DieRoll, PlayerColor, TabulaCondition, GameEvent } from '../../../definitions/tabula/types'
 import { d6 } from './diceService'
 import { EventList } from './EventList'
+import { ConditionAndLog, Payload } from '../../../definitions/tabula/TabulaService'
+import { localTabulaService } from '../localTabulaService'
 
 interface Props {
   socket?: Socket<ServerToClientEvents, ClientToServerEvents>
 }
 
 interface State {
-  condition: TabulaCondition
+  condition?: TabulaCondition
   events: GameEvent[]
   selectedDieIndex?: number
 }
 
 export class BoardGameApp extends Component<Props, State> {
-  tabula: TabulaGame
   constructor(props: Props) {
     super(props)
 
-    const tabula = TabulaGame.testState()
-    this.tabula = tabula
     this.state = {
-      condition: tabula.condition,
-      events: tabula.log,
+      condition: undefined,
+      events: [],
       selectedDieIndex: 0,
     }
     this.handleSquareClick = this.handleSquareClick.bind(this)
     this.handleDieClick = this.handleDieClick.bind(this)
     this.handleSpecialClick = this.handleSpecialClick.bind(this)
+    this.handleServiceResponse=this.handleServiceResponse.bind(this)
     this.rollDice = this.rollDice.bind(this)
   }
 
-  updateConditionState() {
-    this.setState({
-      condition: this.tabula.condition,
-      events: this.tabula.log,
-      selectedDieIndex: this.tabula.condition.dice.length > 0 ? 0 : undefined,
-    })
+  async componentDidMount() {
+    await localTabulaService.requestConditionAndLog()
+      .then(this.handleServiceResponse)
   }
 
-  handleSquareClick(cellIndex: number) {
-    const { selectedDieIndex } = this.state
-    if (typeof selectedDieIndex === 'number') {
-      this.tabula.attemptMoveFromSquare(selectedDieIndex, cellIndex)
-      this.updateConditionState()
+  handleServiceResponse(response: Payload<ConditionAndLog>) {
+    if ('data' in response) {
+      const { condition, log } = response.data
+      return this.setState({
+        condition: condition,
+        events: log,
+        selectedDieIndex: condition.dice.length > 0 ? 0 : undefined,
+      })
+    } else {
+      console.error(response)
     }
   }
 
-  handleSpecialClick(player: PlayerColor, zone: 'jail' | 'start') {
+  async handleSquareClick(cellIndex: number) {
     const { selectedDieIndex } = this.state
-    if (player !== this.tabula.condition.currentPlayer || typeof selectedDieIndex === 'undefined') {
+    if (typeof selectedDieIndex !== 'number') {
       return
     }
-    switch (zone) {
-      case 'jail':
-        this.tabula.attemptMoveFromJail(selectedDieIndex)
-        break
-      case 'start':
-        this.tabula.attemptMoveFromStart(selectedDieIndex)
-        break
-    }
-    this.updateConditionState()
+    await localTabulaService.requestMove({ dieIndex: selectedDieIndex, squareOrZone: cellIndex })
+      .then(this.handleServiceResponse)
   }
 
-  rollDice() {
+  async handleSpecialClick(player: PlayerColor, zone: 'jail' | 'start') {
+    const { selectedDieIndex, condition } = this.state
+    if (player !== condition?.currentPlayer || typeof selectedDieIndex === 'undefined') {
+      return
+    }
+
+    await localTabulaService.requestMove({ dieIndex: selectedDieIndex, squareOrZone: zone })
+      .then(this.handleServiceResponse)
+  }
+
+  async rollDice() {
     const roll: [DieRoll, DieRoll] = [d6(), d6()]
-    this.tabula.newTurn(roll)
-    this.updateConditionState()
+    await localTabulaService.requestNewTurn({ dice: roll })
+      .then(this.handleServiceResponse)
   }
 
   handleDieClick(dieIndex: number) {
@@ -83,11 +87,14 @@ export class BoardGameApp extends Component<Props, State> {
   }
 
   get message(): string {
-    const { currentPlayer, dice } = this.state.condition
-    const { otherPlayer } = this.tabula
+    const { condition } = this.state
+    if (!condition) {
+      return 'LOADING...'
+    }
+    const { currentPlayer, dice } = condition
 
     if (dice.length === 0) {
-      return `${otherPlayer} to roll dice`
+      return `${currentPlayer} turn over. Next player to roll dice`
     }
 
     return `${currentPlayer} to move`
@@ -95,6 +102,16 @@ export class BoardGameApp extends Component<Props, State> {
 
   public render(): ComponentChild {
     const { condition, events } = this.state
+
+    // TO DO - waiting screen?
+    if (!condition) {
+      return html`
+      <div>
+        <p>${this.message}</p>
+      </div>
+      `
+    }
+
     return html`
       <div>
         <p>${this.message}</p>
@@ -112,7 +129,7 @@ export class BoardGameApp extends Component<Props, State> {
           `)}
         </section>
 
-        <div style=${{display:'flex'}}>
+        <div style=${{ display: 'flex' }}>
 
           <${Board}
             game=${condition}
