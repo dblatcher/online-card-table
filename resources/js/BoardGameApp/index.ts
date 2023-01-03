@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 /* eslint-disable @typescript-eslint/space-before-function-paren */
-
 import { Component, ComponentChild } from 'preact'
 import { html } from 'htm/preact'
 import { ServerToClientEvents, ClientToServerEvents } from 'definitions/socketEvents'
@@ -10,7 +9,7 @@ import { DieButton } from './DieButton'
 import { DieRoll, PlayerColor, TabulaCondition, GameEvent } from '../../../definitions/tabula/types'
 import { d6 } from './diceService'
 import { EventList } from './EventList'
-import { ConditionAndLog, Payload } from '../../../definitions/tabula/TabulaService'
+import { ConditionAndLogPayload } from '../../../definitions/tabula/TabulaService'
 import { localTabulaService } from '../localTabulaService'
 
 interface Props {
@@ -35,7 +34,7 @@ export class BoardGameApp extends Component<Props, State> {
     this.handleSquareClick = this.handleSquareClick.bind(this)
     this.handleDieClick = this.handleDieClick.bind(this)
     this.handleSpecialClick = this.handleSpecialClick.bind(this)
-    this.handleServiceResponse=this.handleServiceResponse.bind(this)
+    this.handleServiceResponse = this.handleServiceResponse.bind(this)
     this.rollDice = this.rollDice.bind(this)
   }
 
@@ -44,17 +43,13 @@ export class BoardGameApp extends Component<Props, State> {
       .then(this.handleServiceResponse)
   }
 
-  handleServiceResponse(response: Payload<ConditionAndLog>) {
-    if ('data' in response) {
-      const { condition, log } = response.data
-      return this.setState({
-        condition: condition,
-        events: log,
-        selectedDieIndex: condition.dice.length > 0 ? 0 : undefined,
-      })
-    } else {
-      console.error(response)
-    }
+  handleServiceResponse(response: ConditionAndLogPayload) {
+    const { condition, log } = response
+    return this.setState({
+      condition: condition,
+      events: log,
+      selectedDieIndex: condition.dice.length > 0 ? 0 : undefined,
+    })
   }
 
   async handleSquareClick(cellIndex: number) {

@@ -1,24 +1,22 @@
 /* eslint-disable @typescript-eslint/space-before-function-paren */
+import type { PayloadBase } from 'definitions/types'
 import { TabulaCondition, GameEvent, DieRoll } from './types'
 
-export type ErrorResponse = { error: Error }
-export type Payload<T extends {}> = { data: T } | ErrorResponse
-
-export type MoveRequest = {
+export type MoveRequestPayload = PayloadBase & {
   dieIndex: number
   squareOrZone: number | 'jail' | 'start'
 }
-export type NewTurnRequest = {
+export type NewTurnRequestPayload = PayloadBase & {
   dice: [DieRoll, DieRoll]
 }
-export type ConditionAndLog = {
+export type ConditionAndLogPayload = PayloadBase & {
   condition: TabulaCondition
   log: GameEvent[]
 }
 
 export abstract class TabulaService {
-  public abstract requestConditionAndLog(): Promise<Payload<ConditionAndLog>>
-  public abstract requestMove(request: MoveRequest): Promise<Payload<ConditionAndLog>>
-  public abstract requestNewTurn(request: NewTurnRequest): Promise<Payload<ConditionAndLog>>
+  public abstract requestConditionAndLog(): Promise<ConditionAndLogPayload>
+  public abstract requestMove(request: MoveRequestPayload): Promise<ConditionAndLogPayload>
+  public abstract requestNewTurn(request: NewTurnRequestPayload): Promise<ConditionAndLogPayload>
 }
 

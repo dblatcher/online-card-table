@@ -1,16 +1,15 @@
-
 import { TabulaGame } from '../../definitions/tabula/TabulaGame'
 import {
-  TabulaService, Payload, ConditionAndLog, MoveRequest, NewTurnRequest,
+  TabulaService, ConditionAndLogPayload, MoveRequestPayload, NewTurnRequestPayload,
 } from '../../definitions/tabula/TabulaService'
 const tabula = TabulaGame.testState()
 
 class LocalTabulaService extends TabulaService {
-  public async requestConditionAndLog(): Promise<Payload<ConditionAndLog>> {
+  public async requestConditionAndLog(): Promise<ConditionAndLogPayload> {
     return this.responsePayload
   }
 
-  public async requestMove(request: MoveRequest): Promise<Payload<ConditionAndLog>> {
+  public async requestMove(request: MoveRequestPayload): Promise<ConditionAndLogPayload> {
     const { dieIndex, squareOrZone } = request
     if (typeof squareOrZone === 'number') {
       tabula.attemptMoveFromSquare(dieIndex, squareOrZone)
@@ -23,18 +22,16 @@ class LocalTabulaService extends TabulaService {
     return this.responsePayload
   }
 
-  public async requestNewTurn(request: NewTurnRequest): Promise<Payload<ConditionAndLog>> {
+  public async requestNewTurn(request: NewTurnRequestPayload): Promise<ConditionAndLogPayload> {
     const { dice } = request
     tabula.newTurn(dice)
     return this.responsePayload
   }
 
-  private get responsePayload(): Payload<ConditionAndLog> {
+  private get responsePayload(): ConditionAndLogPayload {
     return {
-      data: {
-        condition: tabula.condition,
-        log: tabula.log,
-      },
+      condition: tabula.condition,
+      log: tabula.log,
     }
   }
 }
