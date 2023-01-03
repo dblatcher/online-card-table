@@ -1,5 +1,8 @@
 import { SerialisedPile, TableAction } from './cardAndPile'
-import { ClientSafePlayer } from './RoomState'
+import {
+  MoveRequestPayload, NewTurnRequestPayload, ConditionAndLogPayload, ConditionAndLogRequestPayload,
+} from './tabula/TabulaService'
+import { ClientSafePlayer } from './types'
 
 interface TableStatusPayload {
   data: SerialisedPile[]
@@ -35,7 +38,9 @@ interface ServerToClientEvents {
   withAck: (d: string, callback: (e: number) => void) => void;
   tableStatus: (payload: TableStatusPayload) => void
   assignId: (payload: AssignIdPayload) => void
-  playerList: (payload:PlayerListPayload) => void
+  playerList: (payload: PlayerListPayload) => void
+
+  conditionAndLog: (payload: ConditionAndLogPayload) => void
 }
 
 interface ClientToServerEvents {
@@ -43,6 +48,10 @@ interface ClientToServerEvents {
   basicEmit: (payload: BasicEmitPayload) => void
   tableStatus: (payload: TableStatusPayload) => void
   logIn: (payload: LogInPayload) => void
+
+  conditionAndLogRequest: (payload: ConditionAndLogRequestPayload, callback: (e: number) => void) => void
+  moveRequest: (payload: MoveRequestPayload) => void
+  newTurnRequest: (payload: NewTurnRequestPayload) => void
 }
 
 interface InterServerEvents {

@@ -5,11 +5,11 @@ import {
 const tabula = TabulaGame.testState()
 
 class LocalTabulaService extends TabulaService {
-  public async requestConditionAndLog(): Promise<ConditionAndLogPayload> {
+  public async requestConditionAndLog () {
     return this.responsePayload
   }
 
-  public async requestMove(request: MoveRequestPayload): Promise<ConditionAndLogPayload> {
+  public async requestMove (request: MoveRequestPayload) {
     const { dieIndex, squareOrZone } = request
     if (typeof squareOrZone === 'number') {
       tabula.attemptMoveFromSquare(dieIndex, squareOrZone)
@@ -22,13 +22,13 @@ class LocalTabulaService extends TabulaService {
     return this.responsePayload
   }
 
-  public async requestNewTurn(request: NewTurnRequestPayload): Promise<ConditionAndLogPayload> {
+  public async requestNewTurn (request: NewTurnRequestPayload) {
     const { dice } = request
     tabula.newTurn(dice)
     return this.responsePayload
   }
 
-  private get responsePayload(): ConditionAndLogPayload {
+  private get responsePayload (): ConditionAndLogPayload {
     return {
       condition: tabula.condition,
       log: tabula.log,
