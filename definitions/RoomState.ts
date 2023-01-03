@@ -1,12 +1,5 @@
 import { SerialisedPile } from './cardAndPile'
-
-interface Player {
-  id: string
-  socketId: string
-  name?: string
-}
-
-type ClientSafePlayer =(Partial<Player> & {id:string, socketId:undefined})
+import { Player, ClientSafePlayer } from './types'
 
 interface RoomState {
   name: string
