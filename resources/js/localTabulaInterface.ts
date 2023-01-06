@@ -1,10 +1,10 @@
 import { TabulaGame } from '../../definitions/tabula/TabulaGame'
 import {
-  TabulaService, ConditionAndLogPayload, MoveRequestPayload, NewTurnRequestPayload,
+  TabulaInterface, ConditionAndLogPayload, MoveRequestPayload, NewTurnRequestPayload,
 } from '../../definitions/tabula/TabulaService'
 const tabula = TabulaGame.testState()
 
-class LocalTabulaService extends TabulaService {
+class LocalTabulaInterface extends TabulaInterface {
   public async requestConditionAndLog () {
     return this.responsePayload
   }
@@ -36,5 +36,5 @@ class LocalTabulaService extends TabulaService {
   }
 }
 
-export const localTabulaService = new LocalTabulaService()
+export const localTabulaService = new LocalTabulaInterface()
 

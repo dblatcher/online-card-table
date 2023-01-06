@@ -9,8 +9,9 @@ import { DieButton } from './DieButton'
 import { DieRoll, PlayerColor, TabulaCondition, GameEvent } from '../../../definitions/tabula/types'
 import { d6 } from './diceService'
 import { EventList } from './EventList'
-import { ConditionAndLogPayload } from '../../../definitions/tabula/TabulaService'
-import { localTabulaService } from '../localTabulaService'
+import { ConditionAndLogPayload, ErrorPayload, TabulaInterface } from '../../../definitions/tabula/TabulaService'
+import { localTabulaService } from '../localTabulaInterface'
+import { RemoteTabulaInterface } from '../RemoteTabulaInterface'
 
 interface Props {
   socket?: Socket<ServerToClientEvents, ClientToServerEvents>
@@ -23,8 +24,13 @@ interface State {
 }
 
 export class BoardGameApp extends Component<Props, State> {
+  tabulaService: TabulaInterface
+
   constructor(props: Props) {
     super(props)
+
+    this.tabulaService = props.socket ? new RemoteTabulaInterface(props.socket) : localTabulaService
+    console.log(props, this.tabulaService)
 
     this.state = {
       condition: undefined,
@@ -39,11 +45,20 @@ export class BoardGameApp extends Component<Props, State> {
   }
 
   async componentDidMount() {
-    await localTabulaService.requestConditionAndLog()
+    console.log('REQUESTING LOGIN')
+    if (this.props.socket) {
+      this.props.socket.emit('logIn', { 'name': 'bob', 'roomName': 'my-first-tabula-room', 'roomType': 'tabula' })
+    }
+
+    await this.tabulaService.requestConditionAndLog({ roomName: 'my-first-tabula-room', from: '123' })
       .then(this.handleServiceResponse)
   }
 
-  handleServiceResponse(response: ConditionAndLogPayload) {
+  handleServiceResponse(response: ConditionAndLogPayload | ErrorPayload) {
+    if ('errorMessage' in response) {
+      console.error(response)
+      return
+    }
     const { condition, log } = response
     return this.setState({
       condition: condition,
@@ -57,7 +72,7 @@ export class BoardGameApp extends Component<Props, State> {
     if (typeof selectedDieIndex !== 'number') {
       return
     }
-    await localTabulaService.requestMove({ dieIndex: selectedDieIndex, squareOrZone: cellIndex })
+    await this.tabulaService.requestMove({ dieIndex: selectedDieIndex, squareOrZone: cellIndex })
       .then(this.handleServiceResponse)
   }
 
@@ -67,13 +82,13 @@ export class BoardGameApp extends Component<Props, State> {
       return
     }
 
-    await localTabulaService.requestMove({ dieIndex: selectedDieIndex, squareOrZone: zone })
+    await this.tabulaService.requestMove({ dieIndex: selectedDieIndex, squareOrZone: zone })
       .then(this.handleServiceResponse)
   }
 
   async rollDice() {
     const roll: [DieRoll, DieRoll] = [d6(), d6()]
-    await localTabulaService.requestNewTurn({ dice: roll })
+    await this.tabulaService.requestNewTurn({ dice: roll })
       .then(this.handleServiceResponse)
   }
 

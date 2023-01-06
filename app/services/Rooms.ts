@@ -1,5 +1,5 @@
-import { ClientSafePlayer, Player, RoomState } from 'definitions/RoomState'
-import { TableStatusPayload, LogInPayload } from 'definitions/socketEvents'
+import { ClientSafePlayer, Player, CardRoomState } from 'definitions/RoomState'
+import { LogInPayload } from 'definitions/socketEvents'
 
 class Rooms {
   private booted = false
@@ -16,31 +16,9 @@ class Rooms {
     this.booted = true
   }
 
-  public handleTableStatusEvent (tableStatusPayload: TableStatusPayload): {
-    room?: RoomState
-    player?: Player
-    errorString?: string
-  } {
-    const { roomName, data, from: playerId } = tableStatusPayload
-    const room = this.getRoomByName(roomName)
-
-    if (!room) {
-      return { errorString: `No room called ${roomName}` }
-    }
-
-    const player = room.players.find(player => player.id === playerId)
-
-    if (!player) {
-      return { errorString: `room "${roomName}" does not have player with id "${playerId}"` }
-    }
-
-    room.table = data
-    return { room, player }
-  }
-
   public handleLogInEvent (logInPayload: LogInPayload, socketId: string): {
     newPlayer?: Player,
-    room?: RoomState,
+    room?: CardRoomState,
     errorString?: string
   } {
     const { roomName, name } = logInPayload
@@ -58,7 +36,7 @@ class Rooms {
 
   public handleDisconnect (socketId: string): {
     leavingPlayer?: Player,
-    room?: RoomState,
+    room?: CardRoomState,
     errorString?: string
   } {
     const room = this.state.find(room => room.players.some(player => player.socketId === socketId))
@@ -94,7 +72,7 @@ class Rooms {
     return possibleId
   }
 
-  public getRoomByName (roomName?: string): RoomState | undefined {
+  public getRoomByName (roomName?: string): CardRoomState | undefined {
     if (!roomName) {
       return undefined
     }
@@ -109,13 +87,13 @@ class Rooms {
     return players
   }
 
-  private static createInitialState (): RoomState[] {
-    const room1: RoomState = {
+  private static createInitialState (): CardRoomState[] {
+    const room1: CardRoomState = {
       name: 'my-first-room',
       table: [],
       players: [],
     }
-    const room2: RoomState = {
+    const room2: CardRoomState = {
       name: 'my-second-room',
       table: [],
       players: [],

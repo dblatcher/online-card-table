@@ -3,6 +3,8 @@ import { makeDisconnectHandler } from 'App/socket-handlers/disconnectHandler'
 import { makeBasicEmitHandler } from 'App/socket-handlers/handleBasicEmit'
 import { makeLoginHandler } from 'App/socket-handlers/loginHandler'
 import { makeTableStatusHandler } from 'App/socket-handlers/tableStatusHandler'
+import { makeConditionAndLogRequestHandler } from 'App/socket-handlers/tabula/conditionAndLogRequest'
+import { makeMoveRequestHandler } from 'App/socket-handlers/tabula/moveRequest'
 Ws.boot()
 
 /**
@@ -12,6 +14,9 @@ Ws.boot()
 Ws.io.on('connection', (socket) => {
   socket.on('basicEmit', makeBasicEmitHandler(socket))
   socket.on('logIn', makeLoginHandler(socket, Ws.io))
-  socket.on('tableStatus',makeTableStatusHandler(socket))
+  socket.on('tableStatus', makeTableStatusHandler(socket))
   socket.on('disconnect', makeDisconnectHandler(socket, Ws.io))
+
+  socket.on('conditionAndLogRequest', makeConditionAndLogRequestHandler(socket))
+  socket.on('moveRequest', makeMoveRequestHandler(socket))
 })

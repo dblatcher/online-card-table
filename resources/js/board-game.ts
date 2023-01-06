@@ -5,7 +5,7 @@ import { BoardGameApp } from './BoardGameApp'
 
 function initBoardGame () {
   const container = document.querySelector('#app-container')
-  const socket = openClientSocket()
+  const socket = openClientSocket(true)
   if (!container) {
     return
   }

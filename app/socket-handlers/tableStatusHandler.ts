@@ -1,11 +1,12 @@
-import Rooms from 'App/services/Rooms'
+import CardTables from 'App/services/CardTables'
 import { TableStatusPayload } from 'Definitions/socketEvents'
 import { AppSocket } from 'Definitions/socketTypes'
+
 
 export function makeTableStatusHandler (socket: AppSocket) {
   return (tableStatusPayload:TableStatusPayload) => {
     console.log(`tableStatus for "${tableStatusPayload.roomName}" received at ${Date.now()} from "${tableStatusPayload.from}" : ${tableStatusPayload.data.length} piles`)
-    const { room, errorString, player } = Rooms.handleTableStatusEvent(tableStatusPayload)
+    const { room, errorString, player } = CardTables.handleTableStatusEvent(tableStatusPayload)
 
     if (errorString) {
       console.warn(errorString)

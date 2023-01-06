@@ -1,6 +1,7 @@
 export type PayloadBase = {
   from?: string
   roomName?: string
+  isError?: boolean
 }
 
 export interface Player {

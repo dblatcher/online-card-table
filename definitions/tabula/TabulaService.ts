@@ -14,11 +14,22 @@ export type ConditionAndLogPayload = PayloadBase & {
   log: GameEvent[]
 }
 
+export type ErrorPayload = PayloadBase & {
+  errorMessage: string
+  isError: true
+}
+
 export type ConditionAndLogRequestPayload = PayloadBase
 
-export abstract class TabulaService {
-  public abstract requestConditionAndLog(request: ConditionAndLogRequestPayload): Promise<ConditionAndLogPayload>
-  public abstract requestMove(request: MoveRequestPayload): Promise<ConditionAndLogPayload>
-  public abstract requestNewTurn(request: NewTurnRequestPayload): Promise<ConditionAndLogPayload>
+export abstract class TabulaInterface {
+  public abstract requestConditionAndLog(
+    request: ConditionAndLogRequestPayload
+  ): Promise<ConditionAndLogPayload | ErrorPayload>
+  public abstract requestMove(
+    request: MoveRequestPayload
+  ): Promise<ConditionAndLogPayload | ErrorPayload>
+  public abstract requestNewTurn(
+    request: NewTurnRequestPayload
+  ): Promise<ConditionAndLogPayload | ErrorPayload>
 }
 

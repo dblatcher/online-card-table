@@ -1,12 +1,20 @@
 import { SerialisedPile } from './cardAndPile'
+import { TabulaGame } from './tabula/TabulaGame'
 import { Player, ClientSafePlayer } from './types'
 
-interface RoomState {
+interface BaseRoomState {
   name: string
-  table: SerialisedPile[]
   players: Player[]
 }
 
+export type CardRoomState = BaseRoomState & {
+  table: SerialisedPile[]
+}
+
+export type TabulaRoomState = BaseRoomState & {
+  game: TabulaGame
+}
+
 export type {
-  Player, RoomState, ClientSafePlayer,
+  Player, ClientSafePlayer,
 }

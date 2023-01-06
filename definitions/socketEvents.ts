@@ -1,6 +1,6 @@
 import { SerialisedPile, TableAction } from './cardAndPile'
 import {
-  MoveRequestPayload, NewTurnRequestPayload, ConditionAndLogPayload, ConditionAndLogRequestPayload,
+  MoveRequestPayload, NewTurnRequestPayload, ConditionAndLogPayload, ConditionAndLogRequestPayload, ErrorPayload,
 } from './tabula/TabulaService'
 import { ClientSafePlayer } from './types'
 
@@ -20,6 +20,7 @@ interface BasicEmitPayload {
 interface LogInPayload {
   name?: string
   roomName?: string
+  roomType?: string
 }
 
 interface AssignIdPayload {
@@ -49,9 +50,18 @@ interface ClientToServerEvents {
   tableStatus: (payload: TableStatusPayload) => void
   logIn: (payload: LogInPayload) => void
 
-  conditionAndLogRequest: (payload: ConditionAndLogRequestPayload, callback: (e: number) => void) => void
-  moveRequest: (payload: MoveRequestPayload) => void
-  newTurnRequest: (payload: NewTurnRequestPayload) => void
+  conditionAndLogRequest: (
+    payload: ConditionAndLogRequestPayload,
+    callback: { (response: ConditionAndLogPayload | ErrorPayload): void }
+  ) => void
+  moveRequest: (
+    payload: MoveRequestPayload,
+    callback: { (response: ConditionAndLogPayload | ErrorPayload): void }
+  ) => void
+  newTurnRequest: (
+    payload: NewTurnRequestPayload,
+    callback: { (response: ConditionAndLogPayload | ErrorPayload): void }
+  ) => void
 }
 
 interface InterServerEvents {
