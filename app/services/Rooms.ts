@@ -1,11 +1,12 @@
-import { ClientSafePlayer, Player, CardRoomState } from 'definitions/RoomState'
+import { CardRoomState } from 'definitions/RoomState'
+import { ClientSafePlayer, Player } from 'definitions/types'
 import { LogInPayload } from 'definitions/socketEvents'
 
 class Rooms {
   private booted = false
   private state = Rooms.createInitialState()
 
-  public boot () {
+  public boot() {
     /**
      * Ignore multiple calls to the boot method
      */
@@ -16,7 +17,7 @@ class Rooms {
     this.booted = true
   }
 
-  public handleLogInEvent (logInPayload: LogInPayload, socketId: string): {
+  public handleLogInEvent(logInPayload: LogInPayload, socketId: string): {
     newPlayer?: Player,
     room?: CardRoomState,
     errorString?: string
@@ -34,7 +35,7 @@ class Rooms {
     return { newPlayer, room }
   }
 
-  public handleDisconnect (socketId: string): {
+  public handleDisconnect(socketId: string): {
     leavingPlayer?: Player,
     room?: CardRoomState,
     errorString?: string
@@ -48,11 +49,11 @@ class Rooms {
       return { errorString: `Cannot find a player with socketId "${socketId}"` }
     }
 
-    room.players.splice(room.players.indexOf(leavingPlayer),1)
+    room.players.splice(room.players.indexOf(leavingPlayer), 1)
     return { leavingPlayer, room }
   }
 
-  public getRoomList (): { name: string, playerCount: number }[] {
+  public getRoomList(): { name: string, playerCount: number }[] {
     return this.state.map(room => {
       return {
         name: room.name, playerCount: room.players.length,
@@ -60,9 +61,9 @@ class Rooms {
     })
   }
 
-  private getNextPlayerId (): string {
+  private getNextPlayerId(): string {
     const players = this.getAllPlayers()
-    const generate = () =>'ID-p' + Math.random().toString()
+    const generate = () => 'ID-p' + Math.random().toString()
     let possibleId = generate()
 
     while (players.find(player => player.id === possibleId)) {
@@ -72,14 +73,14 @@ class Rooms {
     return possibleId
   }
 
-  public getRoomByName (roomName?: string): CardRoomState | undefined {
+  public getRoomByName(roomName?: string): CardRoomState | undefined {
     if (!roomName) {
       return undefined
     }
     return this.state.find(room => room.name === roomName)
   }
 
-  private getAllPlayers (): Player[] {
+  private getAllPlayers(): Player[] {
     const players: Player[] = []
     this.state.forEach(room => {
       players.push(...room.players)
@@ -87,7 +88,7 @@ class Rooms {
     return players
   }
 
-  private static createInitialState (): CardRoomState[] {
+  private static createInitialState(): CardRoomState[] {
     const room1: CardRoomState = {
       name: 'my-first-room',
       table: [],
@@ -102,8 +103,8 @@ class Rooms {
     return [room1, room2]
   }
 
-  public makeSafe (player:Player): ClientSafePlayer {
-    return { ...player, socketId:undefined}
+  public makeSafe(player: Player): ClientSafePlayer {
+    return { ...player, socketId: undefined }
   }
 }
 

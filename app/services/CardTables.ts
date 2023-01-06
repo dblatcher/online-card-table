@@ -1,11 +1,12 @@
-import { Player, CardRoomState } from 'definitions/RoomState'
+import { Player } from 'definitions/types'
+import { CardRoomState } from 'definitions/RoomState'
 import { TableStatusPayload } from 'definitions/socketEvents'
 import Rooms from './Rooms'
 
 class CardTables {
   private booted = false
 
-  public boot () {
+  public boot() {
     /**
      * Ignore multiple calls to the boot method
      */
@@ -16,7 +17,7 @@ class CardTables {
     this.booted = true
   }
 
-  public handleTableStatusEvent (tableStatusPayload: TableStatusPayload): {
+  public handleTableStatusEvent(tableStatusPayload: TableStatusPayload): {
     room?: CardRoomState
     player?: Player
     errorString?: string

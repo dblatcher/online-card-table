@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/indent */
-import { ClientSafePlayer } from 'definitions/RoomState'
+import { ClientSafePlayer } from 'definitions/types'
 import { html } from 'htm/preact'
 import { css } from '@emotion/css'
 

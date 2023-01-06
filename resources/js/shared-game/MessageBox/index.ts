@@ -9,7 +9,7 @@ import {
 import { Socket } from 'socket.io-client'
 import MessagePost from './MessagePost'
 import InputControl from './InputControl'
-import { ClientSafePlayer } from 'definitions/RoomState'
+import { ClientSafePlayer } from 'definitions/types'
 import PlayerListBox from './PlayerListBox'
 
 export function sendLoginRequest(socket: Socket, name?: string): void {
