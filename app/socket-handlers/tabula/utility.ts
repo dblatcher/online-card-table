@@ -25,14 +25,11 @@ export const buildConditionAndLogPayload = (
   roomName: room.name,
 })
 
-/**
- * Place holder - returns true
- */
+// TO DO - when players are assign a side, check it is thier turn?
 export const verifyPlayer = (
   room: TabulaRoomState,
   socketId: string,
   request: PayloadBase
 ): boolean => {
-  console.log(`can ${request.from} (${socketId}) play in ${room.name}?`)
-  return true
+  return room.players.some(player => player.id === request.from && player.socketId === socketId)
 }

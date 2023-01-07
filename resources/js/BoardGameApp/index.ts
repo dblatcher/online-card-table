@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/space-before-function-paren */
 import { Component, ComponentChild } from 'preact'
 import { html } from 'htm/preact'
-import { ServerToClientEvents, ClientToServerEvents } from 'definitions/socketEvents'
+import { ServerToClientEvents, ClientToServerEvents, AssignIdPayload } from 'definitions/socketEvents'
 import { Socket } from 'socket.io-client'
 import { Board } from './Board'
 import { DieButton } from './DieButton'
@@ -26,6 +26,7 @@ interface State {
 
 export class BoardGameApp extends Component<Props, State> {
   tabulaService: TabulaInterface
+  id?: string
 
   constructor(props: Props) {
     super(props)
@@ -44,11 +45,17 @@ export class BoardGameApp extends Component<Props, State> {
     this.rollDice = this.rollDice.bind(this)
 
     props.socket?.on('conditionAndLog', this.handleServiceResponse)
+    props.socket?.on('assignId', this.handleAssignId.bind(this))
   }
 
   async componentDidMount() {
-    await this.tabulaService.requestConditionAndLog({ roomName: this.props.roomName, from: '123' })
+    await this.tabulaService.requestConditionAndLog({ roomName: this.props.roomName, from: this.id })
       .then(this.handleServiceResponse)
+  }
+
+  public handleAssignId(payload: AssignIdPayload): void {
+    console.log('handleAssignId', payload)
+    this.id = payload.player.id
   }
 
   handleServiceResponse(response: ConditionAndLogPayload | ErrorPayload) {
@@ -71,6 +78,7 @@ export class BoardGameApp extends Component<Props, State> {
     }
     await this.tabulaService.requestMove({
       roomName: this.props.roomName,
+      from: this.id,
       dieIndex: selectedDieIndex,
       squareOrZone: cellIndex,
     })
@@ -85,6 +93,7 @@ export class BoardGameApp extends Component<Props, State> {
 
     await this.tabulaService.requestMove({
       roomName: this.props.roomName,
+      from: this.id,
       dieIndex: selectedDieIndex,
       squareOrZone: zone,
     })
@@ -94,8 +103,9 @@ export class BoardGameApp extends Component<Props, State> {
   async rollDice() {
     const roll: [DieRoll, DieRoll] = [d6(), d6()]
     await this.tabulaService.requestNewTurn({
-      dice: roll,
       roomName: this.props.roomName,
+      from: this.id,
+      dice: roll,
     })
       .then(this.handleServiceResponse)
   }
