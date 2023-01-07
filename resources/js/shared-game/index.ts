@@ -15,9 +15,11 @@ export function init (socket: Socket) {
   const app = new SocketedTableApp([], tableElement, socket)
 
   const messageBoxContainer = document.querySelector('.message-box')
+  const url = new URL(window.location.href)
+  const roomName = url.pathname.split('/')[2]
   if (messageBoxContainer) {
     render(
-      h(MessageBox, { socket: socket }),
+      h(MessageBox, { socket, roomName }),
       messageBoxContainer
     )
   }

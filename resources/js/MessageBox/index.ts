@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 /* eslint-disable @typescript-eslint/space-before-function-paren */
-import { Component, Attributes, ComponentChild, ComponentChildren, createRef, RefObject } from 'preact'
+import { Component, Attributes, ComponentChild, createRef, RefObject } from 'preact'
 import { css } from '@emotion/css'
 import { html } from 'htm/preact'
 import {
@@ -12,9 +12,8 @@ import InputControl from './InputControl'
 import { ClientSafePlayer } from 'definitions/types'
 import PlayerListBox from './PlayerListBox'
 
-export function sendLoginRequest(socket: Socket, name?: string): void {
-  const url = new URL(window.location.href)
-  const roomName = url.pathname.split('/')[2]
+function sendLoginRequest(socket: Socket, roomName: string, name?: string): void {
+  console.log('sendLoginRequest', { roomName, name })
   socket.emit('logIn', { roomName, name })
 }
 
@@ -61,7 +60,7 @@ export type Message = {
 
 export class MessageBox extends Component {
   props: Readonly<Attributes & {
-    children?: ComponentChildren;
+    roomName: string
     socket: Socket<ServerToClientEvents, ClientToServerEvents>
   }>
 
@@ -119,9 +118,9 @@ export class MessageBox extends Component {
   }
 
   signIn() {
-    const { socket } = this.props
+    const { socket, roomName } = this.props
     const { nameInputValue } = this.state
-    sendLoginRequest(socket, nameInputValue)
+    sendLoginRequest(socket, roomName, nameInputValue)
   }
 
   handleAssignId(payload: AssignIdPayload): void {
