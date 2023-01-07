@@ -6,12 +6,13 @@ import { ServerToClientEvents, ClientToServerEvents, AssignIdPayload } from 'def
 import { Socket } from 'socket.io-client'
 import { Board } from './Board'
 import { DieButton } from './DieButton'
-import { DieRoll, PlayerColor, TabulaCondition, GameEvent } from '../../../definitions/tabula/types'
+import { DieRoll, PlayerColor, TabulaCondition, GameEvent, AvaliableMove } from '../../../definitions/tabula/types'
 import { d6 } from './diceService'
 import { EventList } from './EventList'
 import { ConditionAndLogPayload, ErrorPayload, TabulaInterface } from '../../../definitions/tabula/TabulaService'
 import { localTabulaService } from '../localTabulaInterface'
 import { RemoteTabulaInterface } from '../RemoteTabulaInterface'
+import { TabulaGame } from '../../../definitions/tabula/TabulaGame'
 
 interface Props {
   socket?: Socket<ServerToClientEvents, ClientToServerEvents>
@@ -56,6 +57,7 @@ export class BoardGameApp extends Component<Props, State> {
   public handleAssignId(payload: AssignIdPayload): void {
     console.log('handleAssignId', payload)
     this.id = payload.player.id
+    this.forceUpdate()
   }
 
   handleServiceResponse(response: ConditionAndLogPayload | ErrorPayload) {
@@ -114,10 +116,18 @@ export class BoardGameApp extends Component<Props, State> {
     this.setState({ selectedDieIndex: dieIndex })
   }
 
+  get needsToLogIn(): boolean {
+    return (this.props.socket && !this.id) || false
+  }
+
   get message(): string {
     const { condition } = this.state
     if (!condition) {
       return 'LOADING...'
+    }
+
+    if (this.needsToLogIn) {
+      return 'You must sign in to play.'
     }
     const { currentPlayer, dice } = condition
 
@@ -125,11 +135,22 @@ export class BoardGameApp extends Component<Props, State> {
       return `${currentPlayer} turn over. Next player to roll dice`
     }
 
+    if (this.availableMoves.length === 0) {
+      return `${currentPlayer} cannot move. Next player to roll dice`
+    }
+
     return `${currentPlayer} to move`
+  }
+
+  get availableMoves(): AvaliableMove[] {
+    const { condition } = this.state
+    return condition ? TabulaGame.findAvailableMovesForCondition(condition) : []
   }
 
   public render(): ComponentChild {
     const { condition, events } = this.state
+    const { availableMoves, needsToLogIn } = this
+    const showRollButton = !!condition && (availableMoves.length === 0 || condition.dice.length === 0)
 
     // TO DO - waiting screen?
     if (!condition) {
@@ -144,18 +165,21 @@ export class BoardGameApp extends Component<Props, State> {
       <div>
         <p>${this.message}</p>
 
-        <section>
-          ${condition.dice.length === 0 && html`
-          <button onClick=${this.rollDice}>roll</buttonl>
-          `}
-          ${condition.dice.map((die, index) => html`
+        ${!needsToLogIn && html`
+          <section>
+            ${condition.dice.map((die, index) => html`
             <${DieButton}
-              value=${die}
-              dieIndex=${index}
-              clickHandler=${this.handleDieClick}
-              isSelected=${index === this.state.selectedDieIndex}/>
-          `)}
-        </section>
+            value=${die}
+                  dieIndex=${index}
+                  clickHandler=${this.handleDieClick}
+                  isSelected=${index === this.state.selectedDieIndex}/>
+                  `)}
+              ${showRollButton && html`
+              <button onClick=${this.rollDice}>roll</buttonl>
+              `}
+              <p>${availableMoves.length} available moves</p>
+            </section>
+          `}
 
         <div style=${{ display: 'flex' }}>
 

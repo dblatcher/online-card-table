@@ -30,7 +30,6 @@ export class TabulaGame {
   }
 
   public get availableMoves(): AvaliableMove[] {
-    console.log('calculating moves')
     const moves: AvaliableMove[] = []
     const { dice, currentPlayer, cells, jail, start } = this.condition
 
@@ -46,7 +45,7 @@ export class TabulaGame {
     // must get stones from jail first
     if (jail[currentPlayer] > 0) {
       uniqueDice.forEach(die => {
-        if (!this.isHeldByOtherPlayer(cells[die])) {
+        if (!this.isHeldByOtherPlayer(cells[die - 1])) {
           moves.push({ die, from: 'jail' })
         }
       })
@@ -55,7 +54,7 @@ export class TabulaGame {
 
     if (start[currentPlayer] > 0) {
       uniqueDice.forEach(die => {
-        if (!this.isHeldByOtherPlayer(cells[die])) {
+        if (!this.isHeldByOtherPlayer(cells[die - 1])) {
           moves.push({ die, from: 'start' })
         }
       })
@@ -242,15 +241,15 @@ export class TabulaGame {
 
   public static testState() {
     const cells: Cell[] = [
-      { stones: 2, 'color': 'BLUE' },
-      { stones: 3, 'color': 'BLUE' },
-      { stones: 1, 'color': 'GREEN' },
-      { stones: 1, 'color': 'GREEN' },
+      { stones: 2, 'color': 'GREEN' },
+      { stones: 3, 'color': 'GREEN' },
+      { stones: 2, 'color': 'GREEN' },
+      { stones: 2, 'color': 'GREEN' },
       { stones: 3, 'color': 'GREEN' },
       { stones: 0 },
       ...makeEmptyCellRange(15),
       { stones: 0 },
-      { stones: 3, color: 'BLUE' },
+      { stones: 3, color: 'GREEN' },
       { stones: 0 },
     ]
     return new TabulaGame({
