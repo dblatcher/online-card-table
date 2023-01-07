@@ -16,6 +16,11 @@ export type TabulaCondition = {
   home: Record<PlayerColor, number>,
 }
 
+export type AvaliableMove = {
+  die: DieRoll
+  from: number | 'jail' | 'start'
+}
+
 export enum EventCategory {
   illegalMove,
   moveMade,

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/space-before-function-paren */
-import { Cell, DieRoll, GameEvent, PlayerColor, TabulaCondition, EventCategory } from './types'
+import { Cell, DieRoll, GameEvent, PlayerColor, TabulaCondition, EventCategory, AvaliableMove } from './types'
 
 const makeEmptyCell = (): Cell => ({ stones: 0 })
 const makeEmptyCellRange = (count: number) => {
@@ -27,6 +27,59 @@ export class TabulaGame {
   }
   public get otherPlayer(): PlayerColor {
     return this._condition.currentPlayer === 'BLUE' ? 'GREEN' : 'BLUE'
+  }
+
+  public get availableMoves(): AvaliableMove[] {
+    console.log('calculating moves')
+    const moves: AvaliableMove[] = []
+    const { dice, currentPlayer, cells, jail, start } = this.condition
+
+    const uniqueDice = dice.reduce<DieRoll[]>((list, roll) => {
+      if (!list.includes(roll)) {
+        list.push(roll)
+      }
+      return list
+    }, [])
+
+    const canCastOff = start[currentPlayer] === 0 && jail[currentPlayer] === 0
+
+    // must get stones from jail first
+    if (jail[currentPlayer] > 0) {
+      uniqueDice.forEach(die => {
+        if (!this.isHeldByOtherPlayer(cells[die])) {
+          moves.push({ die, from: 'jail' })
+        }
+      })
+      return moves
+    }
+
+    if (start[currentPlayer] > 0) {
+      uniqueDice.forEach(die => {
+        if (!this.isHeldByOtherPlayer(cells[die])) {
+          moves.push({ die, from: 'start' })
+        }
+      })
+    }
+
+    cells.forEach((cell, cellIndex) => {
+      if (cell.color !== currentPlayer || cell.stones === 0) {
+        return
+      }
+
+      uniqueDice.forEach(die => {
+        if (cellIndex + die > cells.length) {
+          if (canCastOff) {
+            moves.push({ die, from: cellIndex })
+          }
+        } else {
+          if (!this.isHeldByOtherPlayer(cells[die + cellIndex])) {
+            moves.push({ die, from: cellIndex })
+          }
+        }
+      })
+    })
+
+    return moves
   }
 
   public newTurn(rolls: [DieRoll, DieRoll]) {
@@ -163,6 +216,10 @@ export class TabulaGame {
     this._log.push({ message, category })
   }
 
+  public static findAvailableMovesForCondition(condition: TabulaCondition): AvaliableMove[] {
+    return new TabulaGame(condition).availableMoves
+  }
+
   public static initial() {
     return new TabulaGame({
       cells: makeEmptyCellRange(24),
@@ -199,7 +256,7 @@ export class TabulaGame {
     return new TabulaGame({
       ...TabulaGame.initial()._condition,
       cells,
-      dice: [3,5],
+      dice: [3, 5],
       start: { BLUE: 0, GREEN: 15 },
       jail: { BLUE: 0, GREEN: 0 },
     })
