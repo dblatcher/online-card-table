@@ -26,10 +26,16 @@
         </li>
       </ul>
 
-      <h2>Rooms</h2>
+      <h2>Card Table Rooms</h2>
       <ul>
-        @each(room in rooms)
-        <li> <a href="/shared-table/{{room.name}}"> {{room.name }} : {{room.playerCount}} players</a> </li>
+        @each(room in cardRooms)
+        <li> <a href="/shared-table/{{room.name}}"> {{room.name}} : {{room.playerCount}} players</a> </li>
+        @end
+      </ul>
+      <h2>Tabula Rooms</h2>
+      <ul>
+        @each(room in tabulaRooms)
+        <li> <a href="/shared-tabula/{{room.name}}"> {{room.name}} : {{room.playerCount}} players</a> </li>
         @end
       </ul>
     </div>

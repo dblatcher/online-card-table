@@ -54,10 +54,10 @@ class Rooms {
     return { leavingPlayer, room }
   }
 
-  public getRoomList(): { name: string, playerCount: number }[] {
+  public getRoomList(): { name: string, playerCount: number, type: 'Card' | 'Tabula' }[] {
     return this.state.map(room => {
       return {
-        name: room.name, playerCount: room.players.length,
+        name: room.name, playerCount: room.players.length, type: room.type,
       }
     })
   }

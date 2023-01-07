@@ -20,8 +20,10 @@ function initBoardGame() {
 
   const messageBoxContainer = document.querySelector('.message-box')
   if (messageBoxContainer) {
+    const url = new URL(window.location.href)
+    const roomName = url.pathname.split('/')[2]
     render(
-      h(MessageBox, { socket, roomName: 'tabula-one' }),
+      h(MessageBox, { socket, roomName }),
       messageBoxContainer
     )
   }

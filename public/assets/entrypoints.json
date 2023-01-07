@@ -31,6 +31,14 @@
       "js": [
         "http://localhost:8080/assets/board-game.js"
       ]
+    },
+    "board-game-private": {
+      "css": [
+        "http://localhost:8080/assets/board-game-private.css"
+      ],
+      "js": [
+        "http://localhost:8080/assets/board-game-private.js"
+      ]
     }
   }
 }

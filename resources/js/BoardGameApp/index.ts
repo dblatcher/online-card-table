@@ -30,7 +30,6 @@ export class BoardGameApp extends Component<Props, State> {
     super(props)
 
     this.tabulaService = props.socket ? new RemoteTabulaInterface(props.socket) : localTabulaService
-    console.log(props, this.tabulaService)
 
     this.state = {
       condition: undefined,

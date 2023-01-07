@@ -2,7 +2,7 @@ import { TabulaGame } from '../../definitions/tabula/TabulaGame'
 import {
   TabulaInterface, ConditionAndLogPayload, MoveRequestPayload, NewTurnRequestPayload,
 } from '../../definitions/tabula/TabulaService'
-const tabula = TabulaGame.testState()
+const tabula = TabulaGame.initial()
 
 class LocalTabulaInterface extends TabulaInterface {
   public async requestConditionAndLog () {
