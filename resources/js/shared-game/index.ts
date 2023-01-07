@@ -2,7 +2,7 @@ import { Socket } from 'socket.io-client'
 import { Pile } from '../card-game/pile'
 import { SocketedTableApp } from './SocketedTableApp'
 
-import { MessageBox } from './MessageBox'
+import { MessageBox } from '../MessageBox'
 import { h, render } from 'preact'
 
 export function init (socket: Socket) {
