@@ -2,42 +2,42 @@
   "entrypoints": {
     "app": {
       "css": [
-        "/assets/app.575f04a2.css"
+        "http://localhost:8080/assets/app.css"
       ],
       "js": [
-        "/assets/app.83d4e69c.js"
+        "http://localhost:8080/assets/app.js"
       ]
     },
     "shared-card-table": {
       "css": [
-        "/assets/shared-card-table.170f3464.css"
+        "http://localhost:8080/assets/shared-card-table.css"
       ],
       "js": [
-        "/assets/shared-card-table.9e05ecc6.js"
+        "http://localhost:8080/assets/shared-card-table.js"
       ]
     },
     "private-card-table": {
       "css": [
-        "/assets/private-card-table.170f3464.css"
+        "http://localhost:8080/assets/private-card-table.css"
       ],
       "js": [
-        "/assets/private-card-table.ea536b70.js"
+        "http://localhost:8080/assets/private-card-table.js"
       ]
     },
     "board-game": {
       "css": [
-        "/assets/board-game.9309f74d.css"
+        "http://localhost:8080/assets/board-game.css"
       ],
       "js": [
-        "/assets/board-game.386b84e0.js"
+        "http://localhost:8080/assets/board-game.js"
       ]
     },
     "board-game-private": {
       "css": [
-        "/assets/board-game-private.9309f74d.css"
+        "http://localhost:8080/assets/board-game-private.css"
       ],
       "js": [
-        "/assets/board-game-private.be7d3f26.js"
+        "http://localhost:8080/assets/board-game-private.js"
       ]
     }
   }
