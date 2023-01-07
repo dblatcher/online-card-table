@@ -81,7 +81,7 @@ export class MessageBox extends Component {
       you: undefined,
       messages: [],
       players: [],
-      inputValue: 'initial',
+      inputValue: '',
       nameInputValue: pickRandomName(),
     }
     this.messageBoxRef = createRef()

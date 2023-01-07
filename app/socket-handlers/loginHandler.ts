@@ -28,8 +28,8 @@ export function makeLoginHandler(socket: AppSocket, io: TypedServer) {
       })
     }
 
-    socket.emit('basicEmit', { message: `You are logged in to ${room.name} as new SocketedTableApp with id ${newPlayer.id}`, from: '_SERVER_' })
-    socket.to(room.name).emit('basicEmit', { message: `Another SocketedTableApp has joined ${room.name} with id ${newPlayer.id}`, from: '_SERVER_' })
+    socket.emit('basicEmit', { message: `You have logged in to ${room.name} as ${newPlayer.name}`, from: '_SERVER_' })
+    socket.to(room.name).emit('basicEmit', { message: `${newPlayer.name} has joined ${room.name}`, from: '_SERVER_' })
 
     io.to(room.name).emit('playerList', { roomName: room.name, players: room.players.map(Rooms.makeSafe) })
   }
