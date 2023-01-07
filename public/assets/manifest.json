@@ -1,12 +1,12 @@
 {
-  "assets/app.css": "http://localhost:8080/assets/app.css",
-  "assets/app.js": "http://localhost:8080/assets/app.js",
-  "assets/shared-card-table.css": "http://localhost:8080/assets/shared-card-table.css",
-  "assets/shared-card-table.js": "http://localhost:8080/assets/shared-card-table.js",
-  "assets/private-card-table.css": "http://localhost:8080/assets/private-card-table.css",
-  "assets/private-card-table.js": "http://localhost:8080/assets/private-card-table.js",
-  "assets/board-game.css": "http://localhost:8080/assets/board-game.css",
-  "assets/board-game.js": "http://localhost:8080/assets/board-game.js",
-  "assets/board-game-private.css": "http://localhost:8080/assets/board-game-private.css",
-  "assets/board-game-private.js": "http://localhost:8080/assets/board-game-private.js"
+  "assets/app.css": "/assets/app.575f04a2.css",
+  "assets/app.js": "/assets/app.83d4e69c.js",
+  "assets/shared-card-table.css": "/assets/shared-card-table.170f3464.css",
+  "assets/shared-card-table.js": "/assets/shared-card-table.9e05ecc6.js",
+  "assets/private-card-table.css": "/assets/private-card-table.170f3464.css",
+  "assets/private-card-table.js": "/assets/private-card-table.ea536b70.js",
+  "assets/board-game.css": "/assets/board-game.9309f74d.css",
+  "assets/board-game.js": "/assets/board-game.386b84e0.js",
+  "assets/board-game-private.css": "/assets/board-game-private.9309f74d.css",
+  "assets/board-game-private.js": "/assets/board-game-private.be7d3f26.js"
 }
