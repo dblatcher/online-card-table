@@ -1,7 +1,8 @@
 import { AppSocket } from 'Definitions/socketTypes'
 import { ConditionAndLogPayload, ErrorPayload, MoveRequestPayload } from 'definitions/tabula/TabulaService'
+import { buildErrorPayload, getTabulaRoom, buildConditionAndLogPayload, verifyPlayer } from './utility'
 
-export function makeMoveRequestHandler(
+export function makeMoveRequestHandler (
   socket: AppSocket
 ) {
   return (
@@ -10,7 +11,26 @@ export function makeMoveRequestHandler(
   ) => {
     console.log('MoveRequestPayload', payload)
 
-    socket.emit('basicEmit', { message: 'MoveRequestPayload DOES NOT WORK YET!' })
-    callback({ errorMessage: 'This service is not implemented', isError: true, roomName: payload.roomName })
+    const room = getTabulaRoom(payload.roomName)
+    if (!payload.roomName || !room) {
+      return callback(buildErrorPayload(`No Tabula Room ${payload.roomName}`, payload))
+    }
+
+    if (!verifyPlayer(room, socket.id, payload)) {
+      socket.emit('basicEmit', { message: 'You are not a player!' })
+      return callback(buildErrorPayload(`Not authorised to play in ${payload.roomName}`, payload))
+    }
+
+    if (typeof payload.squareOrZone === 'number') {
+      room.game.attemptMoveFromSquare(payload.dieIndex, payload.squareOrZone)
+    } else if (payload.squareOrZone === 'jail') {
+      room.game.attemptMoveFromJail(payload.dieIndex)
+    } else if (payload.squareOrZone === 'start') {
+      room.game.attemptMoveFromStart(payload.dieIndex)
+    }
+
+    const response = buildConditionAndLogPayload(room)
+    callback(response)
+    socket.to(payload.roomName).emit('conditionAndLog', response)
   }
 }

@@ -4,9 +4,11 @@ import { openClientSocket } from './socket/client-socket'
 import { BoardGameApp } from './BoardGameApp'
 import { MessageBox } from './MessageBox'
 
-function initBoardGame() {
+function initBoardGame () {
   const container = document.querySelector('#app-container')
   const socket = openClientSocket(true)
+  const url = new URL(window.location.href)
+  const roomName = url.pathname.split('/')[2]
   if (!container) {
     return
   }
@@ -14,14 +16,12 @@ function initBoardGame() {
   container.innerHTML = ''
 
   render(
-    h(BoardGameApp, { socket }),
+    h(BoardGameApp, { socket, roomName }),
     container
   )
 
   const messageBoxContainer = document.querySelector('.message-box')
   if (messageBoxContainer) {
-    const url = new URL(window.location.href)
-    const roomName = url.pathname.split('/')[2]
     render(
       h(MessageBox, { socket, roomName }),
       messageBoxContainer

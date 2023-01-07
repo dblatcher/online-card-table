@@ -1,27 +1,8 @@
-import Rooms from 'App/services/Rooms'
-import { TabulaRoomState } from 'definitions/RoomState'
 import { AppSocket } from 'Definitions/socketTypes'
 import { ConditionAndLogRequestPayload, ConditionAndLogPayload, ErrorPayload } from 'definitions/tabula/TabulaService'
+import { buildErrorPayload, getTabulaRoom, buildConditionAndLogPayload } from './utility'
 
-
-const buildConditionAndLogPayload = (
-  room: TabulaRoomState,
-): ConditionAndLogPayload => ({
-  log: room.game.log,
-  condition: room.game.condition,
-  roomName: room.name,
-})
-
-const buildErrorPayload = (
-  errorMessage: string,
-  request: ConditionAndLogRequestPayload
-): ErrorPayload => ({
-  roomName: request.roomName,
-  isError: true,
-  errorMessage,
-})
-
-export function makeConditionAndLogRequestHandler(
+export function makeConditionAndLogRequestHandler (
   socket: AppSocket
 ) {
   return (
@@ -29,9 +10,9 @@ export function makeConditionAndLogRequestHandler(
     callback: { (response: ConditionAndLogPayload | ErrorPayload): void }
   ) => {
     console.log('ConditionAndLogRequestPayload', payload, socket.id)
-    const roomState = Rooms.getRoomByName(payload.roomName)
+    const roomState = getTabulaRoom(payload.roomName)
 
-    if (!roomState || roomState.type !== 'Tabula') {
+    if (!roomState) {
       return callback(buildErrorPayload(`No Tabula Room ${payload.roomName}`, payload))
     }
 

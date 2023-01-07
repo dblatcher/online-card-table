@@ -15,6 +15,7 @@ import { RemoteTabulaInterface } from '../RemoteTabulaInterface'
 
 interface Props {
   socket?: Socket<ServerToClientEvents, ClientToServerEvents>
+  roomName?: string
 }
 
 interface State {
@@ -41,10 +42,12 @@ export class BoardGameApp extends Component<Props, State> {
     this.handleSpecialClick = this.handleSpecialClick.bind(this)
     this.handleServiceResponse = this.handleServiceResponse.bind(this)
     this.rollDice = this.rollDice.bind(this)
+
+    props.socket?.on('conditionAndLog', this.handleServiceResponse)
   }
 
   async componentDidMount() {
-    await this.tabulaService.requestConditionAndLog({ roomName: 'tabula-one', from: '123' })
+    await this.tabulaService.requestConditionAndLog({ roomName: this.props.roomName, from: '123' })
       .then(this.handleServiceResponse)
   }
 
@@ -66,7 +69,11 @@ export class BoardGameApp extends Component<Props, State> {
     if (typeof selectedDieIndex !== 'number') {
       return
     }
-    await this.tabulaService.requestMove({ dieIndex: selectedDieIndex, squareOrZone: cellIndex })
+    await this.tabulaService.requestMove({
+      roomName: this.props.roomName,
+      dieIndex: selectedDieIndex,
+      squareOrZone: cellIndex,
+    })
       .then(this.handleServiceResponse)
   }
 
@@ -76,13 +83,20 @@ export class BoardGameApp extends Component<Props, State> {
       return
     }
 
-    await this.tabulaService.requestMove({ dieIndex: selectedDieIndex, squareOrZone: zone })
+    await this.tabulaService.requestMove({
+      roomName: this.props.roomName,
+      dieIndex: selectedDieIndex,
+      squareOrZone: zone,
+    })
       .then(this.handleServiceResponse)
   }
 
   async rollDice() {
     const roll: [DieRoll, DieRoll] = [d6(), d6()]
-    await this.tabulaService.requestNewTurn({ dice: roll })
+    await this.tabulaService.requestNewTurn({
+      dice: roll,
+      roomName: this.props.roomName,
+    })
       .then(this.handleServiceResponse)
   }
 

@@ -7,7 +7,7 @@ class Rooms {
   private booted = false
   private state = Rooms.createInitialState()
 
-  public boot() {
+  public boot () {
     /**
      * Ignore multiple calls to the boot method
      */
@@ -18,7 +18,7 @@ class Rooms {
     this.booted = true
   }
 
-  public handleLogInEvent(logInPayload: LogInPayload, socketId: string): {
+  public handleLogInEvent (logInPayload: LogInPayload, socketId: string): {
     newPlayer?: Player,
     room?: RoomState,
     errorString?: string
@@ -36,7 +36,7 @@ class Rooms {
     return { newPlayer, room }
   }
 
-  public handleDisconnect(socketId: string): {
+  public handleDisconnect (socketId: string): {
     leavingPlayer?: Player,
     room?: RoomState,
     errorString?: string
@@ -54,7 +54,7 @@ class Rooms {
     return { leavingPlayer, room }
   }
 
-  public getRoomList(): { name: string, playerCount: number, type: 'Card' | 'Tabula' }[] {
+  public getRoomList (): { name: string, playerCount: number, type: 'Card' | 'Tabula' }[] {
     return this.state.map(room => {
       return {
         name: room.name, playerCount: room.players.length, type: room.type,
@@ -62,7 +62,7 @@ class Rooms {
     })
   }
 
-  private getNextPlayerId(): string {
+  private getNextPlayerId (): string {
     const players = this.getAllPlayers()
     const generate = () => 'ID-p' + Math.random().toString()
     let possibleId = generate()
@@ -74,14 +74,14 @@ class Rooms {
     return possibleId
   }
 
-  public getRoomByName(roomName?: string): RoomState | undefined {
+  public getRoomByName (roomName?: string): RoomState | undefined {
     if (!roomName) {
       return undefined
     }
     return this.state.find(room => room.name === roomName)
   }
 
-  private getAllPlayers(): Player[] {
+  private getAllPlayers (): Player[] {
     const players: Player[] = []
     this.state.forEach(room => {
       players.push(...room.players)
@@ -89,7 +89,7 @@ class Rooms {
     return players
   }
 
-  private static createInitialState(): RoomState[] {
+  private static createInitialState (): RoomState[] {
     const room1: RoomState = {
       name: 'my-first-room',
       table: [],
@@ -112,7 +112,7 @@ class Rooms {
     return [room1, room2, tabulaRoom]
   }
 
-  public makeSafe(player: Player): ClientSafePlayer {
+  public makeSafe (player: Player): ClientSafePlayer {
     return { ...player, socketId: undefined }
   }
 }
