@@ -199,7 +199,7 @@ export class TabulaGame {
     return new TabulaGame({
       ...TabulaGame.initial()._condition,
       cells,
-      dice: [],
+      dice: [3,5],
       start: { BLUE: 0, GREEN: 15 },
       jail: { BLUE: 0, GREEN: 0 },
     })

@@ -2,9 +2,10 @@ import Ws from 'App/Services/Ws'
 import { makeDisconnectHandler } from 'App/socket-handlers/disconnectHandler'
 import { makeBasicEmitHandler } from 'App/socket-handlers/handleBasicEmit'
 import { makeLoginHandler } from 'App/socket-handlers/loginHandler'
-import { makeTableStatusHandler } from 'App/socket-handlers/tableStatusHandler'
+import { makeTableStatusHandler } from 'App/socket-handlers/card-table/tableStatusHandler'
 import { makeConditionAndLogRequestHandler } from 'App/socket-handlers/tabula/conditionAndLogRequest'
 import { makeMoveRequestHandler } from 'App/socket-handlers/tabula/moveRequest'
+import { makeNewTurnRequest } from 'App/socket-handlers/tabula/newTurnRequest'
 Ws.boot()
 
 /**
@@ -19,4 +20,5 @@ Ws.io.on('connection', (socket) => {
 
   socket.on('conditionAndLogRequest', makeConditionAndLogRequestHandler(socket))
   socket.on('moveRequest', makeMoveRequestHandler(socket))
+  socket.on('newTurnRequest', makeNewTurnRequest(socket))
 })

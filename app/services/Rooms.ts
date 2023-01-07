@@ -106,7 +106,7 @@ class Rooms {
       name: 'tabula-one',
       players: [],
       type: 'Tabula',
-      game: TabulaGame.initial(),
+      game: TabulaGame.testState(),
     }
 
     return [room1, room2, tabulaRoom]
