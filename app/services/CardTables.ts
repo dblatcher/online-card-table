@@ -4,19 +4,6 @@ import { TableStatusPayload } from 'definitions/socketEvents'
 import Rooms from './Rooms'
 
 class CardTables {
-  private booted = false
-
-  public boot() {
-    /**
-     * Ignore multiple calls to the boot method
-     */
-    if (this.booted) {
-      return
-    }
-
-    this.booted = true
-  }
-
   public handleTableStatusEvent(tableStatusPayload: TableStatusPayload): {
     room?: CardRoomState
     player?: Player
@@ -25,8 +12,8 @@ class CardTables {
     const { roomName, data, from: playerId } = tableStatusPayload
     const room = Rooms.getRoomByName(roomName)
 
-    if (!room) {
-      return { errorString: `No room called ${roomName}` }
+    if (!room || room.type !== 'Card') {
+      return { errorString: `No card room called ${roomName}` }
     }
 
     const player = room.players.find(player => player.id === playerId)

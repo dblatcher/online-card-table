@@ -1,6 +1,7 @@
-import { CardRoomState } from 'definitions/RoomState'
+import { RoomState, TabulaRoomState } from 'definitions/RoomState'
 import { ClientSafePlayer, Player } from 'definitions/types'
 import { LogInPayload } from 'definitions/socketEvents'
+import { TabulaGame } from '../../definitions/tabula/TabulaGame'
 
 class Rooms {
   private booted = false
@@ -19,7 +20,7 @@ class Rooms {
 
   public handleLogInEvent(logInPayload: LogInPayload, socketId: string): {
     newPlayer?: Player,
-    room?: CardRoomState,
+    room?: RoomState,
     errorString?: string
   } {
     const { roomName, name } = logInPayload
@@ -37,7 +38,7 @@ class Rooms {
 
   public handleDisconnect(socketId: string): {
     leavingPlayer?: Player,
-    room?: CardRoomState,
+    room?: RoomState,
     errorString?: string
   } {
     const room = this.state.find(room => room.players.some(player => player.socketId === socketId))
@@ -73,7 +74,7 @@ class Rooms {
     return possibleId
   }
 
-  public getRoomByName(roomName?: string): CardRoomState | undefined {
+  public getRoomByName(roomName?: string): RoomState | undefined {
     if (!roomName) {
       return undefined
     }
@@ -88,19 +89,27 @@ class Rooms {
     return players
   }
 
-  private static createInitialState(): CardRoomState[] {
-    const room1: CardRoomState = {
+  private static createInitialState(): RoomState[] {
+    const room1: RoomState = {
       name: 'my-first-room',
       table: [],
       players: [],
+      type: 'Card',
     }
-    const room2: CardRoomState = {
+    const room2: RoomState = {
       name: 'my-second-room',
       table: [],
       players: [],
+      type: 'Card',
+    }
+    const tabulaRoom: TabulaRoomState = {
+      name: 'tabula-one',
+      players: [],
+      type: 'Tabula',
+      game: TabulaGame.initial(),
     }
 
-    return [room1, room2]
+    return [room1, room2, tabulaRoom]
   }
 
   public makeSafe(player: Player): ClientSafePlayer {

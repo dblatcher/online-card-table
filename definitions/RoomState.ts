@@ -9,8 +9,12 @@ interface BaseRoomState {
 
 export type CardRoomState = BaseRoomState & {
   table: SerialisedPile[]
+  type: 'Card'
 }
 
 export type TabulaRoomState = BaseRoomState & {
   game: TabulaGame
+  type: 'Tabula'
 }
+
+export type RoomState = TabulaRoomState | CardRoomState

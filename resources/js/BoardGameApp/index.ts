@@ -47,10 +47,10 @@ export class BoardGameApp extends Component<Props, State> {
   async componentDidMount() {
     console.log('REQUESTING LOGIN')
     if (this.props.socket) {
-      this.props.socket.emit('logIn', { 'name': 'bob', 'roomName': 'my-first-tabula-room', 'roomType': 'tabula' })
+      this.props.socket.emit('logIn', { 'name': 'bob', 'roomName': 'tabula-one', 'roomType': 'tabula' })
     }
 
-    await this.tabulaService.requestConditionAndLog({ roomName: 'my-first-tabula-room', from: '123' })
+    await this.tabulaService.requestConditionAndLog({ roomName: 'tabula-one', from: '123' })
       .then(this.handleServiceResponse)
   }
 

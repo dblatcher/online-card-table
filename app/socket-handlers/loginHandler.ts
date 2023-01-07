@@ -2,7 +2,7 @@ import Rooms from 'App/services/Rooms'
 import { LogInPayload } from 'Definitions/socketEvents'
 import { AppSocket, TypedServer } from 'Definitions/socketTypes'
 
-export function makeLoginHandler (socket: AppSocket, io: TypedServer) {
+export function makeLoginHandler(socket: AppSocket, io: TypedServer) {
   return (logInPayload: LogInPayload) => {
     console.log(`logIn for "${logInPayload.roomName}" received at ${Date.now()} from "${logInPayload.name || 'UNNAMED'}"`)
     const { newPlayer, room, errorString } = Rooms.handleLogInEvent(logInPayload, socket.id)
@@ -19,11 +19,15 @@ export function makeLoginHandler (socket: AppSocket, io: TypedServer) {
     socket.join(room.name)
 
     socket.emit('assignId', { player: Rooms.makeSafe(newPlayer), roomName: room.name })
-    socket.emit('tableStatus', {
-      data: room.table,
-      from: 'server',
-      roomName: room.name,
-    })
+
+    if (room.type === 'Card') {
+      socket.emit('tableStatus', {
+        data: room.table,
+        from: 'server',
+        roomName: room.name,
+      })
+    }
+
     socket.emit('basicEmit', { message: `You are logged in to ${room.name} as new SocketedTableApp with id ${newPlayer.id}`, from: '_SERVER_' })
     socket.to(room.name).emit('basicEmit', { message: `Another SocketedTableApp has joined ${room.name} with id ${newPlayer.id}`, from: '_SERVER_' })
 
