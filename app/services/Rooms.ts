@@ -102,6 +102,17 @@ class Rooms {
     return this.state.find(room => room.name === roomName)
   }
 
+  public getPlayerAndRoom (playerId: string): { player: Player, room: RoomState } | undefined {
+    const room = this.state.find(room => room.players.some(player => player.id === playerId))
+    if (room) {
+      const player = room.players.find(player => player.id === playerId)
+      if (player) {
+        return { room, player }
+      }
+    }
+    return undefined
+  }
+
   private getAllPlayers (): Player[] {
     const players: Player[] = []
     this.state.forEach(room => {
@@ -127,10 +138,16 @@ class Rooms {
       name: 'tabula-one',
       players: [],
       type: 'Tabula',
+      game: TabulaGame.initial(),
+    }
+    const tabulaRoom2: TabulaRoomState = {
+      name: 'tabula-two',
+      players: [],
+      type: 'Tabula',
       game: TabulaGame.testState(),
     }
 
-    return [room1, room2, tabulaRoom]
+    return [room1, room2, tabulaRoom, tabulaRoom2]
   }
 
   public makeSafe (player: Player): ClientSafePlayer {

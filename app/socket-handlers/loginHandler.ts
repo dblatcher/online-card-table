@@ -13,7 +13,7 @@ const determineTabulaRole = (room: TabulaRoomState): string => {
   return 'OBSERVER'
 }
 
-export function makeLoginHandler(socket: AppSocket, io: TypedServer) {
+export function makeLoginHandler (socket: AppSocket, io: TypedServer) {
   return (logInPayload: LogInPayload) => {
     console.log(`logIn for "${logInPayload.roomName}" received at ${Date.now()} from "${logInPayload.name || 'UNNAMED'}"`)
     const { newPlayer, room, errorString } = Rooms.handleLogInEvent(logInPayload, socket.id)

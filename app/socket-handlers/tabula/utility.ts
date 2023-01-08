@@ -25,11 +25,25 @@ export const buildConditionAndLogPayload = (
   roomName: room.name,
 })
 
-// TO DO - when players are assign a side, check it is thier turn?
 export const verifyPlayer = (
   room: TabulaRoomState,
   socketId: string,
-  request: PayloadBase
-): boolean => {
-  return room.players.some(player => player.id === request.from && player.socketId === socketId)
+  request: PayloadBase,
+  forNewTurn?: boolean,
+): { isPlayersTurn: boolean, reason: string } => {
+  const { currentPlayer: colorWhoCouldMove } = room.game.condition
+  const { otherPlayer: colorWhoWillRollForNewTurn } = room.game
+  const colorWhosTurnItIs = forNewTurn ? colorWhoWillRollForNewTurn : colorWhoCouldMove
+  const player = room.players.find(player => player.id === request.from && player.socketId === socketId)
+  if (!player) {
+    return { reason: 'You are not a player in this game.', isPlayersTurn: false }
+  }
+
+  const isPlayersTurn = player && player.role === colorWhosTurnItIs
+  if (!isPlayersTurn) {
+    const reason = forNewTurn ? `It is ${colorWhoWillRollForNewTurn} who will roll.` : 'It is nont your turn to move'
+    return { reason, isPlayersTurn: false }
+  }
+
+  return { isPlayersTurn: true, reason: '' }
 }

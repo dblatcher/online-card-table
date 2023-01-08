@@ -16,9 +16,10 @@ export function makeMoveRequestHandler(
       return callback(buildErrorPayload(`No Tabula Room ${payload.roomName}`, payload))
     }
 
-    if (!verifyPlayer(room, socket.id, payload)) {
-      socket.emit('basicEmit', { message: 'You are not a player!' })
-      return callback(buildErrorPayload(`Not authorised to play in ${payload.roomName}`, payload))
+    const { isPlayersTurn, reason } = verifyPlayer(room, socket.id, payload)
+    if (!isPlayersTurn) {
+      socket.emit('basicEmit', { message: reason })
+      return callback(buildErrorPayload(`Not authorised to play in ${payload.roomName}: ${reason}`, payload))
     }
 
     room.game.attemptMove(payload.dieIndex, payload.squareOrZone)
