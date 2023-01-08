@@ -41,7 +41,7 @@ export const verifyPlayer = (
 
   const isPlayersTurn = player && player.role === colorWhosTurnItIs
   if (!isPlayersTurn) {
-    const reason = forNewTurn ? `It is ${colorWhoWillRollForNewTurn} who will roll.` : 'It is nont your turn to move'
+    const reason = forNewTurn ? `It is ${colorWhoWillRollForNewTurn} who will roll.` : 'It is not your turn to move'
     return { reason, isPlayersTurn: false }
   }
 

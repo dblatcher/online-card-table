@@ -103,6 +103,10 @@ export class TabulaGame {
       : [rolls[0], rolls[1]]
 
     this._condition.currentPlayer = this.otherPlayer
+    const message = rolls[0] === rolls[1]
+      ? `${this._condition.currentPlayer} rolled a double ${rolls[0]}`
+      : `${this._condition.currentPlayer} rolled a ${rolls[0]} and a ${rolls[1]}`
+    this.record(message, EventCategory.dice)
   }
 
   public attemptMove(dieIndex: number, cellIndexOrZone: number | 'jail' | 'start') {
@@ -130,10 +134,10 @@ export class TabulaGame {
       this.record(`${currentPlayer} has no pieces to bring on`, EventCategory.illegalMove)
       return
     } else if (!validTargetSqaure) {
-      this.record(`target is held by ${this.otherPlayer}`, EventCategory.illegalMove)
+      this.record(`target is held by ${this.otherPlayer} `, EventCategory.illegalMove)
       return
     } else {
-      this.record(`${currentPlayer} is moving a stone from start to ${dieValue}`, EventCategory.moveMade)
+      this.record(`${currentPlayer} is moving a stone from start to ${dieValue} `, EventCategory.moveMade)
       dice.splice(dieIndex, 1)
       this.moveFromStartToSquare(targetCell)
     }
@@ -149,10 +153,10 @@ export class TabulaGame {
       this.record(`${currentPlayer} has no pieces in jail`)
       return
     } else if (!validTargetSqaure) {
-      this.record(`target is held by ${this.otherPlayer}`)
+      this.record(`target is held by ${this.otherPlayer} `)
       return
     } else {
-      this.record(`${currentPlayer} is moving a stone from start to ${dieValue}`)
+      this.record(`${currentPlayer} is moving a stone from start to ${dieValue} `)
       dice.splice(dieIndex, 1)
       this.moveFromJailToSquare(targetCell)
     }
@@ -182,7 +186,7 @@ export class TabulaGame {
       if (canCastOff) {
         dice.splice(dieIndex, 1)
         this.castOffFromSquare(startCell)
-        this.record(`${currentPlayer} casting off from square ${cellIndex + 1}!`, EventCategory.moveMade)
+        this.record(`${currentPlayer} casting off from square ${cellIndex + 1} !`, EventCategory.moveMade)
         return
       } else {
         this.record(`${currentPlayer} cannot cast off!`, EventCategory.illegalMove)
@@ -192,10 +196,10 @@ export class TabulaGame {
 
     if (validStartSquare && validTargetSqaure) {
       dice.splice(dieIndex, 1)
-      this.record(`${currentPlayer} moving ${dieValue} placed from square ${cellIndex + 1}`, EventCategory.moveMade)
+      this.record(`${currentPlayer} moving ${dieValue} placed from square ${cellIndex + 1} `, EventCategory.moveMade)
       this.moveFromSquareToSquare(startCell, targetCell)
     } else if (!validStartSquare) {
-      this.record(`${currentPlayer} has no stones on ${cellIndex + 1}`, EventCategory.illegalMove)
+      this.record(`${currentPlayer} has no stones on ${cellIndex + 1} `, EventCategory.illegalMove)
     } else if (this.isHeldByOtherPlayer(targetCell)) {
       this.record(`${currentPlayer} can't move from ${cellIndex + 1} to ${cellIndex + dieValue + 1} because is it held by ${this.otherPlayer}`, EventCategory.illegalMove)
     }
@@ -247,7 +251,7 @@ export class TabulaGame {
     return new TabulaGame(condition).availableMoves
   }
 
-  public static findWinnerForCondition(condition: TabulaCondition): PlayerColor|undefined {
+  public static findWinnerForCondition(condition: TabulaCondition): PlayerColor | undefined {
     return new TabulaGame(condition).winner
   }
 
