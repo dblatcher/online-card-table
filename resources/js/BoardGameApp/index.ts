@@ -120,7 +120,7 @@ export class BoardGameApp extends Component<Props, State> {
     return (this.props.socket && !this.id) || false
   }
 
-  get message(): string {
+  getMessage(availableMoves: AvaliableMove[], winner: PlayerColor | undefined): string {
     const { condition } = this.state
     if (!condition) {
       return 'LOADING...'
@@ -131,11 +131,15 @@ export class BoardGameApp extends Component<Props, State> {
     }
     const { currentPlayer, dice } = condition
 
+    if (winner) {
+      return `${winner} has won the game!`
+    }
+
     if (dice.length === 0) {
       return `${currentPlayer} turn over. Next player to roll dice`
     }
 
-    if (this.availableMoves.length === 0) {
+    if (availableMoves.length === 0) {
       return `${currentPlayer} cannot move. Next player to roll dice`
     }
 
@@ -147,25 +151,32 @@ export class BoardGameApp extends Component<Props, State> {
     return condition ? TabulaGame.findAvailableMovesForCondition(condition) : []
   }
 
+  get winner(): PlayerColor | undefined {
+    const { condition } = this.state
+    return condition ? TabulaGame.findWinnerForCondition(condition) : undefined
+  }
+
   public render(): ComponentChild {
     const { condition, events } = this.state
-    const { availableMoves, needsToLogIn } = this
+    const { availableMoves, needsToLogIn, winner } = this
     const showRollButton = !!condition && (availableMoves.length === 0 || condition.dice.length === 0)
+
+    const message = this.getMessage(availableMoves, winner)
 
     // TO DO - waiting screen?
     if (!condition) {
       return html`
       <div>
-        <p>${this.message}</p>
+        <p>${message}</p>
       </div>
       `
     }
 
     return html`
       <div>
-        <p>${this.message}</p>
+        <p>${message}</p>
 
-        ${!needsToLogIn && html`
+        ${!winner && !needsToLogIn && html`
           <section>
             ${condition.dice.map((die, index) => html`
             <${DieButton}

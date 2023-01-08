@@ -19,6 +19,7 @@ export class TabulaGame {
     this._log = []
   }
 
+  //TO DO - clone the object
   public get condition() {
     return this._condition
   }
@@ -79,6 +80,21 @@ export class TabulaGame {
     })
 
     return moves
+  }
+
+  public get winner(): PlayerColor | undefined {
+    const { start, jail, cells } = this._condition
+    const hasWon = (playerColor: PlayerColor): boolean => {
+      if (cells.some(cell => cell.color === playerColor && cell.stones > 0)) {
+        return false
+      }
+      if (start[playerColor] > 0 || jail[playerColor] > 0) {
+        return false
+      }
+      return true
+    }
+
+    return hasWon('BLUE') ? 'BLUE' : hasWon('GREEN') ? 'GREEN' : undefined
   }
 
   public newTurn(rolls: [DieRoll, DieRoll]) {
@@ -231,6 +247,10 @@ export class TabulaGame {
     return new TabulaGame(condition).availableMoves
   }
 
+  public static findWinnerForCondition(condition: TabulaCondition): PlayerColor|undefined {
+    return new TabulaGame(condition).winner
+  }
+
   public static initial() {
     return new TabulaGame({
       cells: makeEmptyCellRange(24),
@@ -261,7 +281,7 @@ export class TabulaGame {
       { stones: 0 },
       ...makeEmptyCellRange(15),
       { stones: 0 },
-      { stones: 3, color: 'GREEN' },
+      { stones: 2, color: 'BLUE' },
       { stones: 0 },
     ]
     return new TabulaGame({
