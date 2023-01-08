@@ -89,6 +89,18 @@ export class TabulaGame {
     this._condition.currentPlayer = this.otherPlayer
   }
 
+  public attemptMove(dieIndex: number, cellIndexOrZone: number | 'jail' | 'start') {
+    if (cellIndexOrZone === 'jail') {
+      return this.attemptMoveFromJail(dieIndex)
+    }
+    if (cellIndexOrZone === 'start') {
+      return this.attemptMoveFromStart(dieIndex)
+    }
+    if (typeof cellIndexOrZone === 'number') {
+      return this.attemptMoveFromSquare(dieIndex, cellIndexOrZone)
+    }
+  }
+
   public attemptMoveFromStart(dieIndex: number) {
     const { dice, cells, currentPlayer, start, jail } = this._condition
     const dieValue = dice[dieIndex]

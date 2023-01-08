@@ -2,7 +2,7 @@ import { AppSocket } from 'Definitions/socketTypes'
 import { ConditionAndLogPayload, ErrorPayload, MoveRequestPayload } from 'definitions/tabula/TabulaService'
 import { buildErrorPayload, getTabulaRoom, buildConditionAndLogPayload, verifyPlayer } from './utility'
 
-export function makeMoveRequestHandler (
+export function makeMoveRequestHandler(
   socket: AppSocket
 ) {
   return (
@@ -21,13 +21,7 @@ export function makeMoveRequestHandler (
       return callback(buildErrorPayload(`Not authorised to play in ${payload.roomName}`, payload))
     }
 
-    if (typeof payload.squareOrZone === 'number') {
-      room.game.attemptMoveFromSquare(payload.dieIndex, payload.squareOrZone)
-    } else if (payload.squareOrZone === 'jail') {
-      room.game.attemptMoveFromJail(payload.dieIndex)
-    } else if (payload.squareOrZone === 'start') {
-      room.game.attemptMoveFromStart(payload.dieIndex)
-    }
+    room.game.attemptMove(payload.dieIndex, payload.squareOrZone)
 
     const response = buildConditionAndLogPayload(room)
     callback(response)
