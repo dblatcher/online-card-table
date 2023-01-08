@@ -36,6 +36,27 @@ class Rooms {
     return { newPlayer, room }
   }
 
+  public assignPlayerRole (role: string, playerId: string, roomName: string): {
+    player?: Player,
+    room?: RoomState,
+    errorString?: string
+  } {
+    const room = this.getRoomByName(roomName)
+
+    if (!room) {
+      return { errorString: `There is no room called ${roomName} to assign a player role in.` }
+    }
+
+    const player = room.players.find(player => player.id === playerId)
+    if (!player) {
+      return { errorString: `There is no player [${playerId}] in ${roomName} to assign a role to.` }
+    }
+
+    player.role = role
+
+    return { player, room }
+  }
+
   public handleDisconnect (socketId: string): {
     leavingPlayer?: Player,
     room?: RoomState,

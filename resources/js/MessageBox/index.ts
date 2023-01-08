@@ -124,6 +124,7 @@ export class MessageBox extends Component {
   }
 
   handleAssignId(payload: AssignIdPayload): void {
+    console.log(payload.player)
     this.setState({
       roomName: payload.roomName,
       you: { ...payload.player },
@@ -169,12 +170,13 @@ export class MessageBox extends Component {
     const { you, messages, inputValue, players, nameInputValue } = this.state
 
     const signInText = you ? you.name || you.id : 'NOT SIGNED IN'
+    const roleText = you?.role ? `(${you.role})` : ''
 
     return html`
     <div class=${containerStyle}>
       <div class=${headingStyle}>
         <h2>Messages</h2>
-        <b>You are ${signInText}</b>
+        <b>You are ${signInText}${roleText}</b>
       </div>
       ${you ? html`
         <${PlayerListBox} players=${players} />

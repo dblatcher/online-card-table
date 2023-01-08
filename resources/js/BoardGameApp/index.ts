@@ -28,6 +28,7 @@ interface State {
 export class BoardGameApp extends Component<Props, State> {
   tabulaService: TabulaInterface
   id?: string
+  role?: string
 
   constructor(props: Props) {
     super(props)
@@ -57,6 +58,7 @@ export class BoardGameApp extends Component<Props, State> {
   public handleAssignId(payload: AssignIdPayload): void {
     console.log('handleAssignId', payload)
     this.id = payload.player.id
+    this.role = payload.player.role
     this.forceUpdate()
   }
 
@@ -189,6 +191,7 @@ export class BoardGameApp extends Component<Props, State> {
               <button onClick=${this.rollDice}>roll</buttonl>
               `}
               <p>${availableMoves.length} available moves</p>
+              <p>YOU ARE: ${this.role}</p>
             </section>
           `}
 
