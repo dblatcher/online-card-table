@@ -21,12 +21,6 @@
 import Route from '@ioc:Adonis/Core/Route'
 
 Route.get('/', 'IndexController.index')
-Route.get('/private-table', 'PrivateTablesController.index')
-Route.get('/shared-table', 'SharedTablesController.index')
-Route.get('/shared-table/:roomName', 'SharedTablesController.room')
-Route.get('/board-game', 'BoardGameController.index')
-Route.get('/shared-tabula/:roomName', 'BoardGameController.room')
-
 Route.get('/about', async ({ view }) => {
   const greeting = Math.random() > .5 ? 'hello' : 'hi there'
 
@@ -34,3 +28,7 @@ Route.get('/about', async ({ view }) => {
     greeting,
   })
 })
+Route.get('/card-table/private', 'CardTableController.index')
+Route.get('/card-table/shared/:roomName', 'CardTableController.room')
+Route.get('/tabula/private', 'BoardGameController.index')
+Route.get('/tabula/shared/:roomName', 'BoardGameController.room')

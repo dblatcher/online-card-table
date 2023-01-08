@@ -13,29 +13,20 @@
 
   <main>
     <div>
-      <h1 class="title"> Online card table </h1>
-      <ul>
-        <li>
-          <a href="/private-table">private table</a>
-        </li>
-        <li>
-          <a href="/shared-table">shared table</a>
-        </li>
-        <li>
-          <a href="/board-game">board game</a>
-        </li>
-      </ul>
+      <h1 class="title"> Online cards and board games </h1>
 
-      <h2>Card Table Rooms</h2>
+      <h2>Card Table</h2>
       <ul>
+        <li> <a href="/card-table/private">private card table</a> </li>
         @each(room in cardRooms)
-        <li> <a href="/shared-table/{{room.name}}"> {{room.name}} : {{room.playerCount}} players</a> </li>
+        <li> <a href="/card-table/shared/{{room.name}}"> {{room.name}} : {{room.playerCount}} players</a> </li>
         @end
       </ul>
-      <h2>Tabula Rooms</h2>
+      <h2>Tabula</h2>
       <ul>
+        <li> <a href="/tabula/private">private Tabula</a> </li>
         @each(room in tabulaRooms)
-        <li> <a href="/shared-tabula/{{room.name}}"> {{room.name}} : {{room.playerCount}} players</a> </li>
+        <li> <a href="/tabula/shared/{{room.name}}"> {{room.name}} : {{room.playerCount}} players</a> </li>
         @end
       </ul>
     </div>

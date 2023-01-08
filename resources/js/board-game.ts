@@ -8,7 +8,7 @@ function initBoardGame () {
   const container = document.querySelector('#app-container')
   const socket = openClientSocket(true)
   const url = new URL(window.location.href)
-  const roomName = url.pathname.split('/')[2]
+  const roomName = url.pathname.split('/')[3]
   if (!container) {
     return
   }
