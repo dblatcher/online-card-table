@@ -14,6 +14,7 @@
   },
   "preloads": [
     "./start/routes",
+    "./start/rooms",
     "./start/kernel"
   ],
   "providers": [

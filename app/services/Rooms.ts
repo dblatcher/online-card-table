@@ -1,4 +1,4 @@
-import { RoomState, TabulaRoomState } from 'definitions/RoomState'
+import { RoomState } from 'definitions/RoomState'
 import { ClientSafePlayer, Player } from 'definitions/types'
 import { LogInPayload } from 'definitions/socketEvents'
 import { TabulaGame } from '../../definitions/tabula/TabulaGame'
@@ -14,7 +14,6 @@ class Rooms {
     if (this.booted) {
       return
     }
-
     this.booted = true
   }
 
@@ -122,32 +121,34 @@ class Rooms {
   }
 
   private static createInitialState (): RoomState[] {
-    const room1: RoomState = {
-      name: 'my-first-room',
-      table: [],
-      players: [],
-      type: 'Card',
-    }
-    const room2: RoomState = {
-      name: 'my-second-room',
-      table: [],
-      players: [],
-      type: 'Card',
-    }
-    const tabulaRoom: TabulaRoomState = {
-      name: 'tabula-one',
-      players: [],
-      type: 'Tabula',
-      game: TabulaGame.initial(),
-    }
-    const tabulaRoom2: TabulaRoomState = {
-      name: 'tabula-two',
-      players: [],
-      type: 'Tabula',
-      game: TabulaGame.testState(),
-    }
+    return []
+  }
 
-    return [room1, room2, tabulaRoom, tabulaRoom2]
+  public addRoom (name: string, type: RoomState['type']): boolean {
+    if (this.state.some(existingRoom => existingRoom.name === name)) {
+      console.log(`room ${name} already exist!!`)
+      return false
+    }
+    const newRoom = this.buildRoom(name, type)
+    this.state.push(newRoom)
+    console.log(`${type} room ${newRoom.name} added`)
+    return true
+  }
+
+  private buildRoom (name: string, type: RoomState['type']): RoomState {
+    const newRoom: RoomState = type === 'Card'
+      ? {
+        name,
+        type,
+        players: [],
+        table: [],
+      } : {
+        name,
+        type,
+        players: [],
+        game: TabulaGame.initial(),
+      }
+    return newRoom
   }
 
   public makeSafe (player: Player): ClientSafePlayer {
