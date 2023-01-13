@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online card tables - create shared table</title>
+  @entryPointStyles('app')
+  @entryPointScripts('app')
+</head>
+
+<body>
+
+  <main>
+    <div>
+      <h1 class="title"> create shared room </h1>
+
+      <h2>create new table</h2>
+      <form method="POST">
+        <div>
+          <label>Rooms type</label>
+          <select name="type">
+            @each(roomType in roomTypes)
+            <option> {{roomType}}</option>
+            @end
+          </select>
+        </div>
+
+        <div>
+          <label for="">room name</label>
+          <input type="text" name="name"/>
+        </div>
+
+        <div>
+          <input type="submit" name="submit" required/>
+        </div>
+      </form>
+    </div>
+
+  </main>
+
+</body>
+
+</html>
