@@ -1,4 +1,5 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { getPrivateRoomPath } from 'App/lib/path'
 import Rooms from 'App/services/Rooms'
 
 export default class IndexController {
@@ -8,6 +9,8 @@ export default class IndexController {
     const cardRooms = rooms.filter(room => room.type === 'Card')
     return ctx.view.render('welcome', {
       cardRooms, tabulaRooms,
+      privateCardRoomPath: getPrivateRoomPath('Card'),
+      privateTabulaRoomPath: getPrivateRoomPath('Tabula'),
     })
   }
 }

@@ -17,14 +17,14 @@
 
       <h2>Card Table</h2>
       <ul>
-        <li> <a href="/card-table/private">private card table</a> </li>
+        <li> <a href="{{privateCardRoomPath}}">private card table</a> </li>
         @each(room in cardRooms)
         <li> <a href="{{room.path}}"> {{room.name}} : {{room.playerCount}} players</a> </li>
         @end
       </ul>
       <h2>Tabula</h2>
       <ul>
-        <li> <a href="/tabula/private">private Tabula</a> </li>
+        <li> <a href="{{privateTabulaRoomPath}}">private Tabula</a> </li>
         @each(room in tabulaRooms)
         <li> <a href="{{room.path}}"> {{room.name}} : {{room.playerCount}} players</a> </li>
         @end
