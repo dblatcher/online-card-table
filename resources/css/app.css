@@ -74,3 +74,11 @@ main code {
   font-size: 16px;
   background: #e6e2ff;
 }
+
+body footer {
+  position: fixed;
+  bottom: 0;
+  background-color: #5A45FF;
+  color: #F7F8FA;
+  width: 100%;
+}

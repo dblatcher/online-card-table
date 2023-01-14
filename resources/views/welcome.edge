@@ -1,15 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+@layout('layouts/general')
+@set('title', 'Home page')
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Online card tables - home</title>
-  @entryPointStyles('app')
-  @entryPointScripts('app')
-</head>
-
-<body>
+@section('main')
 
   <main>
     <div>
@@ -29,13 +21,8 @@
         <li> <a href="{{room.path}}"> {{room.name}} : {{room.playerCount}} players</a> </li>
         @end
       </ul>
-    </div>
-
-    <div>
       <a href="/create-room">create new room</a>
     </div>
   </main>
 
-</body>
-
-</html>
+@end
