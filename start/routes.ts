@@ -19,6 +19,7 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
+import { getSharedRoomPath } from 'App/lib/path'
 
 Route.get('/', 'IndexController.index')
 Route.get('/about', async ({ view }) => {
@@ -29,8 +30,8 @@ Route.get('/about', async ({ view }) => {
   })
 })
 Route.get('/card-table/private', 'CardTableController.index')
-Route.get('/card-table/shared/:roomName', 'CardTableController.room')
+Route.get(getSharedRoomPath(':roomName', 'Card'), 'CardTableController.room')
 Route.get('/tabula/private', 'BoardGameController.index')
-Route.get('/tabula/shared/:roomName', 'BoardGameController.room')
+Route.get(getSharedRoomPath(':roomName', 'Tabula'), 'BoardGameController.room')
 Route.get('/create-room', 'CreateController.index')
 Route.post('/create-room', 'CreateController.formHandler')

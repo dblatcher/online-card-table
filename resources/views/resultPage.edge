@@ -19,6 +19,8 @@
 
       @if(success)
       <p> Room created </p>
+      <p>{{room.name}} , {{room.type}}</p>
+      <a href="{{room.path}}">go to room</a>
       @else
       <p> Room creation failed </p>
       @end

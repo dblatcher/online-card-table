@@ -2,6 +2,7 @@ import { RoomState } from 'definitions/RoomState'
 import { ClientSafePlayer, Player } from 'definitions/types'
 import { LogInPayload } from 'definitions/socketEvents'
 import { TabulaGame } from '../../definitions/tabula/TabulaGame'
+import { getSharedRoomPath } from 'App/lib/path'
 
 class Rooms {
   private booted = false
@@ -74,10 +75,13 @@ class Rooms {
     return { leavingPlayer, room }
   }
 
-  public getRoomList (): { name: string, playerCount: number, type: 'Card' | 'Tabula' }[] {
+  public getRoomList (): { name: string, playerCount: number, type: RoomState['type'], path: string }[] {
     return this.state.map(room => {
       return {
-        name: room.name, playerCount: room.players.length, type: room.type,
+        name: room.name,
+        playerCount: room.players.length,
+        type: room.type,
+        path: getSharedRoomPath(room.name, room.type),
       }
     })
   }
@@ -124,15 +128,15 @@ class Rooms {
     return []
   }
 
-  public addRoom (name: string, type: RoomState['type']): boolean {
+  public addRoom (name: string, type: RoomState['type']): { success: boolean, room?: RoomState } {
     if (this.state.some(existingRoom => existingRoom.name === name)) {
       console.log(`room ${name} already exist!!`)
-      return false
+      return { success: false }
     }
     const newRoom = this.buildRoom(name, type)
     this.state.push(newRoom)
     console.log(`${type} room ${newRoom.name} added`)
-    return true
+    return { success: true, room: newRoom }
   }
 
   private buildRoom (name: string, type: RoomState['type']): RoomState {
