@@ -2,7 +2,7 @@ import { RoomState } from 'definitions/RoomState'
 import { ClientSafePlayer, Player } from 'definitions/types'
 import { LogInPayload } from 'definitions/socketEvents'
 import { TabulaGame } from '../../definitions/tabula/TabulaGame'
-import { getSharedRoomPath } from 'App/lib/path'
+import { getSharedRoomPath, toKebab } from 'App/lib/path'
 
 class Rooms {
   private booted = false
@@ -129,11 +129,12 @@ class Rooms {
   }
 
   public addRoom (name: string, type: RoomState['type']): { success: boolean, room?: RoomState } {
-    if (this.state.some(existingRoom => existingRoom.name === name)) {
-      console.log(`room ${name} already exist!!`)
+    const safeName = toKebab(name)
+    if (this.state.some(existingRoom => existingRoom.name === safeName)) {
+      console.log(`room ${safeName} already exist!!`)
       return { success: false }
     }
-    const newRoom = this.buildRoom(name, type)
+    const newRoom = this.buildRoom(safeName, type)
     this.state.push(newRoom)
     console.log(`${type} room ${newRoom.name} added`)
     return { success: true, room: newRoom }

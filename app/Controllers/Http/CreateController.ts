@@ -7,7 +7,6 @@ type RoomType = RoomState['type']
 
 const roomTypes: RoomType[] = ['Card', 'Tabula']
 
-//to do - string parsing of the name - alpha numeric and dashes only
 const parseForm = (body: Record<string, any>): { name: string, type: RoomState['type'] } | undefined => {
   const { type, name } = body
   if (typeof type === 'string' && roomTypes.includes(body.type as RoomType) && typeof name === 'string') {
