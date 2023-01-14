@@ -6,19 +6,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{title}}</title>
   @section('scripts')
-    @entryPointStyles('app')
-    @entryPointScripts('app')
+  @entryPointStyles('app')
+  @entryPointScripts('app')
   @end
 </head>
 
+<header>
+  @section('header')
+  @include('partials/header-content')
+  @end
+</header>
+
 <body>
-
   @!section('main')
-
 </body>
 
 <footer>
-  footer
+  @section('footer')
+  @include('partials/footer-content')
+  @end
 </footer>
 
 </html>
