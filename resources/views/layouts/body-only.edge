@@ -11,20 +11,9 @@
   @end
 </head>
 
-<header>
-  @section('header')
-  @include('partials/header-content')
-  @end
-</header>
 
 <body {{bodyClass ? `class=${bodyClass}` : ''}}>
   @!section('main')
 </body>
-
-<footer>
-  @section('footer')
-  @include('partials/footer-content')
-  @end
-</footer>
 
 </html>

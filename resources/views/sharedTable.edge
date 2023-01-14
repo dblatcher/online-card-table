@@ -1,35 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
+@layout('layouts/body-only')
+@set('title', 'Shared Card Table')
+@set('bodyClass', 'flex-column')
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shared card table</title>
-  @entryPointStyles('shared-card-table')
-  @entryPointScripts('shared-card-table')
-</head>
 
-<body>
+@section('scripts')
+@entryPointStyles('shared-card-table')
+@entryPointScripts('shared-card-table')
+@end
 
-  <main>
-    <div>
-      <h1 class="title"> Shared card table: : {{roomName}} </h1>
 
-      <main class="full-height flex-column">
-        <div>
-          <button id="newDeck">new deck</button>
-        </div>
-        <aside>
-          <div class="message-box"></div>
-          <div class="player-list"></div>
-        </aside>
-        <article id="table" class="full-height table table--outlined"></article>
-      </main>
-
-    </div>
-
-  </main>
-
-</body>
-
-</html>
+@section('main')
+<main>
+  <div>
+    <h1 class="title"> Shared card table: : {{roomName}} </h1>
+    <main class="full-height flex-column">
+      <div>
+        <button id="newDeck">new deck</button>
+      </div>
+      <aside>
+        <div class="message-box"></div>
+        <div class="player-list"></div>
+      </aside>
+      <article id="table" class="full-height table table--outlined"></article>
+    </main>
+  </div>
+</main>
+@end

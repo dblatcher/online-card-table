@@ -1,22 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
+@layout('layouts/body-only')
+@set('title', 'Private Card Table')
+@set('bodyClass', 'flex-column')
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Private card table</title>
-  @entryPointStyles('private-card-table')
-  @entryPointScripts('private-card-table')
-</head>
 
-<body class="flex-column">
+@section('scripts')
+@entryPointStyles('private-card-table')
+@entryPointScripts('private-card-table')
+@end
 
-  <main class="full-height flex-column">
-      <h1 class="title"> Private card table </h1>
-      <article id="table" class="full-height table"></article>
-      <br/>
-  </main>
 
-</body>
-
-</html>
+@section('main')
+<main class="full-height flex-column">
+  <h1 class="title"> Private card table </h1>
+  <article id="table" class="full-height table"></article>
+  <br />
+</main>
+@end
