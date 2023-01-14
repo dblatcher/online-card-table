@@ -1,23 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
+@layout('layouts/body-only')
+@set('title', 'Private board game')
+@set('bodyClass', 'flex-column')
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Online card tables - board game</title>
-  @entryPointStyles('board-game-private')
-  @entryPointScripts('board-game-private')
-</head>
 
-<body class="flex-column">
+@section('scripts')
+@entryPointStyles('board-game-private')
+@entryPointScripts('board-game-private')
+@end
 
+
+@section('main')
   <main class="full-height flex-column">
     <h1 class="title"> Private Board Game Page </h1>
     <article id="app-container" class="full-height">
       App goes here
     </article>
   </main>
-
-</body>
-
-</html>
+@end
