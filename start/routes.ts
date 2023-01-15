@@ -35,3 +35,8 @@ Route.get(getPrivateRoomPath('Tabula'), 'BoardGameController.index')
 Route.get(getSharedRoomPath(':roomName', 'Tabula'), 'BoardGameController.room')
 Route.get('/create-room', 'CreateController.index')
 Route.post('/create-room', 'CreateController.formHandler')
+
+Route.get('*',async (ctx) => {
+  ctx.response.status(404)
+  return ctx.view.render('errors/not-found')
+})
