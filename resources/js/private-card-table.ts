@@ -1,4 +1,4 @@
-import '../scss/base.scss'
+import '../scss/cardGame.scss'
 
 import { init as initPrivateCardTable } from './card-game/'
 

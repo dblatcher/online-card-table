@@ -1,15 +1,1 @@
-
-body.flex-column {
-  height: 100vh;
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.flex-column {
-  display: flex;
-  flex-direction: column;
-
-  .full-height {
-      flex: 1;
-  }
-}
+@import './layout';
