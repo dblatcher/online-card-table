@@ -15,6 +15,17 @@ body {
     }
   }
 
+  > main {
+    p {
+      margin-bottom: 20px;
+    }
+
+    a {
+      color: #5A45FF;
+      text-decoration: none;
+    }
+  }
+
   > footer {
     background-color: #5A45FF;
     color: #F7F8FA;
@@ -33,16 +44,5 @@ body {
   margin-bottom: 40px;
 }
 
-
-main {
-  p {
-    margin-bottom: 20px;
-  }
-
-  a {
-    color: #5A45FF;
-    text-decoration: none;
-  }
-}
 
 
