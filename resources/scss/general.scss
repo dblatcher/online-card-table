@@ -1,21 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
+@import './pageStyle';
+@import './layout';
 
-html, body {
-  background-color: #F7F8FA;
-  font-family: 'Poppins', sans-serif;
-  height: 100vh;
-  color: #46444c;
-  position: relative;
-}
-
-body:before {
-  content: '';
-  background: #5A45FF;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 6px;
-  position: absolute;
+@mixin columnWidth {
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding-left: 30px;
+  padding-right: 30px;
 }
 
 * {
@@ -23,67 +15,30 @@ body:before {
   padding: 0;
 }
 
-a {
-  color: #5A45FF;
-  text-decoration: none;
+ul,
+ol {
+  list-style-position: inside;
 }
 
-main {
-  max-width: 620px;
-  margin: auto;
-  height: 100vh;
-  padding: 0 30px;
-  align-items: center;
+body>header {
+  >div {
+    @include columnWidth();
+  }
+
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
+
+body>main {
+  @include columnWidth();
   display: flex;
+  flex: 1;
+  align-items: center;
   justify-content: center;
 }
 
-.title {
-  font-size: 50px;
-  line-height: 50px;
-  margin-bottom: 10px;
-  color: #17161A;
-}
-
-.subtitle {
-  font-size: 26px;
-  margin-bottom: 40px;
-}
-
-p {
-  margin-bottom: 20px;
-}
-
-main ul {
-  list-style: none;
-}
-
-main li {
-  margin-bottom: 5px;
-  position: relative;
-  padding-left: 25px;
-}
-
-main li:before {
-  content: '—';
-  position: absolute;
-  left: 0;
-}
-
-main code {
-  font-size: 16px;
-  background: #e6e2ff;
-}
-
-body header {
-  position: fixed;
-  top: 0;
-}
-
-body footer {
-  position: fixed;
-  bottom: 0;
-  background-color: #5A45FF;
-  color: #F7F8FA;
-  width: 100%;
+body>footer {
+  >div {
+    @include columnWidth();
+  }
 }

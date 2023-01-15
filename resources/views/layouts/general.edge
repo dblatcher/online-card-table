@@ -12,19 +12,23 @@
 </head>
 
 <header>
-  @section('header')
-  @include('partials/header-content')
-  @end
+  <div>
+    @section('header')
+    @include('partials/header-content')
+    @end
+  </div>
 </header>
 
-<body {{bodyClass ? `class=${bodyClass}` : ''}}>
+<body {{bodyClass ? `class=${bodyClass}` : 'class=flex-column'}}>
   @!section('main')
 </body>
 
 <footer>
-  @section('footer')
-  @include('partials/footer-content')
-  @end
+  <div>
+    @section('footer')
+    @include('partials/footer-content')
+    @end
+  </div>
 </footer>
 
 </html>
