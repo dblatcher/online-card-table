@@ -5,7 +5,7 @@ import { Component, ComponentChild } from 'preact'
 import { html } from 'htm/preact'
 import type { Cell, PlayerColor, TabulaCondition } from '../../../definitions/tabula/types'
 import { Square } from './Square'
-import { Stones } from './Stones'
+import { SpecialZone } from './SpecialZone'
 
 interface Props {
   game: TabulaCondition
@@ -13,20 +13,22 @@ interface Props {
   specialClickHandler: { (player: PlayerColor, zone: 'jail' | 'start'): void }
 }
 
-const cellSize = 4
-const frameStyle = css`
+const cellSize = 4.5
+const boardStyle = css`
+  position: relative;
   display: inline-flex;
-  border: 5px outset pink;
+  border: 5px outset wheat;
   margin-bottom: 2em;
-  background-color:pink;
+  background-color:wheat;
 `
 
-const boardStyle = css`
+const rowsContainerStyle = css`
   position:relative;
   height: ${8 * cellSize}em;
   width: ${8 * cellSize}em;
   padding: ${cellSize * 1.25}em;
   box-sizing: border-box;
+  transform: rotate(-45deg) scale(81%);
 `
 
 const rowStyle = css`
@@ -56,11 +58,11 @@ const rowStyleFor = [
   `,
 ]
 
-const middleStyle = css`
-  background-color: orange;
+const zoneContainerStyle = css`
+  position: absolute;
   padding: .5em;
 
-  div {
+  section {
     display: flex;
     justify-content: space-between;
   }
@@ -68,6 +70,20 @@ const middleStyle = css`
   button {
     min-width: 4em;
   }
+`
+
+const placeMiddle = css`
+top: 25%;
+left: 50%;
+transform: translateX(-50%) translateY(-50%);
+`
+const placeTopLeft = css`
+  top: 0;
+  left:0;
+`
+const placebottomRight = css`
+  bottom: 0;
+  right:0;
 `
 
 export class Board extends Component<Props> {
@@ -88,49 +104,43 @@ export class Board extends Component<Props> {
     const { rows } = this
     const { squareClickHandler, game, specialClickHandler } = this.props
     return html`
-    <article class=${frameStyle}>
-      <main class=${boardStyle}>
-      ${rows.map((row, rowIndex) => html`
-        <section class=${[rowStyle, rowStyleFor[rowIndex]].join(' ')}>
-          ${row.map((cell, index) => html`
-            <${Square}
-              cell=${cell}
-              cellSize=${cellSize}
-              cellIndex=${(rowIndex * 6) + index}
-              clickHandler=${squareClickHandler}
-            />
-          `)}
-        </section>
-      `)}
+    <article class=${boardStyle}>
+      <main class=${rowsContainerStyle}>
+        ${rows.map((row, rowIndex) => html`
+          <section class=${[rowStyle, rowStyleFor[rowIndex]].join(' ')}>
+            ${row.map((cell, index) => html`
+              <${Square}
+                cell=${cell}
+                cellSize=${cellSize}
+                cellIndex=${(rowIndex * 6) + index}
+                clickHandler=${squareClickHandler}
+              />
+            `)}
+          </section>
+        `)}
+      </main>
 
-      <section class=${middleStyle}>
-
-        <div>
-          <span>start</start>
-          <button onclick=${() => { specialClickHandler('BLUE', 'start') }}>
-            <${Stones} color="BLUE" stones=${game.start.BLUE} renderZero />
-          </button>
-          <button onclick=${() => { specialClickHandler('GREEN', 'start') }}>
-            <${Stones} color="GREEN" stones=${game.start.GREEN} renderZero />
-          </button>
-        </div>
-        <div>
-          <span>jail</start>
-          <button onclick=${() => { specialClickHandler('BLUE', 'jail') }}>
-            <${Stones} color="BLUE" stones=${game.jail.BLUE} renderZero />
-          </button>
-          <button onclick=${() => { specialClickHandler('GREEN', 'jail') }}>
-            <${Stones} color="GREEN" stones=${game.jail.GREEN} renderZero/>
-          </button>
-        </div>
-        <div>
-          <span>home</start>
-          <span><${Stones} color="BLUE" stones=${game.home.BLUE} renderZero /></span>
-          <span><${Stones} color="GREEN" stones=${game.home.GREEN} renderZero /></span>
-        </div>
-
+      <section class=${[zoneContainerStyle, placeTopLeft].join(' ')}>
+        <${SpecialZone}
+          game=${game}
+          specialClickHandler=${specialClickHandler}
+          zone='start' />
       </section>
-      </main></article>
+
+      <section class=${[zoneContainerStyle, placeMiddle].join(' ')}>
+        <${SpecialZone}
+          game=${game}
+          specialClickHandler=${specialClickHandler}
+          zone='jail' />
+      </section>
+
+      <section class=${[zoneContainerStyle, placebottomRight].join(' ')}>
+        <${SpecialZone}
+          game=${game}
+          specialClickHandler=${specialClickHandler}
+          zone='home' />
+      </section>
+    </article>
     `
   }
 }

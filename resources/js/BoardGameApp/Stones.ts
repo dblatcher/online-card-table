@@ -13,8 +13,8 @@ interface Props {
 
 const stoneStyle = css`
   display: inline-block;
-  width: 1em;
-  height: 1em;
+  width: 1.2em;
+  height: 1.2em;
   border-radius: 50%;
 `
 
