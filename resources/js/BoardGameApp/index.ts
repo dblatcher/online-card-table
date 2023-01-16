@@ -179,29 +179,35 @@ export class BoardGameApp extends Component<Props, State> {
         <p>${message}</p>
 
         ${!winner && !needsToLogIn && html`
-          <section>
-            ${condition.dice.map((die, index) => html`
-            <${DieButton}
-            value=${die}
-                  dieIndex=${index}
-                  clickHandler=${this.handleDieClick}
-                  isSelected=${index === this.state.selectedDieIndex}/>
-                  `)}
-              ${showRollButton && html`
-              <button onClick=${this.rollDice}>roll</buttonl>
-              `}
-              <p>${availableMoves.length} available moves</p>
-              <p>YOU ARE: ${this.role}</p>
-            </section>
+            <p>
+              <span>${availableMoves.length} available moves.</span>
+              <span>YOU ARE: ${this.role}</span>
+            </p>
           `}
 
         <div style=${{ display: 'flex' }}>
-
           <${Board}
             game=${condition}
             squareClickHandler=${this.handleSquareClick}
             specialClickHandler=${this.handleSpecialClick}
-          />
+          >
+
+          ${!winner && !needsToLogIn && html`
+            <section>
+              ${condition.dice.map((die, index) => html`
+              <${DieButton}
+              value=${die}
+                    dieIndex=${index}
+                    clickHandler=${this.handleDieClick}
+                    isSelected=${index === this.state.selectedDieIndex}/>
+                    `)}
+                ${showRollButton && html`
+                <button onClick=${this.rollDice}>roll</buttonl>
+                `}
+            </section>
+          `}
+
+          </board>
 
           <${EventList} events=${events} />
 

@@ -17,7 +17,7 @@ const zoneStyle = css`
 
   button {
     min-width: 4em;
-    padding: 1em;
+    padding: .5em;
   }
 `
 

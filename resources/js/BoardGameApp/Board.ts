@@ -11,6 +11,7 @@ interface Props {
   game: TabulaCondition
   squareClickHandler: { (cellIndex: number): void }
   specialClickHandler: { (player: PlayerColor, zone: 'jail' | 'start'): void }
+  children?: ComponentChild
 }
 
 const cellSize = 4.5
@@ -61,19 +62,15 @@ const rowStyleFor = [
 const zoneContainerStyle = css`
   position: absolute;
   padding: .5em;
-
-  section {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  button {
-    min-width: 4em;
-  }
 `
 
+const placeTopMiddle = css`
+top: 10%;
+left: 50%;
+transform: translateX(-50%);
+`
 const placeMiddle = css`
-top: 25%;
+top: 50%;
 left: 50%;
 transform: translateX(-50%) translateY(-50%);
 `
@@ -102,7 +99,7 @@ export class Board extends Component<Props> {
 
   public render(): ComponentChild {
     const { rows } = this
-    const { squareClickHandler, game, specialClickHandler } = this.props
+    const { squareClickHandler, game, specialClickHandler, children } = this.props
     return html`
     <article class=${boardStyle}>
       <main class=${rowsContainerStyle}>
@@ -127,7 +124,7 @@ export class Board extends Component<Props> {
           zone='start' />
       </section>
 
-      <section class=${[zoneContainerStyle, placeMiddle].join(' ')}>
+      <section class=${[zoneContainerStyle, placeTopMiddle].join(' ')}>
         <${SpecialZone}
           game=${game}
           specialClickHandler=${specialClickHandler}
@@ -140,6 +137,10 @@ export class Board extends Component<Props> {
           specialClickHandler=${specialClickHandler}
           zone='home' />
       </section>
+
+      <div class=${[zoneContainerStyle, placeMiddle].join(' ')}>
+        ${children}
+      </div>
     </article>
     `
   }
