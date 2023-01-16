@@ -16,6 +16,7 @@ import { localTabulaService } from '../localTabulaInterface'
 import { RemoteTabulaInterface } from '../RemoteTabulaInterface'
 import { TabulaGame } from '../../../definitions/tabula/TabulaGame'
 import { ClientSafePlayer } from 'definitions/types'
+import { PlayerBar } from './PlayerBar'
 
 interface Props {
   socket?: Socket<ServerToClientEvents, ClientToServerEvents>
@@ -28,6 +29,8 @@ interface State {
   selectedDieIndex?: number
   players: Record<PlayerColor, ClientSafePlayer | undefined>
 }
+
+const otherColor = (color: PlayerColor): PlayerColor => color === 'BLUE' ? 'GREEN' : 'BLUE'
 
 export class BoardGameApp extends Component<Props, State> {
   tabulaService: TabulaInterface
@@ -62,6 +65,7 @@ export class BoardGameApp extends Component<Props, State> {
     this.props.socket?.on('assignId', this.handleAssignId)
     this.props.socket?.on('playerList', this.handlePlayerList)
 
+    // TO DO - request player list on mount ?
     await this.tabulaService.requestConditionAndLog({ roomName: this.props.roomName, from: this.id })
       .then(this.handleServiceResponse)
   }
@@ -192,9 +196,10 @@ export class BoardGameApp extends Component<Props, State> {
   }
 
   public render(): ComponentChild {
-    const { condition, events } = this.state
+    const { condition, events, players } = this.state
     const { availableMoves, needsToLogIn, winner } = this
-    const showRollButton = !!condition && (availableMoves.length === 0 || condition.dice.length === 0)
+    const timeToRollDice = !!condition && (availableMoves.length === 0 || condition.dice.length === 0)
+    const whosTurn = (!!condition && timeToRollDice) ? otherColor(condition.currentPlayer) : condition?.currentPlayer
 
     const message = this.getMessage(availableMoves, winner)
 
@@ -209,15 +214,14 @@ export class BoardGameApp extends Component<Props, State> {
 
     return html`
       <div>
-        <p>${message}</p>
 
-        ${!winner && !needsToLogIn && html`
-            <p>
-              <span>${availableMoves.length} available moves.</span>
-              <span>YOU ARE: ${this.role}</span>
-            </p>
-          `}
+        <${PlayerBar}
+          players=${players}
+          isLocal=${!this.props.socket}
+          whosTurn=${whosTurn}
+          localPlayerRole=${this.role} />
 
+        <span>${message}</span>
         <div style=${{ display: 'flex' }}>
           <${Board}
             game=${condition}
@@ -234,8 +238,10 @@ export class BoardGameApp extends Component<Props, State> {
                     clickHandler=${this.handleDieClick}
                     isSelected=${index === this.state.selectedDieIndex}/>
                     `)}
-                ${showRollButton && html`
+                ${timeToRollDice ? html`
                 <button onClick=${this.rollDice}>roll</buttonl>
+                `: html`
+                <p>${availableMoves.length} available moves.</p>
                 `}
             </section>
           `}
