@@ -2,7 +2,9 @@
 /* eslint-disable @typescript-eslint/space-before-function-paren */
 import { Component, ComponentChild } from 'preact'
 import { html } from 'htm/preact'
-import { ServerToClientEvents, ClientToServerEvents, AssignIdPayload } from 'definitions/socketEvents'
+import {
+  ServerToClientEvents, ClientToServerEvents, AssignIdPayload, PlayerListPayload
+} from 'definitions/socketEvents'
 import { Socket } from 'socket.io-client'
 import { Board } from './Board'
 import { DieButton } from './DieButton'
@@ -13,6 +15,7 @@ import { ConditionAndLogPayload, ErrorPayload, TabulaInterface } from '../../../
 import { localTabulaService } from '../localTabulaInterface'
 import { RemoteTabulaInterface } from '../RemoteTabulaInterface'
 import { TabulaGame } from '../../../definitions/tabula/TabulaGame'
+import { ClientSafePlayer } from 'definitions/types'
 
 interface Props {
   socket?: Socket<ServerToClientEvents, ClientToServerEvents>
@@ -23,6 +26,7 @@ interface State {
   condition?: TabulaCondition
   events: GameEvent[]
   selectedDieIndex?: number
+  players: Record<PlayerColor, ClientSafePlayer | undefined>
 }
 
 export class BoardGameApp extends Component<Props, State> {
@@ -39,27 +43,50 @@ export class BoardGameApp extends Component<Props, State> {
       condition: undefined,
       events: [],
       selectedDieIndex: 0,
+      players: {
+        'BLUE': undefined,
+        'GREEN': undefined,
+      },
     }
     this.handleSquareClick = this.handleSquareClick.bind(this)
     this.handleDieClick = this.handleDieClick.bind(this)
     this.handleSpecialClick = this.handleSpecialClick.bind(this)
     this.handleServiceResponse = this.handleServiceResponse.bind(this)
+    this.handleAssignId = this.handleAssignId.bind(this)
+    this.handlePlayerList = this.handlePlayerList.bind(this)
     this.rollDice = this.rollDice.bind(this)
-
-    props.socket?.on('conditionAndLog', this.handleServiceResponse)
-    props.socket?.on('assignId', this.handleAssignId.bind(this))
   }
 
   async componentDidMount() {
+    this.props.socket?.on('conditionAndLog', this.handleServiceResponse)
+    this.props.socket?.on('assignId', this.handleAssignId)
+    this.props.socket?.on('playerList', this.handlePlayerList)
+
     await this.tabulaService.requestConditionAndLog({ roomName: this.props.roomName, from: this.id })
       .then(this.handleServiceResponse)
   }
 
-  public handleAssignId(payload: AssignIdPayload): void {
+  componentWillUnmount(): void {
+    this.props.socket?.off('conditionAndLog', this.handleServiceResponse)
+    this.props.socket?.off('assignId', this.handleAssignId)
+    this.props.socket?.off('playerList', this.handlePlayerList)
+  }
+
+  handleAssignId(payload: AssignIdPayload): void {
     console.log('handleAssignId', payload)
     this.id = payload.player.id
     this.role = payload.player.role
     this.forceUpdate()
+  }
+
+  handlePlayerList(payload: PlayerListPayload): void {
+    const { players } = payload
+    this.setState({
+      players: {
+        BLUE: players.find(player => player.role === 'BLUE'),
+        GREEN: players.find(player => player.role === 'GREEN'),
+      },
+    })
   }
 
   handleServiceResponse(response: ConditionAndLogPayload | ErrorPayload) {
@@ -122,6 +149,10 @@ export class BoardGameApp extends Component<Props, State> {
     return (this.props.socket && !this.id) || false
   }
 
+  getPlayerName(color: PlayerColor): string {
+    return this.state.players[color]?.name || color
+  }
+
   getMessage(availableMoves: AvaliableMove[], winner: PlayerColor | undefined): string {
     const { condition } = this.state
     if (!condition) {
@@ -132,20 +163,22 @@ export class BoardGameApp extends Component<Props, State> {
       return 'You must sign in to play.'
     }
     const { currentPlayer, dice } = condition
+    const currentPlayerName = this.getPlayerName(currentPlayer)
+    const otherPlayerName = this.getPlayerName(currentPlayer === 'BLUE' ? 'GREEN' : 'BLUE')
 
     if (winner) {
-      return `${winner} has won the game!`
+      return `${this.getPlayerName(winner)} has won the game!`
     }
 
     if (dice.length === 0) {
-      return `${currentPlayer} turn over. Next player to roll dice`
+      return `${currentPlayerName}'s turn over. ${otherPlayerName} to roll dice`
     }
 
     if (availableMoves.length === 0) {
-      return `${currentPlayer} cannot move. Next player to roll dice`
+      return `${currentPlayerName} cannot move. ${otherPlayerName} to roll dice`
     }
 
-    return `${currentPlayer} to move`
+    return `${currentPlayerName} to move`
   }
 
   get availableMoves(): AvaliableMove[] {
