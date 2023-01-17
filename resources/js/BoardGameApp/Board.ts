@@ -3,14 +3,14 @@
 import { css } from '@emotion/css'
 import { Component, ComponentChild } from 'preact'
 import { html } from 'htm/preact'
-import type { Cell, PlayerColor, TabulaCondition } from '../../../definitions/tabula/types'
+import type { Cell, TabulaCondition } from '../../../definitions/tabula/types'
 import { Square } from './Square'
 import { SpecialZone } from './SpecialZone'
 
 interface Props {
   game: TabulaCondition
   squareClickHandler: { (cellIndex: number): void }
-  specialClickHandler: { (player: PlayerColor, zone: 'jail' | 'start'): void }
+  specialClickHandler: { (zone: 'jail' | 'start'): void }
   children?: ComponentChild
 }
 

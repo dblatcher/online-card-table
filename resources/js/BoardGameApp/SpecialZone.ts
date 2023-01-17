@@ -2,13 +2,13 @@
 /* eslint-disable @typescript-eslint/space-before-function-paren */
 import { css } from '@emotion/css'
 import { html } from 'htm/preact'
-import type { PlayerColor, TabulaCondition } from '../../../definitions/tabula/types'
+import type { TabulaCondition } from '../../../definitions/tabula/types'
 import { Stones } from './Stones'
 
 interface Props {
   game: TabulaCondition
   zone: 'start' | 'jail' | 'home',
-  specialClickHandler: { (player: PlayerColor, zone: 'jail' | 'start'): void }
+  specialClickHandler: { (zone: 'jail' | 'start'): void }
 }
 
 const zoneStyle = css`
@@ -27,31 +27,27 @@ export const SpecialZone = ({ game, specialClickHandler, zone }: Props) => {
     <section class=${zoneStyle}>
       <span>${zone}</start>
       <span>
-        <${Stones} color="BLUE" stones=${game[zone].BLUE} renderZero />
+        <${Stones} color="BLUE" stones=${game[zone].BLUE} alwaysNumbers />
       </span>
       <span>
-        <${Stones} color="GREEN" stones=${game[zone].GREEN} renderZero />
+        <${Stones} color="GREEN" stones=${game[zone].GREEN} alwaysNumbers />
       </span>
     </section>
     `
   }
 
-  const clickBlue = () => {
-    specialClickHandler('BLUE', zone)
-  }
-  const clickGreen = () => {
-    specialClickHandler('GREEN', zone)
+  const clickHandler = () => {
+    specialClickHandler(zone)
   }
 
+
   return html`
-    <section class=${zoneStyle}>
+
+    <button onclick=${clickHandler} class=${zoneStyle}>
       <span>${zone}</start>
-      <button onclick=${clickBlue}>
-        <${Stones} color="BLUE" stones=${game[zone].BLUE} renderZero />
+        <${Stones} color="BLUE" stones=${game[zone].BLUE} alwaysNumbers />
+        <${Stones} color="GREEN" stones=${game[zone].GREEN} alwaysNumbers />
       </button>
-      <button onclick=${clickGreen}>
-        <${Stones} color="GREEN" stones=${game[zone].GREEN} renderZero />
-      </button>
-    </section>
+
     `
 }

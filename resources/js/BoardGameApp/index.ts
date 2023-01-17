@@ -120,9 +120,9 @@ export class BoardGameApp extends Component<Props, State> {
       .then(this.handleServiceResponse)
   }
 
-  async handleSpecialClick(player: PlayerColor, zone: 'jail' | 'start') {
-    const { selectedDieIndex, condition } = this.state
-    if (player !== condition?.currentPlayer || typeof selectedDieIndex === 'undefined') {
+  async handleSpecialClick(zone: 'jail' | 'start') {
+    const { selectedDieIndex } = this.state
+    if (typeof selectedDieIndex === 'undefined') {
       return
     }
 
@@ -217,7 +217,7 @@ export class BoardGameApp extends Component<Props, State> {
 
         <${PlayerBar}
           players=${players}
-          isLocal=${!this.props.socket}
+          isLocalGame=${!this.props.socket}
           whosTurn=${whosTurn}
           localPlayerRole=${this.role} />
 

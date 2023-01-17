@@ -8,7 +8,7 @@ import { PlayerColor } from '../../../definitions/tabula/types'
 interface Props {
   color?: PlayerColor
   stones: number
-  renderZero?: boolean
+  alwaysNumbers?: boolean
 }
 
 const stoneStyle = css`
@@ -28,15 +28,19 @@ const greenStyle = css`
   border-color: green;
 `
 
-export const Stones: FunctionalComponent<Props> = ({ color = 'BLUE', stones, renderZero }: Props) => {
+export const Stones: FunctionalComponent<Props> = ({ color = 'BLUE', stones, alwaysNumbers }: Props) => {
   const stoneClasses = [stoneStyle, color === 'BLUE' ? blueStyle : greenStyle].join(' ')
 
-  switch (stones) {
-    case 0: return renderZero
-      ? html`
+  if (alwaysNumbers) {
+    return html`
     <span>
       <span class=${stoneClasses}></span> x ${stones}
-    </span>`: null
+    </span>
+    `
+  }
+
+  switch (stones) {
+    case 0: return null
     case 1: return html`
     <span>
        <span class=${stoneClasses}></span>

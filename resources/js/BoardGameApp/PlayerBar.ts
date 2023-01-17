@@ -30,7 +30,7 @@ const playerStyle = (current:boolean) => css`
 
 export const PlayerBar = ({ isLocalGame, players, localPlayerRole, whosTurn }: Props) => {
   const greenPlayerName = isLocalGame ? 'HUMAN' : players.GREEN?.name || '[no one]'
-  const bluePlayerName = isLocalGame ? 'HUMAN' : players.BLUE?.name || '[no on]'
+  const bluePlayerName = isLocalGame ? 'HUMAN' : players.BLUE?.name || '[no one]'
 
   const localPlayerColor = localPlayerRole === 'GREEN'
     ? 'GREEN'
