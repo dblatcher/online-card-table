@@ -1,6 +1,6 @@
 import { AppSocket } from 'Definitions/socketTypes'
 import { ConditionAndLogRequestPayload, ConditionAndLogPayload, ErrorPayload } from 'definitions/tabula/TabulaService'
-import { buildErrorPayload, getTabulaRoom, buildConditionAndLogPayload } from './utility'
+import { buildConditionAndLogPayload, getErrorPayloadOrRoom } from './utility'
 
 export function makeConditionAndLogRequestHandler (
   socket: AppSocket
@@ -10,12 +10,13 @@ export function makeConditionAndLogRequestHandler (
     callback: { (response: ConditionAndLogPayload | ErrorPayload): void }
   ) => {
     console.log('ConditionAndLogRequestPayload', payload, socket.id)
-    const roomState = getTabulaRoom(payload.roomName)
-
-    if (!roomState) {
-      return callback(buildErrorPayload(`No Tabula Room ${payload.roomName}`, payload))
+    const errorOrRoom = getErrorPayloadOrRoom(payload, socket.id)
+    if ('error' in errorOrRoom) {
+      socket.emit('basicEmit', { message: errorOrRoom.error.errorMessage })
+      return callback(errorOrRoom.error)
     }
+    const { room } = errorOrRoom
 
-    return callback(buildConditionAndLogPayload(roomState))
+    return callback(buildConditionAndLogPayload(room))
   }
 }

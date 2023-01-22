@@ -3,7 +3,7 @@
 import { Component, ComponentChild } from 'preact'
 import { html } from 'htm/preact'
 import {
-  ServerToClientEvents, ClientToServerEvents, AssignIdPayload, PlayerListPayload
+  ServerToClientEvents, ClientToServerEvents, AssignIdPayload, PlayerListPayload,
 } from 'definitions/socketEvents'
 import { Socket } from 'socket.io-client'
 import { Board } from './Board'

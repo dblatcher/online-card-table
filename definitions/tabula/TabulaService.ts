@@ -20,6 +20,7 @@ export type ErrorPayload = PayloadBase & {
 }
 
 export type ConditionAndLogRequestPayload = PayloadBase
+export type TabulaClientRequest = MoveRequestPayload | NewTurnRequestPayload | ConditionAndLogRequestPayload
 
 export abstract class TabulaInterface {
   public abstract requestConditionAndLog(
