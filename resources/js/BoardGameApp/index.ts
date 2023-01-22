@@ -8,7 +8,9 @@ import {
 import { Socket } from 'socket.io-client'
 import { Board } from './Board'
 import { DieButton } from './DieButton'
-import { DieRoll, PlayerColor, TabulaCondition, GameEvent, AvaliableMove } from '../../../definitions/tabula/types'
+import {
+  DieRoll, PlayerColor, TabulaCondition, GameEvent, AvaliableMove, ButtonValue
+} from '../../../definitions/tabula/types'
 import { d6 } from './diceService'
 import { EventList } from './EventList'
 import { ConditionAndLogPayload, ErrorPayload, TabulaInterface } from '../../../definitions/tabula/TabulaService'
@@ -28,6 +30,7 @@ interface State {
   events: GameEvent[]
   selectedDieIndex?: number
   players: Record<PlayerColor, ClientSafePlayer | undefined>
+  hoveredOn?: ButtonValue
 }
 
 const otherColor = (color: PlayerColor): PlayerColor => color === 'BLUE' ? 'GREEN' : 'BLUE'
@@ -58,6 +61,7 @@ export class BoardGameApp extends Component<Props, State> {
     this.handleServiceResponse = this.handleServiceResponse.bind(this)
     this.handleAssignId = this.handleAssignId.bind(this)
     this.handlePlayerList = this.handlePlayerList.bind(this)
+    this.updateHoveredButton = this.updateHoveredButton.bind(this)
     this.rollDice = this.rollDice.bind(this)
   }
 
@@ -100,10 +104,10 @@ export class BoardGameApp extends Component<Props, State> {
       return
     }
     const { condition, log, isLogUpdate } = response
-    const events = isLogUpdate ? [...this.state.events,...log] : [...log]
+    const events = isLogUpdate ? [...this.state.events, ...log] : [...log]
 
     return this.setState({
-      condition: {...condition},
+      condition: { ...condition },
       events: [...events],
       selectedDieIndex: condition.dice.length > 0 ? 0 : undefined,
     })
@@ -146,6 +150,15 @@ export class BoardGameApp extends Component<Props, State> {
       reset: true,
     })
       .then(this.handleServiceResponse)
+  }
+
+  updateHoveredButton(button: ButtonValue, eventType: 'enter' | 'leave') {
+    const { hoveredOn } = this.state
+    if (button === hoveredOn && eventType === 'leave') {
+      this.setState({ hoveredOn: undefined })
+    } else if (eventType === 'enter') {
+      this.setState({ hoveredOn: button })
+    }
   }
 
   async rollDice() {
@@ -208,6 +221,19 @@ export class BoardGameApp extends Component<Props, State> {
     return condition ? TabulaGame.findWinnerForCondition(condition) : undefined
   }
 
+  get squareToHighlight(): ButtonValue | undefined {
+    const { hoveredOn, selectedDieIndex, condition } = this.state
+    const dieValue = typeof selectedDieIndex === 'number' ? condition?.dice[selectedDieIndex] : undefined
+
+    if (typeof hoveredOn === 'number' && typeof dieValue === 'number') {
+      return hoveredOn + dieValue
+    }
+    if (typeof hoveredOn === 'string' && typeof dieValue === 'number') {
+      return dieValue - 1
+    }
+    return undefined
+  }
+
   public render(): ComponentChild {
     const { condition, events, players } = this.state
     const { availableMoves, needsToLogIn, winner } = this
@@ -240,6 +266,8 @@ export class BoardGameApp extends Component<Props, State> {
             game=${condition}
             squareClickHandler=${this.handleSquareClick}
             specialClickHandler=${this.handleSpecialClick}
+            highlightSquareIndex=${this.squareToHighlight}
+            updateHoveredButton=${this.updateHoveredButton}
           >
 
           ${!winner && !needsToLogIn && html`

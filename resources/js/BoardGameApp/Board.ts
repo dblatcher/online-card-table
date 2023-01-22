@@ -3,7 +3,7 @@
 import { css } from '@emotion/css'
 import { Component, ComponentChild } from 'preact'
 import { html } from 'htm/preact'
-import type { Cell, TabulaCondition } from '../../../definitions/tabula/types'
+import type { ButtonValue, Cell, TabulaCondition } from '../../../definitions/tabula/types'
 import { Square } from './Square'
 import { SpecialZone } from './SpecialZone'
 
@@ -11,7 +11,9 @@ interface Props {
   game: TabulaCondition
   squareClickHandler: { (cellIndex: number): void }
   specialClickHandler: { (zone: 'jail' | 'start'): void }
+  updateHoveredButton: { (button: ButtonValue, eventType: 'enter' | 'leave'): void }
   children?: ComponentChild
+  highlightSquareIndex?: number
 }
 
 const cellSize = 4.5
@@ -99,7 +101,14 @@ export class Board extends Component<Props> {
 
   public render(): ComponentChild {
     const { rows } = this
-    const { squareClickHandler, game, specialClickHandler, children } = this.props
+    const {
+      squareClickHandler,
+      game,
+      specialClickHandler,
+      children,
+      highlightSquareIndex,
+      updateHoveredButton,
+    } = this.props
     return html`
     <article class=${boardStyle}>
       <main class=${rowsContainerStyle}>
@@ -111,6 +120,8 @@ export class Board extends Component<Props> {
                 cellSize=${cellSize}
                 cellIndex=${(rowIndex * 6) + index}
                 clickHandler=${squareClickHandler}
+                hightlight=${(rowIndex * 6) + index === highlightSquareIndex}
+                updateHoveredButton=${updateHoveredButton}
               />
             `)}
           </section>
@@ -121,6 +132,7 @@ export class Board extends Component<Props> {
         <${SpecialZone}
           game=${game}
           specialClickHandler=${specialClickHandler}
+          updateHoveredButton=${updateHoveredButton}
           zone='start' />
       </section>
 

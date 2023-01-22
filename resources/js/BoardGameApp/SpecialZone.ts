@@ -2,13 +2,14 @@
 /* eslint-disable @typescript-eslint/space-before-function-paren */
 import { css } from '@emotion/css'
 import { html } from 'htm/preact'
-import type { TabulaCondition } from '../../../definitions/tabula/types'
+import type { ButtonValue, TabulaCondition } from '../../../definitions/tabula/types'
 import { Stones } from './Stones'
 
 interface Props {
   game: TabulaCondition
   zone: 'start' | 'jail' | 'home',
   specialClickHandler: { (zone: 'jail' | 'start'): void }
+  updateHoveredButton: { (button: ButtonValue, eventType: 'enter' | 'leave'): void }
 }
 
 const zoneStyle = css`
@@ -21,7 +22,7 @@ const zoneStyle = css`
   }
 `
 
-export const SpecialZone = ({ game, specialClickHandler, zone }: Props) => {
+export const SpecialZone = ({ game, specialClickHandler, zone, updateHoveredButton }: Props) => {
   if (zone === 'home') {
     return html`
     <section class=${zoneStyle}>
@@ -43,7 +44,11 @@ export const SpecialZone = ({ game, specialClickHandler, zone }: Props) => {
 
   return html`
 
-    <button onclick=${clickHandler} class=${zoneStyle}>
+    <button
+      onclick=${clickHandler}
+      onMouseEnter=${() => { updateHoveredButton(zone, 'enter') }}
+      onMouseLeave=${() => { updateHoveredButton(zone, 'leave') }}
+      class=${zoneStyle}>
       <span>${zone}</start>
         <${Stones} color="BLUE" stones=${game[zone].BLUE} alwaysNumbers />
         <${Stones} color="GREEN" stones=${game[zone].GREEN} alwaysNumbers />

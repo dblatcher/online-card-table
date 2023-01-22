@@ -7,6 +7,8 @@ export type Cell = {
 
 export type DieRoll = 1 | 2 | 3 | 4 | 5 | 6
 
+export type ButtonValue = number | 'jail' | 'start'
+
 export type TabulaCondition = {
   cells: Cell[],
   currentPlayer: PlayerColor,
