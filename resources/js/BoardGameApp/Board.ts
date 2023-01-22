@@ -140,6 +140,7 @@ export class Board extends Component<Props> {
         <${SpecialZone}
           game=${game}
           specialClickHandler=${specialClickHandler}
+          updateHoveredButton=${updateHoveredButton}
           zone='jail' />
       </section>
 
