@@ -7,6 +7,7 @@ import {
   NewTurnRequestPayload,
   ConditionAndLogRequestPayload,
   ErrorPayload,
+  ResetGameRequest,
 } from '../../definitions/tabula/TabulaService'
 
 export class RemoteTabulaInterface extends TabulaInterface {
@@ -38,6 +39,16 @@ export class RemoteTabulaInterface extends TabulaInterface {
   public async requestNewTurn (request: NewTurnRequestPayload) {
     const response = await new Promise<ConditionAndLogPayload | ErrorPayload>((resolve) => {
       this.socket.emit('newTurnRequest', request, (response) => {
+        return resolve(response)
+      })
+    })
+
+    return response
+  }
+
+  public async requestResetGame(request: ResetGameRequest): Promise<ConditionAndLogPayload | ErrorPayload> {
+    const response = await new Promise<ConditionAndLogPayload | ErrorPayload>((resolve) => {
+      this.socket.emit('resetGameRequest', request, (response) => {
         return resolve(response)
       })
     })

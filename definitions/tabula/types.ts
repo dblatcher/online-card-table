@@ -26,6 +26,7 @@ export enum EventCategory {
   moveMade,
   capture,
   dice,
+  reset,
 }
 
 export type GameEvent = {

@@ -54,6 +54,7 @@ export class BoardGameApp extends Component<Props, State> {
     this.handleSquareClick = this.handleSquareClick.bind(this)
     this.handleDieClick = this.handleDieClick.bind(this)
     this.handleSpecialClick = this.handleSpecialClick.bind(this)
+    this.handleResetClick = this.handleResetClick.bind(this)
     this.handleServiceResponse = this.handleServiceResponse.bind(this)
     this.handleAssignId = this.handleAssignId.bind(this)
     this.handlePlayerList = this.handlePlayerList.bind(this)
@@ -137,6 +138,16 @@ export class BoardGameApp extends Component<Props, State> {
       .then(this.handleServiceResponse)
   }
 
+  async handleResetClick() {
+    console.log('RESET')
+    await this.tabulaService.requestResetGame({
+      roomName: this.props.roomName,
+      from: this.id,
+      reset: true,
+    })
+      .then(this.handleServiceResponse)
+  }
+
   async rollDice() {
     const roll: [DieRoll, DieRoll] = [d6(), d6()]
     await this.tabulaService.requestNewTurn({
@@ -216,7 +227,7 @@ export class BoardGameApp extends Component<Props, State> {
 
     return html`
       <div>
-
+        <button onclick=${this.handleResetClick}>RESET GAME</button>
         <${PlayerBar}
           players=${players}
           isLocalGame=${!this.props.socket}

@@ -6,6 +6,7 @@ import { makeTableStatusHandler } from 'App/socket-handlers/card-table/tableStat
 import { makeConditionAndLogRequestHandler } from 'App/socket-handlers/tabula/conditionAndLogRequest'
 import { makeMoveRequestHandler } from 'App/socket-handlers/tabula/moveRequest'
 import { makeNewTurnRequest } from 'App/socket-handlers/tabula/newTurnRequest'
+import { makeResetGameRequest } from 'App/socket-handlers/tabula/resetGameRequest'
 Ws.boot()
 
 /**
@@ -21,4 +22,5 @@ Ws.io.on('connection', (socket) => {
   socket.on('conditionAndLogRequest', makeConditionAndLogRequestHandler(socket))
   socket.on('moveRequest', makeMoveRequestHandler(socket))
   socket.on('newTurnRequest', makeNewTurnRequest(socket))
+  socket.on('resetGameRequest', makeResetGameRequest(socket))
 })

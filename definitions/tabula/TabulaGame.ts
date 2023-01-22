@@ -113,7 +113,7 @@ export class TabulaGame {
     return this._log.filter(entry => entry.requestIndex === this._requestIndex)
   }
 
-  public attemptMove(dieIndex: number, cellIndexOrZone: number | 'jail' | 'start') {
+  public attemptMove(dieIndex: number, cellIndexOrZone: number | 'jail' | 'start'):GameEvent[] {
     this._requestIndex++
     if (cellIndexOrZone === 'jail') {
       this.attemptMoveFromJail(dieIndex)
@@ -122,6 +122,13 @@ export class TabulaGame {
     } else if (typeof cellIndexOrZone === 'number') {
       this.attemptMoveFromSquare(dieIndex, cellIndexOrZone)
     }
+    return this._log.filter(entry => entry.requestIndex === this._requestIndex)
+  }
+
+  public resetGame():GameEvent[] {
+    this._requestIndex++
+    this._condition = TabulaGame.initial()._condition
+    this.record('GAME RESET', EventCategory.reset)
     return this._log.filter(entry => entry.requestIndex === this._requestIndex)
   }
 

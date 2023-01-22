@@ -14,6 +14,9 @@ export type ConditionAndLogPayload = PayloadBase & {
   log: GameEvent[]
   isLogUpdate?: boolean
 }
+export type ResetGameRequest = PayloadBase & {
+  reset: true
+}
 
 export type ErrorPayload = PayloadBase & {
   errorMessage: string
@@ -21,7 +24,10 @@ export type ErrorPayload = PayloadBase & {
 }
 
 export type ConditionAndLogRequestPayload = PayloadBase
-export type TabulaClientRequest = MoveRequestPayload | NewTurnRequestPayload | ConditionAndLogRequestPayload
+export type TabulaClientRequest = MoveRequestPayload |
+NewTurnRequestPayload |
+ConditionAndLogRequestPayload |
+ResetGameRequest
 
 export abstract class TabulaInterface {
   public abstract requestConditionAndLog(
@@ -32,6 +38,9 @@ export abstract class TabulaInterface {
   ): Promise<ConditionAndLogPayload | ErrorPayload>
   public abstract requestNewTurn(
     request: NewTurnRequestPayload
+  ): Promise<ConditionAndLogPayload | ErrorPayload>
+  public abstract requestResetGame(
+    request: ResetGameRequest
   ): Promise<ConditionAndLogPayload | ErrorPayload>
 }
 

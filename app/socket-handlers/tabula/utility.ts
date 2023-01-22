@@ -1,15 +1,22 @@
 import Rooms from 'App/services/Rooms'
 import { TabulaRoomState } from 'definitions/RoomState'
 import {
-  ConditionAndLogPayload, ErrorPayload, MoveRequestPayload, NewTurnRequestPayload, TabulaClientRequest,
+  ConditionAndLogPayload,
+  ErrorPayload,
+  MoveRequestPayload,
+  NewTurnRequestPayload,
+  ResetGameRequest,
+  TabulaClientRequest,
 } from 'definitions/tabula/TabulaService'
 import { GameEvent } from 'definitions/tabula/types'
-import { PayloadBase } from 'definitions/types'
+import { PayloadBase, Player } from 'definitions/types'
 
 const getTabulaRoom = (roomName?: string): TabulaRoomState | undefined => {
   const room = Rooms.getRoomByName(roomName)
   return room?.type === 'Tabula' ? room : undefined
 }
+
+const hasPlayerColorRole = (player?: Player): boolean => player?.role === 'GREEN' || player?.role === 'BLUE'
 
 const buildErrorPayload = (
   errorMessage: string,
@@ -30,19 +37,22 @@ export const buildConditionAndLogPayload = (
   isLogUpdate: !!eventsFromRequest,
 })
 
-const verifyPlayer = (
+const verifyPlayerMove = (
   room: TabulaRoomState,
   socketId: string,
   request: NewTurnRequestPayload | MoveRequestPayload,
 ): { isPlayersTurn: boolean, reason: string } => {
+  const player = room.players.find(player => player.id === request.from && player.socketId === socketId)
+  if (!player) {
+    return { reason: 'You are not signed in to this game.', isPlayersTurn: false }
+  }
+  if (!hasPlayerColorRole(player)) {
+    return { reason: 'You are just an observer in this game.', isPlayersTurn: false }
+  }
   const forNewTurn = 'dice' in request
   const { currentPlayer: colorWhoCouldMove } = room.game.condition
   const { otherPlayer: colorWhoWillRollForNewTurn } = room.game
   const colorWhosTurnItIs = forNewTurn ? colorWhoWillRollForNewTurn : colorWhoCouldMove
-  const player = room.players.find(player => player.id === request.from && player.socketId === socketId)
-  if (!player) {
-    return { reason: 'You are not a player in this game.', isPlayersTurn: false }
-  }
 
   const isPlayersTurn = player && player.role === colorWhosTurnItIs
   if (!isPlayersTurn) {
@@ -51,6 +61,19 @@ const verifyPlayer = (
   }
 
   return { isPlayersTurn: true, reason: '' }
+}
+
+const vertifyCanReset = (
+  room: TabulaRoomState,
+  socketId: string,
+  request: ResetGameRequest,
+): { canReset: boolean, reason: string } => {
+  const player = room.players.find(player => player.id === request.from && player.socketId === socketId)
+  if (!hasPlayerColorRole(player)) {
+    return { reason: 'You are not a player in this game.', canReset: false }
+  }
+
+  return { canReset: true, reason: '' }
 }
 
 export const getErrorPayloadOrRoom = (
@@ -62,8 +85,14 @@ export const getErrorPayloadOrRoom = (
     return { error: buildErrorPayload(`No Tabula Room ${payload.roomName}`, payload) }
   }
 
+  if ('reset' in payload) {
+    const { canReset, reason } = vertifyCanReset(room, socketId, payload)
+    if (!canReset) {
+      return { error: buildErrorPayload(`Reset refused in ${payload.roomName}: ${reason}`, payload) }
+    }
+  }
   if ('dice' in payload || 'dieIndex' in payload) {
-    const { isPlayersTurn, reason } = verifyPlayer(room, socketId, payload)
+    const { isPlayersTurn, reason } = verifyPlayerMove(room, socketId, payload)
     if (!isPlayersTurn) {
       return { error: buildErrorPayload(`Move refused in ${payload.roomName}: ${reason}`, payload) }
     }
