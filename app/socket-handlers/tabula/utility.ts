@@ -3,6 +3,7 @@ import { TabulaRoomState } from 'definitions/RoomState'
 import {
   ConditionAndLogPayload, ErrorPayload, MoveRequestPayload, NewTurnRequestPayload, TabulaClientRequest,
 } from 'definitions/tabula/TabulaService'
+import { GameEvent } from 'definitions/tabula/types'
 import { PayloadBase } from 'definitions/types'
 
 const getTabulaRoom = (roomName?: string): TabulaRoomState | undefined => {
@@ -21,10 +22,12 @@ const buildErrorPayload = (
 
 export const buildConditionAndLogPayload = (
   room: TabulaRoomState,
+  eventsFromRequest?: GameEvent[],
 ): ConditionAndLogPayload => ({
-  log: room.game.log,
+  log: eventsFromRequest || room.game.log,
   condition: room.game.condition,
   roomName: room.name,
+  isLogUpdate: !!eventsFromRequest,
 })
 
 const verifyPlayer = (

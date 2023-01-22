@@ -98,10 +98,12 @@ export class BoardGameApp extends Component<Props, State> {
       console.error(response)
       return
     }
-    const { condition, log } = response
+    const { condition, log, isLogUpdate } = response
+    const events = isLogUpdate ? [...this.state.events,...log] : [...log]
+
     return this.setState({
-      condition: condition,
-      events: log,
+      condition: {...condition},
+      events: [...events],
       selectedDieIndex: condition.dice.length > 0 ? 0 : undefined,
     })
   }

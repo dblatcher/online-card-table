@@ -12,6 +12,7 @@ export type NewTurnRequestPayload = PayloadBase & {
 export type ConditionAndLogPayload = PayloadBase & {
   condition: TabulaCondition
   log: GameEvent[]
+  isLogUpdate?: boolean
 }
 
 export type ErrorPayload = PayloadBase & {

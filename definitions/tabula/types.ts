@@ -31,4 +31,5 @@ export enum EventCategory {
 export type GameEvent = {
   message: string
   category?: EventCategory
+  requestIndex?: number
 }

@@ -13,10 +13,12 @@ const makeEmptyCellRange = (count: number) => {
 export class TabulaGame {
   private _condition: TabulaCondition
   private _log: GameEvent[]
+  private _requestIndex: number
 
   constructor(condition: TabulaCondition) {
     this._condition = condition
     this._log = []
+    this._requestIndex = 0
   }
 
   //TO DO - clone the object
@@ -97,7 +99,8 @@ export class TabulaGame {
     return hasWon('BLUE') ? 'BLUE' : hasWon('GREEN') ? 'GREEN' : undefined
   }
 
-  public newTurn(rolls: [DieRoll, DieRoll]) {
+  public newTurn(rolls: [DieRoll, DieRoll]): GameEvent[] {
+    this._requestIndex++
     this._condition.dice = rolls[0] === rolls[1]
       ? [rolls[0], rolls[0], rolls[0], rolls[0]]
       : [rolls[0], rolls[1]]
@@ -107,21 +110,22 @@ export class TabulaGame {
       ? `${this._condition.currentPlayer} rolled a double ${rolls[0]}`
       : `${this._condition.currentPlayer} rolled a ${rolls[0]} and a ${rolls[1]}`
     this.record(message, EventCategory.dice)
+    return this._log.filter(entry => entry.requestIndex === this._requestIndex)
   }
 
   public attemptMove(dieIndex: number, cellIndexOrZone: number | 'jail' | 'start') {
+    this._requestIndex++
     if (cellIndexOrZone === 'jail') {
-      return this.attemptMoveFromJail(dieIndex)
+      this.attemptMoveFromJail(dieIndex)
+    } else if (cellIndexOrZone === 'start') {
+      this.attemptMoveFromStart(dieIndex)
+    } else if (typeof cellIndexOrZone === 'number') {
+      this.attemptMoveFromSquare(dieIndex, cellIndexOrZone)
     }
-    if (cellIndexOrZone === 'start') {
-      return this.attemptMoveFromStart(dieIndex)
-    }
-    if (typeof cellIndexOrZone === 'number') {
-      return this.attemptMoveFromSquare(dieIndex, cellIndexOrZone)
-    }
+    return this._log.filter(entry => entry.requestIndex === this._requestIndex)
   }
 
-  public attemptMoveFromStart(dieIndex: number) {
+  private attemptMoveFromStart(dieIndex: number) {
     const { dice, cells, currentPlayer, start, jail } = this._condition
     const dieValue = dice[dieIndex]
     const targetCell = cells[dieValue - 1]
@@ -143,7 +147,7 @@ export class TabulaGame {
     }
   }
 
-  public attemptMoveFromJail(dieIndex: number) {
+  private attemptMoveFromJail(dieIndex: number) {
     const { dice, cells, currentPlayer, jail } = this._condition
     const dieValue = dice[dieIndex]
     const targetCell = cells[dieValue - 1]
@@ -162,7 +166,7 @@ export class TabulaGame {
     }
   }
 
-  public attemptMoveFromSquare(dieIndex: number, cellIndex: number) {
+  private attemptMoveFromSquare(dieIndex: number, cellIndex: number) {
     const { dice, cells, currentPlayer, jail, start } = this._condition
     const dieValue = dice[dieIndex]
     const startCell = cells[cellIndex]
@@ -244,7 +248,7 @@ export class TabulaGame {
   }
 
   private record(message: string, category?: EventCategory): void {
-    this._log.push({ message, category })
+    this._log.push({ message, category, requestIndex: this._requestIndex })
   }
 
   public static findAvailableMovesForCondition(condition: TabulaCondition): AvaliableMove[] {

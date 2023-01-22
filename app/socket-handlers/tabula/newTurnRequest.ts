@@ -17,8 +17,8 @@ export function makeNewTurnRequest (
     }
     const { room } = errorOrRoom
 
-    room.game.newTurn(payload.dice)
-    const response = buildConditionAndLogPayload(room)
+    const events = room.game.newTurn(payload.dice)
+    const response = buildConditionAndLogPayload(room, events)
     callback(response)
     socket.to(room.name).emit('conditionAndLog', response)
   }

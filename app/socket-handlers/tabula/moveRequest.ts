@@ -17,8 +17,8 @@ export function makeMoveRequestHandler (
     }
     const { room } = errorOrRoom
 
-    room.game.attemptMove(payload.dieIndex, payload.squareOrZone)
-    const response = buildConditionAndLogPayload(room)
+    const events = room.game.attemptMove(payload.dieIndex, payload.squareOrZone)
+    const response = buildConditionAndLogPayload(room, events)
     callback(response)
     socket.to(room.name).emit('conditionAndLog', response)
   }
