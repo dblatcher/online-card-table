@@ -5,6 +5,7 @@ import { FunctionalComponent } from 'preact'
 import { html } from 'htm/preact'
 import { Cell, ButtonValue } from '../../../definitions/tabula/types'
 import { Stones } from './Stones'
+import { romanNumeral } from '../util'
 
 interface Props {
   cell: Cell
@@ -42,10 +43,10 @@ export const Square: FunctionalComponent<Props> = ({
   <button
     class=${SquareStyle(cellSize, hightlight)}
     onClick=${() => { clickHandler(cellIndex) }}
-    onMouseEnter=${() => {updateHoveredButton(cellIndex, 'enter')}}
-    onMouseLeave=${() => {updateHoveredButton(cellIndex, 'leave')}}
+    onMouseEnter=${() => { updateHoveredButton(cellIndex, 'enter') }}
+    onMouseLeave=${() => { updateHoveredButton(cellIndex, 'leave') }}
     >
-    <b>${cellIndex + 1}</b>
+    <b>${romanNumeral(cellIndex + 1)}</b>
     <${Stones} color=${cell.color} stones=${cell.stones} />
   </button>
   `

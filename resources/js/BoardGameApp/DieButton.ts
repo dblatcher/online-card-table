@@ -4,6 +4,7 @@ import { css } from '@emotion/css'
 import { FunctionalComponent } from 'preact'
 import { html } from 'htm/preact'
 import { DieRoll } from '../../../definitions/tabula/types'
+import { romanNumeral } from '../util'
 
 interface Props {
   value: DieRoll
@@ -33,9 +34,9 @@ export const DieButton: FunctionalComponent<Props> = ({ dieIndex, value, clickHa
   <button
     class=${dieStyle(isSelected)}
     onClick=${() => {
-    clickHandler(dieIndex)
-  }}>
-    <b>${value}</b>
+      clickHandler(dieIndex)
+    }}>
+    <b>${romanNumeral(value)}</b>
 
   </button>
   `
