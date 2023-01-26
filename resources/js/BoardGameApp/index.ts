@@ -7,7 +7,6 @@ import {
 } from 'definitions/socketEvents'
 import { Socket } from 'socket.io-client'
 import { Board } from './Board'
-import { DieButton } from './DieButton'
 import {
   DieRoll, PlayerColor, TabulaCondition, GameEvent, AvaliableMove, ButtonValue
 } from '../../../definitions/tabula/types'
@@ -20,6 +19,7 @@ import { TabulaGame } from '../../../definitions/tabula/TabulaGame'
 import { ClientSafePlayer } from 'definitions/types'
 import { PlayerBar } from './PlayerBar'
 import { MainMessage } from './MainMessage'
+import { DiceSection } from './DiceSection'
 
 interface Props {
   socket?: Socket<ServerToClientEvents, ClientToServerEvents>
@@ -208,7 +208,7 @@ export class BoardGameApp extends Component<Props, State> {
   }
 
   public render(): ComponentChild {
-    const { condition, events, players } = this.state
+    const { condition, events, players, selectedDieIndex } = this.state
     const { availableMoves, needsToLogIn, winner } = this
     const timeToRollDice = !!condition && (availableMoves.length === 0 || condition.dice.length === 0)
     const whosTurn = (!!condition && timeToRollDice) ? otherColor(condition.currentPlayer) : condition?.currentPlayer
@@ -241,24 +241,15 @@ export class BoardGameApp extends Component<Props, State> {
             highlightSquareIndex=${this.squareToHighlight}
             updateHoveredButton=${this.updateHoveredButton}
           >
-
           ${!winner && !needsToLogIn && html`
-            <section>
-              ${condition.dice.map((die, index) => html`
-              <${DieButton}
-              value=${die}
-                    dieIndex=${index}
-                    clickHandler=${this.handleDieClick}
-                    isSelected=${index === this.state.selectedDieIndex}/>
-                    `)}
-                ${timeToRollDice ? html`
-                <button onClick=${this.rollDice}>roll</button>
-                `: html`
-                <p>${availableMoves.length} available moves.</p>
-                `}
-            </section>
+            <${DiceSection}
+              condition=${condition}
+              numberOfMoves=${availableMoves.length}
+              handleDieClick=${this.handleDieClick}
+              selectedDieIndex=${selectedDieIndex}
+              rollDice=${this.rollDice}
+            />
           `}
-
           </${Board}>
         `}
           <${EventList} events=${events} />
