@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 /* eslint-disable @typescript-eslint/space-before-function-paren */
-import { Component, ComponentChild } from 'preact'
+import { Component, ComponentChild, Fragment } from 'preact'
 import { html } from 'htm/preact'
 import {
   ServerToClientEvents, ClientToServerEvents, AssignIdPayload, PlayerListPayload,
@@ -19,6 +19,7 @@ import { RemoteTabulaInterface } from '../RemoteTabulaInterface'
 import { TabulaGame } from '../../../definitions/tabula/TabulaGame'
 import { ClientSafePlayer } from 'definitions/types'
 import { PlayerBar } from './PlayerBar'
+import { MainMessage } from './MainMessage'
 
 interface Props {
   socket?: Socket<ServerToClientEvents, ClientToServerEvents>
@@ -183,34 +184,6 @@ export class BoardGameApp extends Component<Props, State> {
     return this.state.players[color]?.name || color
   }
 
-  getMessage(availableMoves: AvaliableMove[], winner: PlayerColor | undefined): string {
-    const { condition } = this.state
-    if (!condition) {
-      return 'LOADING...'
-    }
-
-    if (this.needsToLogIn) {
-      return 'You must sign in to play.'
-    }
-    const { currentPlayer, dice } = condition
-    const currentPlayerName = this.getPlayerName(currentPlayer)
-    const otherPlayerName = this.getPlayerName(currentPlayer === 'BLUE' ? 'GREEN' : 'BLUE')
-
-    if (winner) {
-      return `${this.getPlayerName(winner)} has won the game!`
-    }
-
-    if (dice.length === 0) {
-      return `${currentPlayerName}'s turn over. ${otherPlayerName} to roll dice`
-    }
-
-    if (availableMoves.length === 0) {
-      return `${currentPlayerName} cannot move. ${otherPlayerName} to roll dice`
-    }
-
-    return `${currentPlayerName} to move`
-  }
-
   get availableMoves(): AvaliableMove[] {
     const { condition } = this.state
     return condition ? TabulaGame.findAvailableMovesForCondition(condition) : []
@@ -240,19 +213,8 @@ export class BoardGameApp extends Component<Props, State> {
     const timeToRollDice = !!condition && (availableMoves.length === 0 || condition.dice.length === 0)
     const whosTurn = (!!condition && timeToRollDice) ? otherColor(condition.currentPlayer) : condition?.currentPlayer
 
-    const message = this.getMessage(availableMoves, winner)
-
-    // TO DO - waiting screen?
-    if (!condition) {
-      return html`
-      <div>
-        <p>${message}</p>
-      </div>
-      `
-    }
-
     return html`
-      <div>
+      <${Fragment}>
         <button onclick=${this.handleResetClick}>RESET GAME</button>
         <${PlayerBar}
           players=${players}
@@ -260,8 +222,18 @@ export class BoardGameApp extends Component<Props, State> {
           whosTurn=${whosTurn}
           localPlayerRole=${this.role} />
 
-        <span>${message}</span>
+        <${MainMessage}
+          availableMoves=${availableMoves}
+          winner= ${winner}
+          currentPlayer=${condition?.currentPlayer || 'BLUE'}
+          players=${players}
+          needsToLogIn=${needsToLogIn}
+          noDiceLeft= ${timeToRollDice}
+        />
+
         <div style=${{ display: 'flex' }}>
+
+        ${condition && html`
           <${Board}
             game=${condition}
             squareClickHandler=${this.handleSquareClick}
@@ -280,19 +252,19 @@ export class BoardGameApp extends Component<Props, State> {
                     isSelected=${index === this.state.selectedDieIndex}/>
                     `)}
                 ${timeToRollDice ? html`
-                <button onClick=${this.rollDice}>roll</buttonl>
+                <button onClick=${this.rollDice}>roll</button>
                 `: html`
                 <p>${availableMoves.length} available moves.</p>
                 `}
             </section>
           `}
 
-          </board>
-
+          </${Board}>
+        `}
           <${EventList} events=${events} />
 
         </div>
-      </div>
+      </${Fragment}>
     `
   }
 }
