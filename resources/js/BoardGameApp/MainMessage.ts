@@ -37,7 +37,7 @@ const getMessage = (
   const otherPlayerName = players[otherColor]?.name || otherColor
 
   if (noDiceLeft) {
-    return `${currentPlayerName}'s turn over. ${otherPlayerName} to roll dice`
+    return `${otherPlayerName} to roll dice`
   }
 
   if (availableMoves.length === 0) {

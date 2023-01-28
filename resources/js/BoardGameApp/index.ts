@@ -234,11 +234,11 @@ export class BoardGameApp extends Component<Props, State> {
 
         <${MainMessage}
           availableMoves=${availableMoves}
-          winner= ${winner}
+          winner=${winner}
           currentPlayer=${condition?.currentPlayer || 'BLUE'}
           players=${players}
           needsToLogIn=${needsToLogIn}
-          noDiceLeft= ${timeToRollDice}
+          noDiceLeft=${condition?.dice.length === 0}
         />
 
         <div style=${{ display: 'flex' }}>
