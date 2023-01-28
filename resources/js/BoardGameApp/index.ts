@@ -3,7 +3,7 @@
 import { Component, ComponentChild, Fragment } from 'preact'
 import { html } from 'htm/preact'
 import {
-  ServerToClientEvents, ClientToServerEvents, AssignIdPayload, PlayerListPayload,
+  ServerToClientEvents, ClientToServerEvents, AssignIdPayload, PlayerListPayload, BasicEmitPayload,
 } from 'definitions/socketEvents'
 import { Socket } from 'socket.io-client'
 import { Board } from './Board'
@@ -64,6 +64,7 @@ export class BoardGameApp extends Component<Props, State> {
     this.handleResetClick = this.handleResetClick.bind(this)
     this.handleServiceResponse = this.handleServiceResponse.bind(this)
     this.handleAssignId = this.handleAssignId.bind(this)
+    this.handleBasicEmit = this.handleBasicEmit.bind(this)
     this.handlePlayerList = this.handlePlayerList.bind(this)
     this.updateHoveredButton = this.updateHoveredButton.bind(this)
     this.rollDice = this.rollDice.bind(this)
@@ -73,7 +74,8 @@ export class BoardGameApp extends Component<Props, State> {
     this.props.socket?.on('conditionAndLog', this.handleServiceResponse)
     this.props.socket?.on('assignId', this.handleAssignId)
     this.props.socket?.on('playerList', this.handlePlayerList)
-    // TO DO - request player list on mount ?
+    this.props.socket?.on('basicEmit', this.handleBasicEmit)
+
     await this.tabulaService.requestConditionAndLog({ roomName: this.props.roomName, from: this.id })
       .then(this.handleServiceResponse)
   }
@@ -82,13 +84,23 @@ export class BoardGameApp extends Component<Props, State> {
     this.props.socket?.off('conditionAndLog', this.handleServiceResponse)
     this.props.socket?.off('assignId', this.handleAssignId)
     this.props.socket?.off('playerList', this.handlePlayerList)
+    this.props.socket?.off('basicEmit', this.handleBasicEmit)
   }
 
   handleAssignId(payload: AssignIdPayload): void {
-    console.log('handleAssignId', payload)
     this.id = payload.player.id
     this.role = payload.player.role
     this.forceUpdate()
+  }
+
+  handleBasicEmit(payload: BasicEmitPayload):void {
+    this.setState(state => {
+      const {events} = state
+      events.push({
+        message:`${payload.from}: ${payload.message}`,
+      })
+      return {events}
+    })
   }
 
   handlePlayerList(payload: PlayerListPayload): void {
