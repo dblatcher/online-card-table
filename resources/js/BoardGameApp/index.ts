@@ -20,6 +20,9 @@ import { ClientSafePlayer } from 'definitions/types'
 import { PlayerBar } from './PlayerBar'
 import { MainMessage } from './MainMessage'
 import { DiceSection } from './DiceSection'
+import { MenuBar } from './MenuBar'
+import { ModalContainer } from '../ModalContainer'
+import { LogInDialogue } from './LogInDialogue'
 
 interface Props {
   socket?: Socket<ServerToClientEvents, ClientToServerEvents>
@@ -70,7 +73,6 @@ export class BoardGameApp extends Component<Props, State> {
     this.props.socket?.on('conditionAndLog', this.handleServiceResponse)
     this.props.socket?.on('assignId', this.handleAssignId)
     this.props.socket?.on('playerList', this.handlePlayerList)
-
     // TO DO - request player list on mount ?
     await this.tabulaService.requestConditionAndLog({ roomName: this.props.roomName, from: this.id })
       .then(this.handleServiceResponse)
@@ -215,7 +217,15 @@ export class BoardGameApp extends Component<Props, State> {
 
     return html`
       <${Fragment}>
-        <button onclick=${this.handleResetClick}>RESET GAME</button>
+
+        <${ModalContainer} isOpen=${needsToLogIn}>
+          <${LogInDialogue}
+            socket=${this.props.socket}
+            roomName=${this.props.roomName}
+          />
+        </${ModalContainer}>
+
+        <${MenuBar} handleResetClick=${this.handleResetClick}/>
         <${PlayerBar}
           players=${players}
           isLocalGame=${!this.props.socket}
