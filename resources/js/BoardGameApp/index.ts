@@ -34,6 +34,7 @@ interface State {
   events: GameEvent[]
   selectedDieIndex?: number
   players: Record<PlayerColor, ClientSafePlayer | undefined>
+  playerList: ClientSafePlayer[]
   hoveredOn?: ButtonValue
 }
 
@@ -57,6 +58,7 @@ export class BoardGameApp extends Component<Props, State> {
         'BLUE': undefined,
         'GREEN': undefined,
       },
+      playerList: [],
     }
     this.handleSquareClick = this.handleSquareClick.bind(this)
     this.handleDieClick = this.handleDieClick.bind(this)
@@ -93,13 +95,16 @@ export class BoardGameApp extends Component<Props, State> {
     this.forceUpdate()
   }
 
-  handleBasicEmit(payload: BasicEmitPayload):void {
+  handleBasicEmit(payload: BasicEmitPayload): void {
     this.setState(state => {
-      const {events} = state
+      const { events, playerList } = state
+
+      const sender = playerList.find(player => player.id === payload.from)
+
       events.push({
-        message:`${payload.from}: ${payload.message}`,
+        message: sender?.name ? `${sender.name}: ${payload.message}` : payload.message,
       })
-      return {events}
+      return { events }
     })
   }
 
@@ -110,6 +115,7 @@ export class BoardGameApp extends Component<Props, State> {
         BLUE: players.find(player => player.role === 'BLUE'),
         GREEN: players.find(player => player.role === 'GREEN'),
       },
+      playerList: players,
     })
   }
 
