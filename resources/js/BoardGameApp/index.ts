@@ -229,6 +229,7 @@ export class BoardGameApp extends Component<Props, State> {
   }
 
   public render(): ComponentChild {
+    const { roomName } = this.props
     const { condition, events, players, selectedDieIndex } = this.state
     const { availableMoves, needsToLogIn, winner } = this
     const timeToRollDice = !!condition && (availableMoves.length === 0 || condition.dice.length === 0)
@@ -240,25 +241,30 @@ export class BoardGameApp extends Component<Props, State> {
         <${ModalContainer} isOpen=${needsToLogIn}>
           <${LogInDialogue}
             socket=${this.props.socket}
-            roomName=${this.props.roomName}
+            roomName=${roomName}
           />
         </${ModalContainer}>
 
-        <${MenuBar} handleResetClick=${this.handleResetClick}/>
-        <${PlayerBar}
-          players=${players}
-          isLocalGame=${!this.props.socket}
-          whosTurn=${whosTurn}
-          localPlayerRole=${this.role} />
+        <${MenuBar}
+          handleResetClick=${this.handleResetClick}
+          title=${roomName || 'Tabula'}/>
 
-        <${MainMessage}
-          availableMoves=${availableMoves}
-          winner=${winner}
-          currentPlayer=${condition?.currentPlayer || 'BLUE'}
-          players=${players}
-          needsToLogIn=${needsToLogIn}
-          noDiceLeft=${condition?.dice.length === 0}
-        />
+          <div style=${{ display: 'flex', alignItems:'center' }}>
+            <${PlayerBar}
+              players=${players}
+              isLocalGame=${!this.props.socket}
+              whosTurn=${whosTurn}
+              localPlayerRole=${this.role} />
+
+            <${MainMessage}
+              availableMoves=${availableMoves}
+              winner=${winner}
+              currentPlayer=${condition?.currentPlayer || 'BLUE'}
+              players=${players}
+              needsToLogIn=${needsToLogIn}
+              noDiceLeft=${condition?.dice.length === 0}
+            />
+          </div>
 
         <div style=${{ display: 'flex' }}>
 
@@ -287,7 +293,7 @@ export class BoardGameApp extends Component<Props, State> {
               <${MessageControl}
               socket=${this.props.socket}
               playerId=${this.id}
-              roomName=${this.props.roomName}
+              roomName=${roomName}
               addToOwnEvents=${(event: GameEvent) => {
     this.setState(state => {
       const { events } = state
