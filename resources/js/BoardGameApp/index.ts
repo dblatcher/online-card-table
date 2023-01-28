@@ -8,7 +8,7 @@ import {
 import { Socket } from 'socket.io-client'
 import { Board } from './Board'
 import {
-  DieRoll, PlayerColor, TabulaCondition, GameEvent, AvaliableMove, ButtonValue
+  DieRoll, PlayerColor, TabulaCondition, GameEvent, AvaliableMove, ButtonValue,
 } from '../../../definitions/tabula/types'
 import { d6 } from './diceService'
 import { EventList } from './EventList'
@@ -23,6 +23,7 @@ import { DiceSection } from './DiceSection'
 import { MenuBar } from './MenuBar'
 import { ModalContainer } from '../ModalContainer'
 import { LogInDialogue } from './LogInDialogue'
+import { MessageControl } from './MessageControl'
 
 interface Props {
   socket?: Socket<ServerToClientEvents, ClientToServerEvents>
@@ -280,8 +281,23 @@ export class BoardGameApp extends Component<Props, State> {
           `}
           </${Board}>
         `}
-          <${EventList} events=${events} />
-
+          <div style=${{ display: 'flex', flexDirection: 'column', flex: 1, flexShrink: 1 }}>
+            <${EventList} events=${events} />
+            ${this.props.socket && this.id && html`
+              <${MessageControl}
+              socket=${this.props.socket}
+              playerId=${this.id}
+              roomName=${this.props.roomName}
+              addToOwnEvents=${(event: GameEvent) => {
+    this.setState(state => {
+      const { events } = state
+      events.push(event)
+      return { events }
+    })
+  }}
+              />
+            `}
+          </div>
         </div>
       </${Fragment}>
     `
