@@ -1,23 +1,34 @@
 @layout('layouts/general')
 @set('title', 'create shared room')
 
+@section('scripts')
+@super()
+@entryPointScripts('create-room-form')
+@end
+
 @section('main')
 
-  <main>
-    <div>
-      <h1 class="title"> create shared room </h1>
+<main>
+  <div>
+    <h1 class="title"> create shared room </h1>
 
-      <h2>Result</h2>
+    <h2>Result</h2>
 
-      @if(success)
-      <p> Room created </p>
-      <p>{{room.name}} , {{room.type}}</p>
-      <a href="{{room.path}}">go to room</a>
-      @else
-      <p> Room creation failed </p>
-      @end
+    @if(success)
+    <p> {{room.type}} Room created </p>
+    <p>{{room.name}}</p>
 
-    </div>
+    <aside data-role="clipboard-widget" class="clipboard-widget">
+      <textarea readonly>{{room.path}}</textarea>
+      <button>📋</button>
+    </aside>
 
-  </main>
+    <a href="{{room.path}}">go to room</a>
+    @else
+    <p> Room creation failed </p>
+    @end
+
+  </div>
+
+</main>
 @end

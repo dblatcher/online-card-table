@@ -1,0 +1,14 @@
+.clipboard-widget {
+  display: flex;
+
+
+  textArea {
+    flex: 1;
+    overflow: hidden;
+    resize: none;
+  }
+
+  button {
+  font-size: 200%;
+  }
+}
