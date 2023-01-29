@@ -6,7 +6,7 @@ const PATHS = {
   },
 } as const
 
-const fetchJson = async (path: string): Promise<{ data?: Record<string, any>, error?: string }> => {
+async function fetchJson<T extends {}> (path: string): Promise<{ data?: T, error?: string }> {
   try {
     const response = await fetch(path)
     if (!response.ok) {
@@ -22,12 +22,7 @@ const fetchJson = async (path: string): Promise<{ data?: Record<string, any>, er
 }
 
 export const fetchSuggestedRoomName = async (): Promise<string | undefined> => {
-  const { error, data } = await fetchJson(PATHS.rooms.suggestName)
-
-  if (error || !data) {
-    return undefined
-  }
-
-  return (data as RoomNameSuggestion).suggestion
+  const { data } = await fetchJson<RoomNameSuggestion>(PATHS.rooms.suggestName)
+  return data?.suggestion
 }
 
