@@ -52,6 +52,7 @@ Encore.addEntry('shared-card-table', './resources/js/shared-card-table.ts')
 Encore.addEntry('private-card-table', './resources/js/private-card-table.ts')
 Encore.addEntry('board-game', './resources/js/board-game.ts')
 Encore.addEntry('board-game-private', './resources/js/board-game-private.ts')
+Encore.addEntry('create-room-form', './resources/js/create-room-form.ts')
 
 /*
 |--------------------------------------------------------------------------

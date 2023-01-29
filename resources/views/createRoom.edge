@@ -1,6 +1,11 @@
 @layout('layouts/general')
 @set('title', 'create shared room')
 
+@section('scripts')
+@super()
+@entryPointScripts('create-room-form')
+@end
+
 @section('main')
 
   <main>
@@ -21,6 +26,7 @@
         <div>
           <label for="">room name</label>
           <input type="text" name="name"/>
+          <button id="getNameSuggestion" onclick="event.preventDefault()">random name</button>
         </div>
 
         <div>

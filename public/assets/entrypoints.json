@@ -39,6 +39,11 @@
       "js": [
         "http://localhost:8080/assets/board-game-private.js"
       ]
+    },
+    "create-room-form": {
+      "js": [
+        "http://localhost:8080/assets/create-room-form.js"
+      ]
     }
   }
 }

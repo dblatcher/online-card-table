@@ -8,5 +8,6 @@
   "assets/board-game.css": "http://localhost:8080/assets/board-game.css",
   "assets/board-game.js": "http://localhost:8080/assets/board-game.js",
   "assets/board-game-private.css": "http://localhost:8080/assets/board-game-private.css",
-  "assets/board-game-private.js": "http://localhost:8080/assets/board-game-private.js"
+  "assets/board-game-private.js": "http://localhost:8080/assets/board-game-private.js",
+  "assets/create-room-form.js": "http://localhost:8080/assets/create-room-form.js"
 }
